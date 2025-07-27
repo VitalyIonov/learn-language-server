@@ -1,8 +1,7 @@
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy import select, func
 from app.models.category import Category
-from app.schemas import CategoryCreate
-from collections.abc import Sequence
+from app.schemas import CategoryCreate, CategoriesListResponse
 from typing import Optional
 from app.constants.data import DEFAULT_OFFSET, DEFAULT_LIMIT
 
@@ -20,7 +19,7 @@ async def get_categories(
     offset: int = DEFAULT_OFFSET,
     limit: int = DEFAULT_LIMIT,
     q: Optional[str] = None,
-) -> Sequence[Category]:
+) -> CategoriesListResponse:
     statement = select(Category).order_by(Category.name)
     count_statement = select(func.count()).select_from(Category)
 
@@ -33,7 +32,9 @@ async def get_categories(
     result = await db.execute(statement)
     count = await db.execute(count_statement)
 
-    return {
-        "items": result.scalars().all(),
-        "meta": {"totalCount": count.scalar_one()},
-    }
+    return CategoriesListResponse.validate(
+        {
+            "items": result.scalars().all(),
+            "meta": {"total_count": count.scalar_one()},
+        }
+    )

@@ -1,8 +1,7 @@
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy import select, func
 from app.models.level import Level
-from app.schemas import LevelCreate
-from collections.abc import Sequence
+from app.schemas import LevelCreate, LevelsListResponse
 from typing import Optional
 from app.constants.data import DEFAULT_OFFSET, DEFAULT_LIMIT
 
@@ -20,7 +19,7 @@ async def get_levels(
     offset: int = DEFAULT_OFFSET,
     limit: int = DEFAULT_LIMIT,
     q: Optional[str] = None,
-) -> Sequence[Level]:
+) -> LevelsListResponse:
     statement = select(Level).order_by(Level.alias)
     count_statement = select(func.count()).select_from(Level)
 
@@ -31,9 +30,12 @@ async def get_levels(
     statement = statement.offset(offset).limit(limit)
 
     result = await db.execute(statement)
-    count = await db.execute(count_statement)
+    total = (await db.execute(count_statement)).scalar_one()
+    orm_items = result.scalars().all()
 
-    return {
-        "items": result.scalars().all(),
-        "meta": {"totalCount": count.scalar_one()},
-    }
+    return LevelsListResponse.model_validate(
+        {
+            "items": orm_items,
+            "meta": {"total_count": total},
+        }
+    )

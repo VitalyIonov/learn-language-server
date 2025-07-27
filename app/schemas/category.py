@@ -1,4 +1,3 @@
-from pydantic import Field
 from typing import List
 from app.schemas import Meta, NonNegativeInt, BaseSchema
 
@@ -12,9 +11,7 @@ class CategoryOut(BaseSchema):
 
 
 class CategoriesListResponse(BaseSchema):
-    items: List[CategoryOut] = Field(
-        ..., min_length=0, max_length=100, description="Список категорий"
-    )
+    items: List[CategoryOut]
     meta: Meta
 
 

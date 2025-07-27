@@ -7,7 +7,7 @@ from app.crud.meaning import (
     create_meaning as crud_create_meaning,
     get_meanings as crud_get_meanings,
 )
-from app.schemas import MeaningUpdate, MeaningCreate, MeaningsListResponse, MeaningOut
+from app.schemas import MeaningUpdate, MeaningCreate, MeaningsListResponse
 from app.models.meaning import Meaning
 
 

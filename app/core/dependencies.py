@@ -6,6 +6,9 @@ from app.core.db import get_db
 from app.services.auth import AuthService
 from app.services.user import UserService
 from app.services.meaning import MeaningService
+from app.services.definition import DefinitionService
+from app.services.level import LevelService
+from app.services.category import CategoryService
 
 
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="token")
@@ -17,6 +20,20 @@ async def get_user_service(db: AsyncSession = Depends(get_db)) -> UserService:
 
 async def get_meaning_service(db: AsyncSession = Depends(get_db)) -> MeaningService:
     return MeaningService(db)
+
+
+async def get_definition_service(
+    db: AsyncSession = Depends(get_db),
+) -> DefinitionService:
+    return DefinitionService(db)
+
+
+async def get_level_service(db: AsyncSession = Depends(get_db)) -> LevelService:
+    return LevelService(db)
+
+
+async def get_category_service(db: AsyncSession = Depends(get_db)) -> CategoryService:
+    return CategoryService(db)
 
 
 async def get_current_user(

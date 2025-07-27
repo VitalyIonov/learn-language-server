@@ -3,6 +3,7 @@ from sqlalchemy import select
 from app.models.user import User
 from collections.abc import Sequence
 from app.constants.data import DEFAULT_OFFSET, DEFAULT_LIMIT
+from app.schemas import UsersListResponse
 
 
 async def get_user_by_email(db: AsyncSession, email: str) -> User | None:
@@ -20,7 +21,7 @@ async def create_user(db: AsyncSession, email: str, name: str | None) -> User:
 
 async def get_users(
     db: AsyncSession, offset: int = DEFAULT_OFFSET, limit: int = DEFAULT_LIMIT
-) -> Sequence[User]:
+) -> UsersListResponse:
     result = await db.execute(select(User).offset(offset).limit(limit))
 
-    return result.scalars().all()
+    return UsersListResponse.model_validate({"items": result})

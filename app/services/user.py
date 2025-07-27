@@ -1,7 +1,11 @@
 from sqlalchemy.ext.asyncio import AsyncSession
-from app.crud.user import get_user_by_email as crud_get_user_by_email
+from app.crud.user import (
+    get_user_by_email as crud_get_user_by_email,
+    get_users as crud_get_users,
+)
 from app.models.user import User
 from fastapi import HTTPException, status
+from app.schemas import UsersListResponse
 
 
 class UserService:
@@ -15,6 +19,9 @@ class UserService:
                 status_code=status.HTTP_404_NOT_FOUND, detail="User not found"
             )
         return user
+
+    async def get_all(self) -> UsersListResponse:
+        return await crud_get_users(self.db)
 
     async def require_admin(self, user: User) -> None:
         if user.role != user.role.ADMIN:
