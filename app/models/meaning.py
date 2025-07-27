@@ -1,0 +1,44 @@
+from __future__ import annotations
+from typing import TYPE_CHECKING
+
+from sqlalchemy import ForeignKey, Integer
+from sqlalchemy.orm import Mapped, mapped_column, relationship
+from app.core.db import Base
+from app.models.definition import Definition
+from app.models.associations import definitions_meanings
+
+if TYPE_CHECKING:
+    from category import Category
+    from level import Level
+
+
+class Meaning(Base):
+    __tablename__ = "meanings"
+
+    id: Mapped[int] = mapped_column(primary_key=True)
+    name: Mapped[str] = mapped_column(unique=True, index=True, nullable=False)
+
+    category_id: Mapped[int] = mapped_column(
+        ForeignKey("categories.id"),
+        nullable=True,
+    )
+    level_id: Mapped[int] = mapped_column(
+        ForeignKey("levels.id"),
+        nullable=True,
+    )
+
+    category: Mapped[Category] = relationship(
+        "Category",
+        back_populates="meanings",
+        lazy="joined",
+    )
+    level: Mapped[Level] = relationship(
+        "Level",
+        back_populates="meanings",
+        lazy="joined",
+    )
+    definitions: Mapped[list[Definition]] = relationship(
+        "Definition",
+        secondary=definitions_meanings,
+        back_populates="meanings",
+    )
