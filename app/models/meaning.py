@@ -1,11 +1,10 @@
 from __future__ import annotations
 from typing import TYPE_CHECKING
 
-from sqlalchemy import ForeignKey, Integer
+from sqlalchemy import ForeignKey
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 from app.core.db import Base
 from app.models.definition import Definition
-from app.models.associations import definitions_meanings
 
 if TYPE_CHECKING:
     from category import Category
@@ -19,11 +18,11 @@ class Meaning(Base):
     name: Mapped[str] = mapped_column(unique=True, index=True, nullable=False)
 
     category_id: Mapped[int] = mapped_column(
-        ForeignKey("categories.id"),
+        ForeignKey("categories.id", ondelete="SET NULL"),
         nullable=True,
     )
     level_id: Mapped[int] = mapped_column(
-        ForeignKey("levels.id"),
+        ForeignKey("levels.id", ondelete="SET NULL"),
         nullable=True,
     )
 
@@ -39,6 +38,6 @@ class Meaning(Base):
     )
     definitions: Mapped[list[Definition]] = relationship(
         "Definition",
-        secondary=definitions_meanings,
+        secondary="definitions_meanings",
         back_populates="meanings",
     )

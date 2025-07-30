@@ -1,5 +1,5 @@
 from sqlalchemy.ext.asyncio import AsyncSession
-from sqlalchemy import select, func
+from sqlalchemy import select, func, delete
 from app.models.level import Level
 from app.schemas import LevelCreate, LevelsListResponse
 from typing import Optional
@@ -39,3 +39,11 @@ async def get_levels(
             "meta": {"total_count": total},
         }
     )
+
+
+async def delete_level(db: AsyncSession, level_id: int) -> bool:
+    stmt = delete(Level).where(Level.id == level_id).returning(Level.id)
+    result = await db.execute(stmt)
+    await db.commit()
+    deleted_id = result.scalar_one_or_none()
+    return deleted_id is not None

@@ -12,6 +12,8 @@ import app.models.level
 import app.models.category
 import app.models.user
 import app.models.meaning
+import app.models.definition
+import app.models.associations
 
 target_metadata = Base.metadata
 # this is the Alembic Config object, which provides

@@ -1,11 +1,12 @@
+from typing import Optional
+
 from sqlalchemy.ext.asyncio import AsyncSession
 from asyncio import gather
 from sqlalchemy import select, func, delete
 from sqlalchemy.orm import selectinload
 from app.models.definition import Definition
-from app.models.associations import definitions_meanings
+from app.models.associations import DefinitionsMeanings
 from app.schemas import DefinitionListResponse, DefinitionUpdate, DefinitionCreate
-from typing import Optional
 from app.constants.data import DEFAULT_OFFSET, DEFAULT_LIMIT, MAX_LIMIT
 
 
@@ -94,8 +95,8 @@ async def update_definition(
 
 async def delete_definition(db: AsyncSession, item_id: int) -> bool:
     await db.execute(
-        delete(definitions_meanings).where(
-            definitions_meanings.c.definition_id == item_id
+        delete(DefinitionsMeanings).where(
+            DefinitionsMeanings.c.definition_id == item_id
         )
     )
 

@@ -5,7 +5,6 @@ from app.constants.data import DEFAULT_OFFSET, DEFAULT_LIMIT
 from app.core.dependencies import get_level_service
 from app.services.level import LevelService
 
-
 router = APIRouter(tags=["levels"])
 
 
@@ -25,3 +24,11 @@ async def read_levels(
     svc: LevelService = Depends(get_level_service),
 ):
     return await svc.get_all(offset, limit, q)
+
+
+@router.delete("/levels/{level_id}")
+async def delete_level_endpoint(
+    level_id: int,
+    svc: LevelService = Depends(get_level_service),
+):
+    await svc.delete(level_id)

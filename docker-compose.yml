@@ -1,6 +1,15 @@
 version: "3.8"
 
 services:
+  nginx:
+    image: nginx:latest
+    volumes:
+      - ./nginx/conf.d:/etc/nginx/conf.d
+    ports:
+      - "80:80"
+    networks:
+      - backend_net
+
   db:
     image: postgres:15
     container_name: postgres-db
@@ -14,6 +23,8 @@ services:
       - "5433:5432"
     volumes:
       - ./postgres_data:/var/lib/postgresql/data
+    networks:
+      - backend_net
 
   web:
     build: .
@@ -30,3 +41,9 @@ services:
       - "8000:8000"
     volumes:
       - .:/app
+    networks:
+      - backend_net
+
+networks:
+  backend_net:
+    driver: bridge

@@ -1,11 +1,10 @@
 from app.api.main import api_router
 from tenacity import retry, stop_after_attempt, wait_fixed
-from fastapi import FastAPI, Depends
+from fastapi import FastAPI
 from contextlib import asynccontextmanager
 from starlette.middleware.sessions import SessionMiddleware
 from fastapi.middleware.cors import CORSMiddleware
 from app.core.db import engine, Base
-from app.core.dependencies import get_current_user
 
 from app.core.config import settings
 

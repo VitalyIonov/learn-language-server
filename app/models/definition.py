@@ -4,7 +4,7 @@ from typing import TYPE_CHECKING
 from sqlalchemy import ForeignKey
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 from app.core.db import Base
-from app.models.associations import definitions_meanings
+from app.models.associations import DefinitionsMeanings
 
 if TYPE_CHECKING:
     from category import Category
@@ -19,11 +19,14 @@ class Definition(Base):
     text: Mapped[str] = mapped_column(index=True, nullable=False)
 
     category_id: Mapped[int] = mapped_column(
-        ForeignKey("categories.id"),
+        ForeignKey("categories.id", ondelete="SET NULL"),
         nullable=True,
     )
     level_id: Mapped[int] = mapped_column(
-        ForeignKey("levels.id"),
+        ForeignKey(
+            "levels.id",
+            ondelete="SET NULL",
+        ),
         nullable=True,
     )
 
@@ -44,5 +47,5 @@ class Definition(Base):
     meanings: Mapped[list[Meaning]] = relationship(
         "Meaning",
         back_populates="definitions",
-        secondary=definitions_meanings,
+        secondary=DefinitionsMeanings.__tablename__,
     )
