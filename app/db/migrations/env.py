@@ -8,13 +8,6 @@ from alembic import context
 from app.core.db import Base
 from app.core.config import settings
 
-import app.models.level
-import app.models.category
-import app.models.user
-import app.models.meaning
-import app.models.definition
-import app.models.associations
-
 target_metadata = Base.metadata
 # this is the Alembic Config object, which provides
 # access to the values within the .ini file in use.

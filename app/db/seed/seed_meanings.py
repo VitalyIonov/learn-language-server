@@ -1,9 +1,7 @@
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy import select
 
-from app.models.category import Category
-from app.models.level import Level
-from app.models.meaning import Meaning
+from app.models.common import Category, Level, Meaning
 
 
 async def seed_meanings(session: AsyncSession, meanings_data: list[dict]) -> None:

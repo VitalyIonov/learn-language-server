@@ -1,5 +1,5 @@
 from sqlalchemy import select, insert
-from app.models.level import Level
+from app.models.common import Level
 from sqlalchemy.ext.asyncio import AsyncSession
 
 

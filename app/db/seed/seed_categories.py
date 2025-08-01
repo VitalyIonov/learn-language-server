@@ -1,5 +1,5 @@
 from sqlalchemy import select, insert
-from app.models.category import Category
+from app.models.common import Category
 from sqlalchemy.ext.asyncio import AsyncSession
 
 

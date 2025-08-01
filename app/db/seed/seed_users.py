@@ -1,5 +1,5 @@
 from sqlalchemy import select, insert
-from app.models.user import User
+from app.models.common import User
 from sqlalchemy.ext.asyncio import AsyncSession
 
 
