@@ -1,0 +1,14 @@
+from fastapi import APIRouter, Query
+from app.schemas.client import TranslateOut
+from app.services.client import TranslateService
+
+router = APIRouter(tags=["translations"])
+
+
+@router.get("/translate", response_model=TranslateOut)
+async def translate_text(
+    text: str = Query(description="text to translate"),
+):
+    result = TranslateService.translate(text)
+
+    return {"translation": result}

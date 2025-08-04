@@ -43,6 +43,7 @@ services:
       - "8000:8000"
     volumes:
       - .:/app
+      - ./static/images:/app/static/images
     networks:
       - backend_net
 

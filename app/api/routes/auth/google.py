@@ -1,12 +1,12 @@
 from fastapi import APIRouter, Request, Depends
-from sqlalchemy.ext.asyncio import AsyncSession
 from authlib.integrations.starlette_client import OAuth
 from app.core.config import settings
-from app.core.db import get_db
-from app.crud.common import get_user_by_email, create_user
 from app.core.security import create_access_token
 from datetime import timedelta
 from fastapi.responses import RedirectResponse
+from app.core.dependencies.common import get_user_service
+from app.schemas.common import UserCreate
+from app.services.common import UserService
 
 oauth = OAuth()
 ACCESS_TOKEN_EXPIRE_MINUTES = 60 * 24 * 30
@@ -31,7 +31,7 @@ async def login(request: Request):
 
 
 @router.get("/google/callback")
-async def auth_callback(request: Request, db: AsyncSession = Depends(get_db)):
+async def auth_callback(request: Request, svc: UserService = Depends(get_user_service)):
     token = await oauth.google.authorize_access_token(request)
 
     resp = await oauth.google.get(
@@ -42,9 +42,9 @@ async def auth_callback(request: Request, db: AsyncSession = Depends(get_db)):
     email = user_info["email"]
     name = user_info.get("name")
 
-    user = await get_user_by_email(db, email=email)
+    user = await svc.get_by_email(email)
     if not user:
-        user = await create_user(db, email=email, name=name)
+        user = await svc.create(UserCreate(email=email, name=name))
 
     access_token = create_access_token(
         subject=user.email,

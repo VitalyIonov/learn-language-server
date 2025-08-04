@@ -13,5 +13,10 @@ class UserOut(BaseSchema):
         from_attributes = True
 
 
+class UserCreate(BaseSchema):
+    email: EmailStr
+    name: str | None = None
+
+
 class UsersListResponse(BaseSchema):
     items: List[UserOut]

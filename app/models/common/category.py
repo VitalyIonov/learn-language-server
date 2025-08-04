@@ -7,6 +7,8 @@ from app.core.db import Base
 if TYPE_CHECKING:
     from definition import Definition
     from meaning import Meaning
+    from question import Question
+    from category_progress_info import CategoryProgressInfo
 
 
 class Category(Base):
@@ -23,4 +25,16 @@ class Category(Base):
     definitions: Mapped[list["Definition"]] = relationship(
         "Definition",
         back_populates="category",
+    )
+
+    questions: Mapped[list[Question]] = relationship(
+        "Question",
+        back_populates="category",
+        lazy="joined",
+    )
+
+    categories_progress_info: Mapped[list[CategoryProgressInfo]] = relationship(
+        "CategoryProgressInfo",
+        back_populates="category",
+        lazy="joined",
     )

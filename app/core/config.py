@@ -1,19 +1,15 @@
 import os
 from pydantic_settings import BaseSettings, SettingsConfigDict
 from pydantic_core import MultiHostUrl
-from dotenv import load_dotenv
 from pydantic import (
-    PostgresDsn,
     computed_field,
 )
-
-load_dotenv(".env.base")
-load_dotenv(os.environ.get("ENV_FILE", ".env.local"), override=True)
 
 
 class Settings(BaseSettings):
     model_config = SettingsConfigDict(
-        env_file=".env.base",
+        env_file=[".env.base", os.environ.get("ENV_FILE", ".env.local")],
+        env_file_encoding="utf-8",
         env_ignore_empty=True,
         extra="ignore",
     )
@@ -60,7 +56,7 @@ class Settings(BaseSettings):
         )
 
     SESSION_SECRET_KEY: str
-
+    OPENAI_API_KEY: str
     GOOGLE_CLIENT_ID: str
     GOOGLE_CLIENT_SECRET: str
 

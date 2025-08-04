@@ -6,6 +6,7 @@ from app.services.admin import (
     DefinitionService,
     LevelService,
     CategoryService,
+    UserInfoService,
 )
 
 
@@ -25,3 +26,7 @@ async def get_level_service(db: AsyncSession = Depends(get_db)) -> LevelService:
 
 async def get_category_service(db: AsyncSession = Depends(get_db)) -> CategoryService:
     return CategoryService(db)
+
+
+async def get_user_info_service(db: AsyncSession = Depends(get_db)) -> UserInfoService:
+    return UserInfoService(db)

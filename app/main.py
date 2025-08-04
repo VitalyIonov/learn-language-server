@@ -4,6 +4,7 @@ from fastapi import FastAPI
 from contextlib import asynccontextmanager
 from starlette.middleware.sessions import SessionMiddleware
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.staticfiles import StaticFiles
 from app.core.db import engine, Base
 
 from app.core.config import settings
@@ -74,3 +75,4 @@ app.add_middleware(SessionMiddleware, secret_key=settings.SESSION_SECRET_KEY)
 app.mount(f"{settings.API_V1_STR}/client", client_app)
 app.mount(f"{settings.API_V1_STR}/admin", admin_app)
 app.mount(f"{settings.API_V1_STR}/auth", auth_app)
+app.mount("/static", StaticFiles(directory="static"), name="static")

@@ -10,6 +10,8 @@ if TYPE_CHECKING:
     from app.models.common.category import Category
     from level import Level
     from meaning import Meaning
+    from question import Question
+    from definition_progress_info import DefinitionProgressInfo
 
 
 class Definition(Base):
@@ -48,4 +50,14 @@ class Definition(Base):
         "Meaning",
         back_populates="definitions",
         secondary=DefinitionsMeanings.__tablename__,
+    )
+    questions: Mapped[list[Question]] = relationship(
+        "Question",
+        back_populates="definitions",
+        secondary="definitions_questions",
+    )
+    definitions_progress_info: Mapped[list[DefinitionProgressInfo]] = relationship(
+        "DefinitionProgressInfo",
+        back_populates="definition",
+        lazy="joined",
     )

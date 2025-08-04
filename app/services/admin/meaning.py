@@ -31,10 +31,7 @@ class MeaningService:
 
     async def update(self, meaning_id: int, payload: MeaningUpdate) -> Meaning:
         entity = await self.get(meaning_id)
-        if entity is None:
-            raise HTTPException(
-                status_code=status.HTTP_404_NOT_FOUND, detail="Meaning not found"
-            )
+
         return await crud_update_meaning(self.db, entity, payload)
 
     async def delete(self, meaning_id: int) -> None:

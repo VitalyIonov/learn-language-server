@@ -7,6 +7,8 @@ from app.core.db import Base
 if TYPE_CHECKING:
     from meaning import Meaning
     from definition import Definition
+    from category_progress_info import CategoryProgressInfo
+    from meaning_progress_info import MeaningProgressInfo
 
 
 class Level(Base):
@@ -15,6 +17,7 @@ class Level(Base):
     id: Mapped[int] = mapped_column(primary_key=True)
     name: Mapped[str] = mapped_column(unique=True, index=True, nullable=False)
     alias: Mapped[str] = mapped_column(unique=True, index=True, nullable=False)
+    value: Mapped[int] = mapped_column(nullable=False, server_default="0")
 
     meanings: Mapped[list["Meaning"]] = relationship(
         "Meaning",

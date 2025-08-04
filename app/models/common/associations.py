@@ -12,3 +12,14 @@ class DefinitionsMeanings(Base):
     meaning_id: Mapped[int] = mapped_column(
         ForeignKey("meanings.id", ondelete="CASCADE"), primary_key=True
     )
+
+
+class DefinitionsQuestions(Base):
+    __tablename__ = "definitions_questions"
+
+    definition_id: Mapped[int] = mapped_column(
+        ForeignKey("definitions.id", ondelete="CASCADE"), primary_key=True
+    )
+    question_id: Mapped[int] = mapped_column(
+        ForeignKey("questions.id", ondelete="CASCADE"), primary_key=True
+    )
