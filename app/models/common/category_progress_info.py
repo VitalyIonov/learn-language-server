@@ -26,7 +26,5 @@ class CategoryProgressInfo(Base):
         ForeignKey("levels.id", ondelete="SET NULL"), nullable=True
     )
 
-    category: Mapped["Category"] = relationship(
-        "Category", back_populates="categories_progress_info", lazy="joined"
-    )
-    current_level: Mapped[Level | None] = relationship("Level", lazy="joined")
+    category: Mapped["Category"] = relationship("Category")
+    current_level: Mapped[Level | None] = relationship("Level")

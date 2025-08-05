@@ -56,8 +56,3 @@ class Definition(Base):
         back_populates="definitions",
         secondary="definitions_questions",
     )
-    definitions_progress_info: Mapped[list[DefinitionProgressInfo]] = relationship(
-        "DefinitionProgressInfo",
-        back_populates="definition",
-        lazy="joined",
-    )

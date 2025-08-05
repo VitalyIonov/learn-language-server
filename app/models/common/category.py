@@ -30,11 +30,4 @@ class Category(Base):
     questions: Mapped[list[Question]] = relationship(
         "Question",
         back_populates="category",
-        lazy="joined",
-    )
-
-    categories_progress_info: Mapped[list[CategoryProgressInfo]] = relationship(
-        "CategoryProgressInfo",
-        back_populates="category",
-        lazy="joined",
     )

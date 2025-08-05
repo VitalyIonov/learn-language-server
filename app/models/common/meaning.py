@@ -32,12 +32,10 @@ class Meaning(Base):
     category: Mapped[Category] = relationship(
         "Category",
         back_populates="meanings",
-        lazy="joined",
     )
     level: Mapped[Level] = relationship(
         "Level",
         back_populates="meanings",
-        lazy="joined",
     )
     definitions: Mapped[list[Definition]] = relationship(
         "Definition",
@@ -47,15 +45,4 @@ class Meaning(Base):
     questions: Mapped[list[Question]] = relationship(
         "Question",
         back_populates="meaning",
-        lazy="joined",
-    )
-    definitions_progress_info: Mapped[list[DefinitionProgressInfo]] = relationship(
-        "DefinitionProgressInfo",
-        back_populates="meaning",
-        lazy="joined",
-    )
-    meanings_progress_info: Mapped[list[MeaningProgressInfo]] = relationship(
-        "MeaningProgressInfo",
-        back_populates="meaning",
-        lazy="joined",
     )

@@ -30,15 +30,13 @@ class MeaningProgressInfo(Base):
     )
 
     meaning: Mapped["Meaning"] = relationship(
-        "Meaning", back_populates="meanings_progress_info", lazy="joined"
+        "Meaning",
     )
     level: Mapped[Level | None] = relationship(
         "Level",
         foreign_keys=lambda: [MeaningProgressInfo.level_id],
-        lazy="joined",
     )
     current_level: Mapped[Level | None] = relationship(
         "Level",
         foreign_keys=lambda: [MeaningProgressInfo.current_level_id],
-        lazy="joined",
     )

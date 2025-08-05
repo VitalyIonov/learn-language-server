@@ -26,9 +26,5 @@ class DefinitionProgressInfo(Base):
         ForeignKey("definitions.id", ondelete="CASCADE"), nullable=False
     )
 
-    meaning: Mapped[Meaning | None] = relationship(
-        "Meaning", back_populates="definitions_progress_info", lazy="joined"
-    )
-    definition: Mapped[Definition | None] = relationship(
-        "Definition", back_populates="definitions_progress_info", lazy="joined"
-    )
+    meaning: Mapped[Meaning | None] = relationship("Meaning")
+    definition: Mapped[Definition | None] = relationship("Definition")

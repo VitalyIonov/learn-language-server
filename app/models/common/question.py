@@ -40,10 +40,10 @@ class Question(Base):
     )
 
     meaning: Mapped[Meaning | None] = relationship(
-        "Meaning", back_populates="questions", lazy="joined"
+        "Meaning", back_populates="questions"
     )
     category: Mapped[Category | None] = relationship(
-        "Category", back_populates="questions", lazy="joined"
+        "Category", back_populates="questions"
     )
     definitions: Mapped[list["Definition"]] = relationship(
         "Definition", back_populates="questions", secondary="definitions_questions"
