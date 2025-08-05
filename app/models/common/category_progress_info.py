@@ -13,15 +13,16 @@ if TYPE_CHECKING:
 class CategoryProgressInfo(Base):
     __tablename__ = "categories_progress_info"
 
-    id: Mapped[int] = mapped_column(primary_key=True, autoincrement=True)
-    score: Mapped[int] = mapped_column(default=0, server_default="0")
-
     user_id: Mapped[int] = mapped_column(
-        ForeignKey("users.id", ondelete="CASCADE"), nullable=False
+        ForeignKey("users.id", ondelete="CASCADE"), nullable=False, primary_key=True
     )
     category_id: Mapped[int] = mapped_column(
-        ForeignKey("categories.id", ondelete="CASCADE"), nullable=False
+        ForeignKey("categories.id", ondelete="CASCADE"),
+        nullable=False,
+        primary_key=True,
     )
+
+    score: Mapped[int] = mapped_column(default=0, server_default="0")
     current_level_id: Mapped[int] = mapped_column(
         ForeignKey("levels.id", ondelete="SET NULL"), nullable=True
     )

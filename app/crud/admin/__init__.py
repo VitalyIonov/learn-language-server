@@ -3,3 +3,4 @@ from .definition import *
 from .level import *
 from .meaning import *
 from .user_info import *
+from .category_progress_info import *

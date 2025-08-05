@@ -26,14 +26,15 @@ class UserInfoService:
     async def create(self, payload: UserInfoCreate) -> None:
         entity = await crud_get_user_info(self.db, payload.user_id)
 
-        if not entity:
-            await crud_create_user_info(self.db, payload)
+        if entity:
+            raise HTTPException(
+                status_code=status.HTTP_400_BAD_REQUEST,
+                detail="UserInfo already created",
+            )
+
+        await crud_create_user_info(self.db, payload)
 
     async def update(self, user_id: int, payload: UserInfoUpdate) -> UserInfo:
         entity = await self.get(user_id)
-        if entity is None:
-            raise HTTPException(
-                status_code=status.HTTP_404_NOT_FOUND, detail="UserInfo not found"
-            )
 
         return await crud_update_user_info(self.db, entity, payload)
