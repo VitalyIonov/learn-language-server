@@ -7,6 +7,7 @@ from app.services.admin import (
     LevelService,
     CategoryService,
     UserInfoService,
+    CategoryProgressInfoService,
 )
 
 
@@ -30,3 +31,9 @@ async def get_category_service(db: AsyncSession = Depends(get_db)) -> CategorySe
 
 async def get_user_info_service(db: AsyncSession = Depends(get_db)) -> UserInfoService:
     return UserInfoService(db)
+
+
+async def get_category_progress_info_service(
+    db: AsyncSession = Depends(get_db),
+) -> CategoryProgressInfoService:
+    return CategoryProgressInfoService(db)

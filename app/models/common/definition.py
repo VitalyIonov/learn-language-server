@@ -11,7 +11,6 @@ if TYPE_CHECKING:
     from level import Level
     from meaning import Meaning
     from question import Question
-    from definition_progress_info import DefinitionProgressInfo
 
 
 class Definition(Base):
@@ -39,17 +38,18 @@ class Definition(Base):
     category: Mapped[Category | None] = relationship(
         "Category",
         back_populates="definitions",
-        lazy="joined",
+        lazy="selectin",
     )
     level: Mapped[Level | None] = relationship(
         "Level",
         back_populates="definitions",
-        lazy="joined",
+        lazy="selectin",
     )
     meanings: Mapped[list[Meaning]] = relationship(
         "Meaning",
         back_populates="definitions",
         secondary=DefinitionsMeanings.__tablename__,
+        lazy="selectin",
     )
     questions: Mapped[list[Question]] = relationship(
         "Question",

@@ -1,6 +1,7 @@
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 from typing import Optional
+
 from app.models.common import CategoryProgressInfo
 from app.schemas.admin import CategoryProgressInfoCreate, CategoryProgressInfoUpdate
 

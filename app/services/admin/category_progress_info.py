@@ -15,16 +15,10 @@ class CategoryProgressInfoService:
     def __init__(self, db: AsyncSession):
         self.db = db
 
-    async def get(self, user_id: int, category_id: int) -> CategoryProgressInfo:
-        entity = await crud_get_category_progress_info(self.db, user_id, category_id)
-        if entity is None:
-            raise HTTPException(
-                status_code=status.HTTP_404_NOT_FOUND,
-                detail="CategoryProgressInfo not found",
-            )
-        return entity
+    async def get(self, user_id: int, category_id: int) -> CategoryProgressInfo | None:
+        return await crud_get_category_progress_info(self.db, user_id, category_id)
 
-    async def create(self, payload: CategoryProgressInfoCreate) -> None:
+    async def create(self, payload: CategoryProgressInfoCreate) -> CategoryProgressInfo:
         entity = await crud_get_category_progress_info(
             self.db, payload.user_id, payload.category_id
         )
@@ -35,7 +29,7 @@ class CategoryProgressInfoService:
                 detail="CategoryProgressInfo already created",
             )
 
-        await crud_create_category_progress_info(self.db, payload)
+        return await crud_create_category_progress_info(self.db, payload)
 
     async def update(
         self, user_id: int, category_id: int, payload: CategoryProgressInfoUpdate

@@ -32,17 +32,17 @@ class Meaning(Base):
     category: Mapped[Category] = relationship(
         "Category",
         back_populates="meanings",
+        lazy="selectin",
     )
     level: Mapped[Level] = relationship(
-        "Level",
-        back_populates="meanings",
+        "Level", back_populates="meanings", lazy="selectin"
     )
     definitions: Mapped[list[Definition]] = relationship(
         "Definition",
         secondary="definitions_meanings",
         back_populates="meanings",
+        lazy="selectin",
     )
     questions: Mapped[list[Question]] = relationship(
-        "Question",
-        back_populates="meaning",
+        "Question", back_populates="meaning", lazy="selectin"
     )
