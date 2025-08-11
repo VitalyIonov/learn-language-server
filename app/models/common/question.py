@@ -8,9 +8,9 @@ from sqlalchemy.orm import Mapped, mapped_column, relationship
 from app.core.db import Base
 
 if TYPE_CHECKING:
-    from definition import Definition
-    from category import Category
-    from meaning import Meaning
+    from .definition import Definition
+    from .category import Category
+    from .meaning import Meaning
 
 
 class Question(Base):
@@ -26,14 +26,21 @@ class Question(Base):
     category_id: Mapped[int] = mapped_column(
         ForeignKey("categories.id", ondelete="SET NULL"), nullable=True
     )
+    level_id: Mapped[int] = mapped_column(
+        ForeignKey("levels.id", ondelete="SET NULL"), nullable=True
+    )
+    correct_definition_id: Mapped[int] = mapped_column(
+        ForeignKey("definitions.id", ondelete="SET NULL"), nullable=True
+    )
+    chosen_definition_id: Mapped[int] = mapped_column(
+        ForeignKey("definitions.id", ondelete="SET NULL"), nullable=True
+    )
 
     @property
     def definition_ids(self) -> list[int]:
         return [d.id for d in self.definitions]
 
-    is_correct: Mapped[bool] = mapped_column(
-        default=False, server_default=text("false")
-    )
+    is_correct: Mapped[bool] = mapped_column(nullable=True)
     created_at: Mapped[datetime] = mapped_column(server_default=func.now())
     updated_at: Mapped[datetime] = mapped_column(
         server_default=func.now(), onupdate=func.now()

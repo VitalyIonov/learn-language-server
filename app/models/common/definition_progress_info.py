@@ -13,18 +13,23 @@ if TYPE_CHECKING:
 class DefinitionProgressInfo(Base):
     __tablename__ = "definitions_progress_info"
 
-    id: Mapped[int] = mapped_column(primary_key=True, autoincrement=True)
-    score: Mapped[int] = mapped_column(default=0, server_default="0")
-
     user_id: Mapped[int] = mapped_column(
-        ForeignKey("users.id", ondelete="CASCADE"), nullable=False
+        ForeignKey("users.id", ondelete="CASCADE"), nullable=False, primary_key=True
     )
     meaning_id: Mapped[int] = mapped_column(
-        ForeignKey("meanings.id", ondelete="SET NULL"), nullable=True
+        ForeignKey("meanings.id", ondelete="CASCADE"), nullable=False, primary_key=True
     )
     definition_id: Mapped[int] = mapped_column(
-        ForeignKey("definitions.id", ondelete="CASCADE"), nullable=False
+        ForeignKey("definitions.id", ondelete="CASCADE"),
+        nullable=False,
+        primary_key=True,
     )
 
-    meaning: Mapped[Meaning | None] = relationship("Meaning")
-    definition: Mapped[Definition | None] = relationship("Definition")
+    @property
+    def level_id(self) -> int:
+        return self.meaning.level_id
+
+    score: Mapped[int] = mapped_column(default=0, server_default="0")
+
+    meaning: Mapped[Meaning] = relationship("Meaning")
+    definition: Mapped[Definition] = relationship("Definition")

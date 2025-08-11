@@ -19,9 +19,7 @@ class CategoryProgressInfoService:
         return await crud_get_category_progress_info(self.db, user_id, category_id)
 
     async def create(self, payload: CategoryProgressInfoCreate) -> CategoryProgressInfo:
-        entity = await crud_get_category_progress_info(
-            self.db, payload.user_id, payload.category_id
-        )
+        entity = await self.get(payload.user_id, payload.category_id)
 
         if entity:
             raise HTTPException(
@@ -35,5 +33,11 @@ class CategoryProgressInfoService:
         self, user_id: int, category_id: int, payload: CategoryProgressInfoUpdate
     ) -> CategoryProgressInfo:
         entity = await self.get(user_id, category_id)
+
+        if entity is None:
+            raise HTTPException(
+                status_code=status.HTTP_404_NOT_FOUND,
+                detail="CategoryProgressInfo not found",
+            )
 
         return await crud_update_category_progress_info(self.db, entity, payload)

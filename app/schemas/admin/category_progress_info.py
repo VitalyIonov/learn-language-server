@@ -1,3 +1,5 @@
+from typing import Optional
+
 from app.schemas.common import BaseSchema
 
 
@@ -8,5 +10,5 @@ class CategoryProgressInfoCreate(BaseSchema):
 
 
 class CategoryProgressInfoUpdate(BaseSchema):
-    current_level_id: int
-    score: int
+    current_level_id: Optional[int] = None
+    score: Optional[int] = None

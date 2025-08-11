@@ -13,21 +13,16 @@ if TYPE_CHECKING:
 class MeaningProgressInfo(Base):
     __tablename__ = "meanings_progress_info"
 
-    id: Mapped[int] = mapped_column(primary_key=True, autoincrement=True)
-    score: Mapped[int] = mapped_column(default=0, server_default="0")
-
     user_id: Mapped[int] = mapped_column(
-        ForeignKey("users.id", ondelete="CASCADE"), nullable=False
+        ForeignKey("users.id", ondelete="CASCADE"), nullable=False, primary_key=True
     )
     meaning_id: Mapped[int] = mapped_column(
-        ForeignKey("meanings.id", ondelete="CASCADE"), nullable=False
+        ForeignKey("meanings.id", ondelete="CASCADE"), nullable=False, primary_key=True
     )
     level_id: Mapped[int] = mapped_column(
-        ForeignKey("levels.id", ondelete="SET NULL"), nullable=True
+        ForeignKey("levels.id", ondelete="CASCADE"), nullable=False, primary_key=True
     )
-    current_level_id: Mapped[int] = mapped_column(
-        ForeignKey("levels.id", ondelete="SET NULL"), nullable=True
-    )
+    score: Mapped[int] = mapped_column(default=0, server_default="0")
 
     meaning: Mapped["Meaning"] = relationship(
         "Meaning",
@@ -35,8 +30,4 @@ class MeaningProgressInfo(Base):
     level: Mapped[Level | None] = relationship(
         "Level",
         foreign_keys=lambda: [MeaningProgressInfo.level_id],
-    )
-    current_level: Mapped[Level | None] = relationship(
-        "Level",
-        foreign_keys=lambda: [MeaningProgressInfo.current_level_id],
     )

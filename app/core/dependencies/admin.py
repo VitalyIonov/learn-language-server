@@ -8,6 +8,8 @@ from app.services.admin import (
     CategoryService,
     UserInfoService,
     CategoryProgressInfoService,
+    MeaningProgressInfoService,
+    DefinitionProgressInfoService,
 )
 
 
@@ -33,7 +35,19 @@ async def get_user_info_service(db: AsyncSession = Depends(get_db)) -> UserInfoS
     return UserInfoService(db)
 
 
-async def get_category_progress_info_service(
+def get_category_progress_info_service(
     db: AsyncSession = Depends(get_db),
 ) -> CategoryProgressInfoService:
     return CategoryProgressInfoService(db)
+
+
+def get_meaning_progress_info_service(
+    db: AsyncSession = Depends(get_db),
+) -> MeaningProgressInfoService:
+    return MeaningProgressInfoService(db)
+
+
+def get_definition_progress_info_service(
+    db: AsyncSession = Depends(get_db),
+) -> DefinitionProgressInfoService:
+    return DefinitionProgressInfoService(db)
