@@ -8,9 +8,9 @@ from .associations import DefinitionsMeanings
 
 if TYPE_CHECKING:
     from app.models.common.category import Category
-    from level import Level
-    from meaning import Meaning
-    from question import Question
+    from .level import Level
+    from .meaning import Meaning
+    from .question import Question
 
 
 class Definition(Base):

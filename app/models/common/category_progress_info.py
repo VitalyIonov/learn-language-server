@@ -21,11 +21,14 @@ class CategoryProgressInfo(Base):
         nullable=False,
         primary_key=True,
     )
-
-    score: Mapped[int] = mapped_column(default=0, server_default="0")
-    current_level_id: Mapped[int] = mapped_column(
-        ForeignKey("levels.id", ondelete="CASCADE"), nullable=False
+    level_id: Mapped[int] = mapped_column(
+        ForeignKey("levels.id", ondelete="CASCADE"), nullable=False, primary_key=True
     )
+    score: Mapped[int] = mapped_column(default=0, server_default="0")
+
+    @property
+    def level_value(self) -> int:
+        return self.level.value
 
     category: Mapped["Category"] = relationship("Category")
-    current_level: Mapped[Level] = relationship("Level", lazy="selectin")
+    level: Mapped[Level] = relationship("Level", lazy="selectin")

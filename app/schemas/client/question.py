@@ -1,3 +1,5 @@
+from typing import Optional
+
 from pydantic import Field
 from app.schemas.common import BaseSchema
 from .definition import DefinitionOut
@@ -11,7 +13,7 @@ class QuestionOut(BaseSchema):
 
 
 class QuestionGenerate(BaseSchema):
-    level_id: int
+    level_id: Optional[int] = None
     category_id: int
 
 

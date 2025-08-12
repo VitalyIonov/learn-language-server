@@ -15,11 +15,15 @@ class CategoryProgressInfoService:
     def __init__(self, db: AsyncSession):
         self.db = db
 
-    async def get(self, user_id: int, category_id: int) -> CategoryProgressInfo | None:
-        return await crud_get_category_progress_info(self.db, user_id, category_id)
+    async def get(
+        self, user_id: int, category_id: int, level_id: int
+    ) -> CategoryProgressInfo | None:
+        return await crud_get_category_progress_info(
+            self.db, user_id, category_id, level_id
+        )
 
     async def create(self, payload: CategoryProgressInfoCreate) -> CategoryProgressInfo:
-        entity = await self.get(payload.user_id, payload.category_id)
+        entity = await self.get(payload.user_id, payload.category_id, payload.level_id)
 
         if entity:
             raise HTTPException(
@@ -30,9 +34,13 @@ class CategoryProgressInfoService:
         return await crud_create_category_progress_info(self.db, payload)
 
     async def update(
-        self, user_id: int, category_id: int, payload: CategoryProgressInfoUpdate
+        self,
+        user_id: int,
+        category_id: int,
+        level_id: int,
+        payload: CategoryProgressInfoUpdate,
     ) -> CategoryProgressInfo:
-        entity = await self.get(user_id, category_id)
+        entity = await self.get(user_id, category_id, level_id)
 
         if entity is None:
             raise HTTPException(

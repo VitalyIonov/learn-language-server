@@ -26,7 +26,7 @@ from app.schemas.client import (
     QuestionGenerate,
     QuestionUpdateOut,
 )
-from app.models import User, Meaning, Definition, Question
+from app.models import User, Meaning, Definition, Question, CategoryProgressInfo, Level
 from app.crud.client import (
     create_question as crud_create_question,
     get_question as crud_get_question,
@@ -46,29 +46,38 @@ class QuestionService:
     async def generate(
         self, payload: QuestionGenerate, current_user: User
     ) -> QuestionOut:
+        cpi_max_level_id = None
+        min_level_id = None
 
-        category_progress_info = await self.category_progress_info_svc.get(
-            user_id=current_user.id, category_id=payload.category_id
-        )
-
-        if category_progress_info is None:
-            category_progress_info = await self.category_progress_info_svc.create(
-                CategoryProgressInfoCreate(
-                    user_id=current_user.id,
-                    category_id=payload.category_id,
-                    current_level_id=payload.level_id,
+        if payload.level_id is None:
+            cpi_max_level_stmt = (
+                select(CategoryProgressInfo.level_id)
+                .where(
+                    CategoryProgressInfo.user_id == current_user.id,
+                    CategoryProgressInfo.category_id == payload.category_id,
                 )
+                .order_by(CategoryProgressInfo.level.value.desc())
+                .limit(1)
             )
 
-        current_level_id = category_progress_info.current_level.id
+            cpi_max_level_id = (await self.db.execute(cpi_max_level_stmt)).scalar()
+
+        if cpi_max_level_id is None:
+            level_stmt = select(Level.id).order_by(Level.value.asc()).limit(1)
+            min_level_id = (await self.db.execute(level_stmt)).scalar()
+
+            if min_level_id is None:
+                raise NoResultFound("No levels configured")
+
+        question_level_id = payload.level_id or cpi_max_level_id or min_level_id
 
         meaning_stmt = (
             select(Meaning)
             .options(load_only(Meaning.id, Meaning.name))
             .where(
-                Meaning.definitions.any(Definition.level_id == current_level_id),
+                Meaning.definitions.any(Definition.level_id == question_level_id),
                 Meaning.category_id == payload.category_id,
-                Meaning.level_id == current_level_id,
+                Meaning.level_id == question_level_id,
             )
             .order_by(func.random())
             .limit(1)
@@ -82,7 +91,7 @@ class QuestionService:
             select(Definition)
             .options(load_only(Definition.id, Definition.text))
             .where(
-                Definition.level_id == current_level_id,
+                Definition.level_id == question_level_id,
                 ~Definition.meanings.any(Meaning.id == meaning.id),
             )
             .order_by(func.random())
@@ -93,7 +102,7 @@ class QuestionService:
             select(Definition)
             .options(load_only(Definition.id, Definition.text))
             .where(
-                Definition.level_id == current_level_id,
+                Definition.level_id == question_level_id,
                 Definition.meanings.any(Meaning.id == meaning.id),
             )
             .order_by(func.random())
@@ -118,7 +127,7 @@ class QuestionService:
             user_id=current_user.id,
             meaning_id=cast(int, meaning.id),
             category_id=payload.category_id,
-            level_id=current_level_id,
+            level_id=question_level_id,
             correct_definition_id=cast(int, true_definition.id),
         )
 
@@ -145,7 +154,9 @@ class QuestionService:
     ) -> QuestionUpdateOut:
         entity = await self.get(question_id)
         category_progress_info = await self.category_progress_info_svc.get(
-            user_id=current_user.id, category_id=entity.category_id
+            user_id=current_user.id,
+            category_id=entity.category_id,
+            level_id=entity.level_id,
         )
         meaning_progress_info = await self.meaning_progress_info_svc.get(
             user_id=current_user.id,
@@ -163,7 +174,7 @@ class QuestionService:
                 CategoryProgressInfoCreate(
                     user_id=current_user.id,
                     category_id=entity.category_id,
-                    current_level_id=entity.level_id,
+                    level_id=entity.level_id,
                 )
             )
         if meaning_progress_info is None:
@@ -204,6 +215,7 @@ class QuestionService:
             await self.category_progress_info_svc.update(
                 user_id=current_user.id,
                 category_id=entity.category_id,
+                level_id=entity.level_id,
                 payload=CategoryProgressInfoUpdate(
                     score=cpi_new_score,
                 ),
