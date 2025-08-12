@@ -1,13 +1,18 @@
 from fastapi import HTTPException
+from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 from starlette import status
 
+from sqlalchemy.exc import NoResultFound
+
+from app.models import Level
 from app.models.common import CategoryProgressInfo
 from app.schemas.admin import CategoryProgressInfoCreate, CategoryProgressInfoUpdate
 from app.crud.admin import (
     get_category_progress_info as crud_get_category_progress_info,
     create_category_progress_info as crud_create_category_progress_info,
     update_category_progress_info as crud_update_category_progress_info,
+    get_top_category_progress_info as crud_get_top_category_progress_info,
 )
 
 
@@ -49,3 +54,61 @@ class CategoryProgressInfoService:
             )
 
         return await crud_update_category_progress_info(self.db, entity, payload)
+
+    async def get_or_create(
+        self, user_id: int, category_id: int, level_id: int
+    ) -> CategoryProgressInfo:
+        entity = await self.get(
+            user_id=user_id,
+            category_id=category_id,
+            level_id=level_id,
+        )
+
+        if entity is None:
+            entity = await self.create(
+                CategoryProgressInfoCreate(
+                    user_id=user_id,
+                    category_id=category_id,
+                    level_id=level_id,
+                )
+            )
+
+        return entity
+
+    async def get_top_category_progress_info(
+        self, user_id: int, category_id: int
+    ) -> CategoryProgressInfo:
+        cpi = await crud_get_top_category_progress_info(self.db, user_id, category_id)
+
+        if cpi is None:
+            raise NoResultFound("CategoryProgressInfo non found")
+
+        return cpi
+
+    async def update_category_level(
+        self,
+        user_id: int,
+        category_id: int,
+        current_level_id: int,
+    ) -> CategoryProgressInfo | None:
+        current_value_stmt = (
+            select(Level.value).where(Level.id == current_level_id).scalar_subquery()
+        )
+
+        level_stmt = (
+            select(Level.id)
+            .where(Level.value > current_value_stmt)
+            .order_by(Level.value.asc())
+            .limit(1)
+        )
+
+        next_level_id = (await self.db.execute(level_stmt)).scalar_one_or_none()
+
+        if next_level_id is None:
+            return None
+
+        entity = await self.get_or_create(
+            user_id=user_id, category_id=category_id, level_id=next_level_id
+        )
+
+        return entity

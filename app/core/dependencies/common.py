@@ -2,7 +2,7 @@ from fastapi import Depends
 from sqlalchemy.ext.asyncio import AsyncSession
 from app.models.common import User
 from app.core.db import get_db
-from app.services.common import UserService, AuthService
+from app.services.common import UserService, AuthService, StatisticService
 from app.core.dependencies.auth import oauth2_scheme
 
 
@@ -24,3 +24,7 @@ async def require_admin(
 ) -> User:
     await user_svc.require_admin(current_user)
     return current_user
+
+
+def get_statistic_service(db: AsyncSession = Depends(get_db)) -> StatisticService:
+    return StatisticService(db)

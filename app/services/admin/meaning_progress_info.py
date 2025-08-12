@@ -49,3 +49,19 @@ class MeaningProgressInfoService:
             )
 
         return await crud_update_meaning_progress_info(self.db, entity, payload)
+
+    async def get_or_create(
+        self, user_id: int, meaning_id: int, level_id: int
+    ) -> MeaningProgressInfo:
+        entity = await self.get(user_id, meaning_id, level_id)
+
+        if entity is None:
+            entity = await self.create(
+                MeaningProgressInfoCreate(
+                    user_id=user_id,
+                    meaning_id=meaning_id,
+                    level_id=level_id,
+                )
+            )
+
+        return entity

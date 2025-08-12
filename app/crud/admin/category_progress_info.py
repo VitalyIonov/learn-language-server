@@ -2,8 +2,27 @@ from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 from typing import Optional
 
-from app.models.common import CategoryProgressInfo
+from app.models import Level, CategoryProgressInfo
 from app.schemas.admin import CategoryProgressInfoCreate, CategoryProgressInfoUpdate
+
+
+async def get_top_category_progress_info(
+    db: AsyncSession, user_id: int, category_id: int
+) -> Optional[CategoryProgressInfo]:
+    cpi_max_level_stmt = (
+        select(CategoryProgressInfo)
+        .join(CategoryProgressInfo.level)
+        .where(
+            CategoryProgressInfo.user_id == user_id,
+            CategoryProgressInfo.category_id == category_id,
+        )
+        .order_by(Level.value.desc())
+        .limit(1)
+    )
+
+    cpi_max_level = (await db.execute(cpi_max_level_stmt)).scalar_one_or_none()
+
+    return cpi_max_level
 
 
 async def get_category_progress_info(

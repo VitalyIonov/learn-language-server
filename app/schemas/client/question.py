@@ -1,9 +1,17 @@
-from typing import Optional
+from typing import Optional, Literal, Annotated, Union
 
-from pydantic import Field
+from pydantic import Field, BaseModel
 from app.schemas.common import BaseSchema
 from .definition import DefinitionOut
 from .meaning import MeaningOut
+
+
+class LevelUpInfo(BaseModel):
+    type: Literal["level_up"]
+    new_level: str
+
+
+Info = Annotated[Union[LevelUpInfo], Field(discriminator="type")]
 
 
 class QuestionOut(BaseSchema):
@@ -31,3 +39,4 @@ class QuestionUpdate(BaseSchema):
 
 class QuestionUpdateOut(BaseSchema):
     is_correct: bool
+    info: Optional[Info] = None

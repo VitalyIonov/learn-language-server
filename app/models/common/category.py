@@ -5,10 +5,9 @@ from sqlalchemy.orm import Mapped, mapped_column, relationship
 from app.core.db import Base
 
 if TYPE_CHECKING:
-    from definition import Definition
-    from meaning import Meaning
-    from question import Question
-    from category_progress_info import CategoryProgressInfo
+    from .definition import Definition
+    from .meaning import Meaning
+    from .question import Question
 
 
 class Category(Base):

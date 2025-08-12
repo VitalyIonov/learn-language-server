@@ -4,6 +4,17 @@ from app.models.common import Category
 from app.schemas.client import CategoriesListResponse
 
 
+async def get_category(
+    db: AsyncSession,
+    category_id: int,
+) -> Category | None:
+    result = (
+        await db.execute(select(Category).where(Category.id == category_id))
+    ).scalar_one_or_none()
+
+    return result
+
+
 async def get_categories(
     db: AsyncSession,
 ) -> CategoriesListResponse:

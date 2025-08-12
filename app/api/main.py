@@ -13,6 +13,7 @@ client_router.include_router(client_routes.users.router)
 client_router.include_router(client_routes.categories.router)
 client_router.include_router(client_routes.translate.router)
 client_router.include_router(client_routes.question.router)
+client_router.include_router(client_routes.statistic.router)
 
 admin_router = APIRouter(
     dependencies=[Depends(require_admin), Depends(get_current_user)]

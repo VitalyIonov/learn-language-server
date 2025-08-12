@@ -27,7 +27,11 @@ class DefinitionProgressInfo(Base):
 
     @property
     def level_id(self) -> int:
-        return self.meaning.level_id
+        return self.definition.level_id
+
+    @property
+    def category_id(self) -> int:
+        return self.definition.category_id
 
     score: Mapped[int] = mapped_column(default=0, server_default="0")
 
