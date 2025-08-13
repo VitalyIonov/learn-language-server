@@ -14,6 +14,7 @@ from app.crud.admin import (
     update_category_progress_info as crud_update_category_progress_info,
     get_top_category_progress_info as crud_get_top_category_progress_info,
 )
+from app.services.admin import LevelService
 
 
 class CategoryProgressInfoService:
@@ -87,28 +88,18 @@ class CategoryProgressInfoService:
 
     async def update_category_level(
         self,
+        svc_level: LevelService,
         user_id: int,
         category_id: int,
         current_level_id: int,
     ) -> CategoryProgressInfo | None:
-        current_value_stmt = (
-            select(Level.value).where(Level.id == current_level_id).scalar_subquery()
-        )
+        next_level = await svc_level.get_next_level(current_level_id)
 
-        level_stmt = (
-            select(Level.id)
-            .where(Level.value > current_value_stmt)
-            .order_by(Level.value.asc())
-            .limit(1)
-        )
-
-        next_level_id = (await self.db.execute(level_stmt)).scalar_one_or_none()
-
-        if next_level_id is None:
+        if next_level is None:
             return None
 
         entity = await self.get_or_create(
-            user_id=user_id, category_id=category_id, level_id=next_level_id
+            user_id=user_id, category_id=category_id, level_id=next_level.id
         )
 
         return entity

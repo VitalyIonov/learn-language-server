@@ -47,3 +47,20 @@ async def delete_level(db: AsyncSession, level_id: int) -> bool:
     await db.commit()
     deleted_id = result.scalar_one_or_none()
     return deleted_id is not None
+
+
+async def get_next_level(db: AsyncSession, level_id: int) -> Optional[Level]:
+    current_value_stmt = (
+        select(Level.value).where(Level.id == level_id).scalar_subquery()
+    )
+
+    level_stmt = (
+        select(Level)
+        .where(Level.value > current_value_stmt)
+        .order_by(Level.value.asc())
+        .limit(1)
+    )
+
+    next_level = (await db.execute(level_stmt)).scalar_one_or_none()
+
+    return next_level

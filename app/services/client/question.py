@@ -6,6 +6,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy import select, func, and_
 from sqlalchemy.orm import load_only
 
+from app.constants.score import BASE_SCORE
 from app.schemas.admin import (
     CategoryProgressInfoUpdate,
     MeaningProgressInfoUpdate,
@@ -32,6 +33,7 @@ from app.crud.client import (
     get_question as crud_get_question,
     update_question as crud_update_question,
 )
+from app.services.admin import LevelService
 
 
 class QuestionService:
@@ -87,7 +89,7 @@ class QuestionService:
                 Meaning.definitions.any(Definition.level_id == question_level_id),
                 Meaning.category_id == payload.category_id,
                 Level.value <= current_level_value_stmt,
-                func.coalesce(MeaningProgressInfo.score, 0) < 6,
+                func.coalesce(MeaningProgressInfo.score, 0) < BASE_SCORE,
             )
             .order_by(func.random())
             .limit(1)
@@ -160,7 +162,11 @@ class QuestionService:
         return entity
 
     async def update(
-        self, question_id: int, payload: QuestionUpdate, current_user: User
+        self,
+        svc_level: LevelService,
+        question_id: int,
+        payload: QuestionUpdate,
+        current_user: User,
     ) -> QuestionUpdateOut:
         entity = await self.get(question_id)
         category_progress_info = await self.category_progress_info_svc.get_or_create(
@@ -245,6 +251,7 @@ class QuestionService:
 
         if current_progress >= 100:
             new_cpi = await self.category_progress_info_svc.update_category_level(
+                svc_level=svc_level,
                 user_id=current_user.id,
                 category_id=entity.category_id,
                 current_level_id=entity.level_id,

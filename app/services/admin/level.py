@@ -1,3 +1,5 @@
+from typing import Optional
+
 from fastapi import HTTPException
 from sqlalchemy.ext.asyncio import AsyncSession
 from starlette import status
@@ -6,6 +8,7 @@ from app.crud.admin import (
     get_levels as crud_get_levels,
     create_level as crud_create_level,
     delete_level as crud_delete_level,
+    get_next_level as crud_get_next_level,
 )
 
 from app.models.common import Level
@@ -28,3 +31,6 @@ class LevelService:
             raise HTTPException(
                 status_code=status.HTTP_404_NOT_FOUND, detail="Level not found"
             )
+
+    async def get_next_level(self, level_id: int) -> Optional[Level]:
+        return await crud_get_next_level(self.db, level_id)

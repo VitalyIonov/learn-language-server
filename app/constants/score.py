@@ -1,0 +1,1 @@
+BASE_SCORE = 6

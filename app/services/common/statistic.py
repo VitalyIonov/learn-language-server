@@ -2,9 +2,8 @@ from sqlalchemy import select, case, literal
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.sql.functions import func, coalesce
 
+from app.constants.score import BASE_SCORE
 from app.models import Meaning, MeaningProgressInfo, Level
-
-BASE_SCORE = 6
 
 
 class StatisticService:
