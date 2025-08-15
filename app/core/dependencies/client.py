@@ -8,7 +8,7 @@ from app.core.dependencies.admin import (
 )
 from app.core.dependencies.common import get_statistic_service
 
-from app.services.client import CategoryService, QuestionService
+from app.services.client import CategoryService, QuestionService, LevelService
 
 
 async def get_category_service(
@@ -32,3 +32,7 @@ async def get_question_service(
         svc_definition_progress_info=svc_definition_progress_info,
         svc_statistic=svc_statistic,
     )
+
+
+async def get_level_service(db: AsyncSession = Depends(get_db)) -> LevelService:
+    return LevelService(db)

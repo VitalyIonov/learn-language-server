@@ -2,13 +2,14 @@ from typing import Optional, Literal, Annotated, Union
 
 from pydantic import Field, BaseModel
 from app.schemas.common import BaseSchema
+from .level import LevelOutBase
 from .definition import DefinitionOut
 from .meaning import MeaningOut
 
 
 class LevelUpInfo(BaseModel):
     type: Literal["level_up"]
-    new_level: str
+    new_level: LevelOutBase
 
 
 Info = Annotated[Union[LevelUpInfo], Field(discriminator="type")]

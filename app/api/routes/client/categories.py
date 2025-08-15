@@ -1,11 +1,9 @@
 from fastapi import APIRouter, Depends
 
-from app.core.dependencies.admin import get_category_progress_info_service
 from app.core.dependencies.common import get_current_user
 from app.models import User
 from app.schemas.client import CategoriesListResponse, CategoryOut
 from app.core.dependencies.client import get_category_service
-from app.services.admin import CategoryProgressInfoService
 from app.services.client import CategoryService
 
 

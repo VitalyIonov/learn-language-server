@@ -3,7 +3,7 @@ from typing import cast
 
 from sqlalchemy.exc import NoResultFound
 from sqlalchemy.ext.asyncio import AsyncSession
-from sqlalchemy import select, func, and_
+from sqlalchemy import select, func, and_, case
 from sqlalchemy.orm import load_only
 
 from app.constants.score import BASE_SCORE
@@ -20,6 +20,7 @@ from app.schemas.client import (
     QuestionGenerate,
     QuestionUpdateOut,
     LevelUpInfo,
+    LevelOutBase,
 )
 from app.models import User, Meaning, Definition, Question, Level, MeaningProgressInfo
 from app.crud.client import (
@@ -50,6 +51,44 @@ class QuestionService:
         self.svc_definition_progress_info = svc_definition_progress_info
         self.svc_statistic = svc_statistic
 
+    def _build_meaning_query(
+        self,
+        question_level_id: int | None,
+        category_id: int,
+        user_id: int,
+    ):
+        current_level_value_stmt = (
+            select(Level.value).where(Level.id == question_level_id).scalar_subquery()
+        )
+
+        return (
+            select(Meaning)
+            .join(Level, Meaning.level_id == Level.id)
+            .options(load_only(Meaning.id, Meaning.name))
+            .join(
+                MeaningProgressInfo,
+                and_(
+                    MeaningProgressInfo.meaning_id == Meaning.id,
+                    MeaningProgressInfo.level_id == question_level_id,
+                    MeaningProgressInfo.user_id == user_id,
+                ),
+                isouter=True,
+            )
+            .where(
+                Meaning.definitions.any(Definition.level_id == question_level_id),
+                Meaning.category_id == category_id,
+                Level.value <= current_level_value_stmt,
+            )
+            .order_by(
+                case(
+                    (func.coalesce(MeaningProgressInfo.score, 0) < BASE_SCORE, 1),
+                    else_=2,
+                ),
+                func.random(),
+            )
+            .limit(1)
+        )
+
     async def generate(
         self, payload: QuestionGenerate, current_user: User
     ) -> QuestionOut:
@@ -72,31 +111,10 @@ class QuestionService:
 
         question_level_id = payload.level_id or cpi_max_level_id or min_level_id
 
-        current_level_value_stmt = (
-            select(Level.value).where(Level.id == question_level_id).scalar_subquery()
-        )
-
-        meaning_stmt = (
-            select(Meaning)
-            .join(Level, Meaning.level_id == Level.id)
-            .options(load_only(Meaning.id, Meaning.name))
-            .join(
-                MeaningProgressInfo,
-                and_(
-                    MeaningProgressInfo.meaning_id == Meaning.id,
-                    MeaningProgressInfo.level_id == question_level_id,
-                    MeaningProgressInfo.user_id == current_user.id,
-                ),
-                isouter=True,
-            )
-            .where(
-                Meaning.definitions.any(Definition.level_id == question_level_id),
-                Meaning.category_id == payload.category_id,
-                Level.value <= current_level_value_stmt,
-                func.coalesce(MeaningProgressInfo.score, 0) < BASE_SCORE,
-            )
-            .order_by(func.random())
-            .limit(1)
+        meaning_stmt = self._build_meaning_query(
+            question_level_id=question_level_id,
+            category_id=payload.category_id,
+            user_id=current_user.id,
         )
         meaning = (await self.db.execute(meaning_stmt)).scalars().one_or_none()
 
@@ -260,7 +278,9 @@ class QuestionService:
             )
 
         info = (
-            LevelUpInfo(type="level_up", new_level=new_cpi.level.alias)
+            LevelUpInfo(
+                type="level_up", new_level=LevelOutBase.model_validate(new_cpi.level)
+            )
             if new_cpi
             else None
         )
