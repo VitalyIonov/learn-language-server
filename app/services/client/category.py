@@ -10,14 +10,15 @@ from app.services.admin import CategoryProgressInfoService
 
 
 class CategoryService:
-    def __init__(self, db: AsyncSession):
+    def __init__(
+        self, db: AsyncSession, svc_category_progress_info: CategoryProgressInfoService
+    ):
         self.db = db
+        self.svc_category_progress_info = svc_category_progress_info
 
-    async def get(
-        self, svc_cpi: CategoryProgressInfoService, current_user: User, category_id: int
-    ) -> CategoryOut:
+    async def get(self, current_user: User, category_id: int) -> CategoryOut:
         category = await crud_get_category(self.db, category_id)
-        cpi = await svc_cpi.get_top_category_progress_info(
+        cpi = await self.svc_category_progress_info.get_top_category_progress_info(
             user_id=current_user.id, category_id=category_id
         )
 

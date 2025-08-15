@@ -19,10 +19,9 @@ router = APIRouter(tags=["categories"])
 async def read_category(
     category_id: int,
     svc_category: CategoryService = Depends(get_category_service),
-    svc_cpi: CategoryProgressInfoService = Depends(get_category_progress_info_service),
     current_user: User = Depends(get_current_user),
 ):
-    return await svc_category.get(svc_cpi, current_user, category_id)
+    return await svc_category.get(current_user, category_id)
 
 
 @router.get(

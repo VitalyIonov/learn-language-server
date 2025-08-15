@@ -12,12 +12,6 @@ from app.schemas.admin import (
     MeaningProgressInfoUpdate,
     DefinitionProgressInfoUpdate,
 )
-from app.core.dependencies.admin import (
-    get_category_progress_info_service,
-    get_meaning_progress_info_service,
-    get_definition_progress_info_service,
-)
-from app.core.dependencies.common import get_statistic_service
 
 from app.schemas.client import (
     QuestionOut,
@@ -33,18 +27,28 @@ from app.crud.client import (
     get_question as crud_get_question,
     update_question as crud_update_question,
 )
-from app.services.admin import LevelService
+from app.services.admin import (
+    CategoryProgressInfoService,
+    MeaningProgressInfoService,
+    DefinitionProgressInfoService,
+)
+from app.services.common import StatisticService
 
 
 class QuestionService:
-    def __init__(self, db: AsyncSession):
+    def __init__(
+        self,
+        db: AsyncSession,
+        svc_category_progress_info: CategoryProgressInfoService,
+        svc_meaning_progress_info: MeaningProgressInfoService,
+        svc_definition_progress_info: DefinitionProgressInfoService,
+        svc_statistic: StatisticService,
+    ):
         self.db = db
-        self.category_progress_info_svc = get_category_progress_info_service(self.db)
-        self.meaning_progress_info_svc = get_meaning_progress_info_service(self.db)
-        self.definition_progress_info_svc = get_definition_progress_info_service(
-            self.db
-        )
-        self.statistic_svc = get_statistic_service(self.db)
+        self.svc_category_progress_info = svc_category_progress_info
+        self.svc_meaning_progress_info = svc_meaning_progress_info
+        self.svc_definition_progress_info = svc_definition_progress_info
+        self.svc_statistic = svc_statistic
 
     async def generate(
         self, payload: QuestionGenerate, current_user: User
@@ -54,7 +58,7 @@ class QuestionService:
 
         if payload.level_id is None:
             cpi_max_level_id = (
-                await self.category_progress_info_svc.get_top_category_progress_info(
+                await self.svc_category_progress_info.get_top_category_progress_info(
                     user_id=current_user.id, category_id=payload.category_id
                 )
             ).level_id
@@ -163,24 +167,23 @@ class QuestionService:
 
     async def update(
         self,
-        svc_level: LevelService,
         question_id: int,
         payload: QuestionUpdate,
         current_user: User,
     ) -> QuestionUpdateOut:
         entity = await self.get(question_id)
-        category_progress_info = await self.category_progress_info_svc.get_or_create(
+        category_progress_info = await self.svc_category_progress_info.get_or_create(
             user_id=current_user.id,
             category_id=entity.category_id,
             level_id=entity.level_id,
         )
-        meaning_progress_info = await self.meaning_progress_info_svc.get_or_create(
+        meaning_progress_info = await self.svc_meaning_progress_info.get_or_create(
             user_id=current_user.id,
             meaning_id=entity.meaning_id,
             level_id=entity.level_id,
         )
         definition_progress_info = (
-            await self.definition_progress_info_svc.get_or_create(
+            await self.svc_definition_progress_info.get_or_create(
                 user_id=current_user.id,
                 meaning_id=entity.meaning_id,
                 definition_id=payload.chosen_definition_id,
@@ -214,7 +217,7 @@ class QuestionService:
         )
 
         if cpi_new_score != category_progress_info.score:
-            await self.category_progress_info_svc.update(
+            await self.svc_category_progress_info.update(
                 user_id=current_user.id,
                 category_id=entity.category_id,
                 level_id=entity.level_id,
@@ -223,7 +226,7 @@ class QuestionService:
                 ),
             )
         if mpi_new_score != meaning_progress_info.score:
-            await self.meaning_progress_info_svc.update(
+            await self.svc_meaning_progress_info.update(
                 user_id=current_user.id,
                 meaning_id=entity.meaning_id,
                 level_id=entity.level_id,
@@ -232,7 +235,7 @@ class QuestionService:
                 ),
             )
         if dpi_new_score != definition_progress_info.score:
-            await self.definition_progress_info_svc.update(
+            await self.svc_definition_progress_info.update(
                 user_id=current_user.id,
                 meaning_id=entity.meaning_id,
                 definition_id=entity.correct_definition_id,
@@ -241,7 +244,7 @@ class QuestionService:
                 ),
             )
 
-        current_progress = await self.statistic_svc.get_level_progress_by_category(
+        current_progress = await self.svc_statistic.get_level_progress_by_category(
             user_id=current_user.id,
             level_id=entity.level_id,
             category_id=entity.category_id,
@@ -250,8 +253,7 @@ class QuestionService:
         new_cpi = None
 
         if current_progress >= 100:
-            new_cpi = await self.category_progress_info_svc.update_category_level(
-                svc_level=svc_level,
+            new_cpi = await self.svc_category_progress_info.update_category_level(
                 user_id=current_user.id,
                 category_id=entity.category_id,
                 current_level_id=entity.level_id,

@@ -35,19 +35,20 @@ async def get_user_info_service(db: AsyncSession = Depends(get_db)) -> UserInfoS
     return UserInfoService(db)
 
 
-def get_category_progress_info_service(
+async def get_category_progress_info_service(
     db: AsyncSession = Depends(get_db),
+    svc_level: LevelService = Depends(get_level_service),
 ) -> CategoryProgressInfoService:
-    return CategoryProgressInfoService(db)
+    return CategoryProgressInfoService(db=db, svc_level=svc_level)
 
 
-def get_meaning_progress_info_service(
+async def get_meaning_progress_info_service(
     db: AsyncSession = Depends(get_db),
 ) -> MeaningProgressInfoService:
     return MeaningProgressInfoService(db)
 
 
-def get_definition_progress_info_service(
+async def get_definition_progress_info_service(
     db: AsyncSession = Depends(get_db),
 ) -> DefinitionProgressInfoService:
     return DefinitionProgressInfoService(db)

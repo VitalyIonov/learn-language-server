@@ -1,11 +1,9 @@
 from fastapi import HTTPException
-from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 from starlette import status
 
 from sqlalchemy.exc import NoResultFound
 
-from app.models import Level
 from app.models.common import CategoryProgressInfo
 from app.schemas.admin import CategoryProgressInfoCreate, CategoryProgressInfoUpdate
 from app.crud.admin import (
@@ -18,8 +16,9 @@ from app.services.admin import LevelService
 
 
 class CategoryProgressInfoService:
-    def __init__(self, db: AsyncSession):
+    def __init__(self, db: AsyncSession, svc_level: LevelService):
         self.db = db
+        self.svc_level = svc_level
 
     async def get(
         self, user_id: int, category_id: int, level_id: int
@@ -88,12 +87,11 @@ class CategoryProgressInfoService:
 
     async def update_category_level(
         self,
-        svc_level: LevelService,
         user_id: int,
         category_id: int,
         current_level_id: int,
     ) -> CategoryProgressInfo | None:
-        next_level = await svc_level.get_next_level(current_level_id)
+        next_level = await self.svc_level.get_next_level(current_level_id)
 
         if next_level is None:
             return None
