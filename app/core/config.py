@@ -57,6 +57,11 @@ class Settings(BaseSettings):
 
     SESSION_SECRET_KEY: str
     OPENAI_API_KEY: str
+    R2_ACCOUNT_ID: str
+    R2_ACCESS_KEY_ID: str
+    R2_SECRET_ACCESS_KEY: str
+    R2_BUCKET: str
+    R2_PUBLIC_URL: str
     GOOGLE_CLIENT_ID: str
     GOOGLE_CLIENT_SECRET: str
 

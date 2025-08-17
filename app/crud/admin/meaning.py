@@ -57,8 +57,10 @@ async def update_meaning(
     if update_data:
         for field, value in update_data.items():
             setattr(db_meaning, field, value)
-        await db.commit()
-        await db.refresh(db_meaning)
+
+    await db.commit()
+    await db.refresh(db_meaning)
+
     return db_meaning
 
 

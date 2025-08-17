@@ -1,9 +1,13 @@
 from sqlalchemy.ext.asyncio import AsyncSession
-from sqlalchemy import select, func
+from sqlalchemy import select, func, delete
 from app.models.common import Category
-from app.schemas.admin import CategoryCreate, CategoriesListResponse
+from app.schemas.admin import CategoryCreate, CategoriesListResponse, CategoryUpdate
 from typing import Optional
 from app.constants.data import DEFAULT_OFFSET, DEFAULT_LIMIT
+
+
+async def get_category(db: AsyncSession, category_id: int) -> Optional[Category]:
+    return await db.get(Category, category_id)
 
 
 async def create_category(db: AsyncSession, new_category: CategoryCreate) -> Category:
@@ -12,6 +16,27 @@ async def create_category(db: AsyncSession, new_category: CategoryCreate) -> Cat
     await db.commit()
     await db.refresh(category)
     return category
+
+
+async def update_category(
+    db: AsyncSession, db_category: Category, payload: CategoryUpdate
+) -> Category:
+    update_data = payload.model_dump(exclude_unset=True)
+    if update_data:
+        for field, value in update_data.items():
+            setattr(db_category, field, value)
+
+    await db.commit()
+    await db.refresh(db_category)
+    return db_category
+
+
+async def delete_category(db: AsyncSession, category_id: int) -> bool:
+    stmt = delete(Category).where(Category.id == category_id).returning(Category.id)
+    result = await db.execute(stmt)
+    await db.commit()
+    deleted_id = result.scalar_one_or_none()
+    return deleted_id is not None
 
 
 async def get_categories(

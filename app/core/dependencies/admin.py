@@ -10,6 +10,8 @@ from app.services.admin import (
     CategoryProgressInfoService,
     MeaningProgressInfoService,
     DefinitionProgressInfoService,
+    ImageService,
+    StorageR2Service,
 )
 
 
@@ -27,7 +29,13 @@ async def get_level_service(db: AsyncSession = Depends(get_db)) -> LevelService:
     return LevelService(db)
 
 
-async def get_category_service(db: AsyncSession = Depends(get_db)) -> CategoryService:
+async def get_storage_r2_service() -> StorageR2Service:
+    return StorageR2Service()
+
+
+async def get_category_service(
+    db: AsyncSession = Depends(get_db),
+) -> CategoryService:
     return CategoryService(db)
 
 
@@ -52,3 +60,10 @@ async def get_definition_progress_info_service(
     db: AsyncSession = Depends(get_db),
 ) -> DefinitionProgressInfoService:
     return DefinitionProgressInfoService(db)
+
+
+async def get_image_service(
+    db: AsyncSession = Depends(get_db),
+    svc_storage_r2: StorageR2Service = Depends(get_storage_r2_service),
+) -> ImageService:
+    return ImageService(db=db, svc_storage_r2=svc_storage_r2)

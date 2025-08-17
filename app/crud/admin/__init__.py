@@ -6,3 +6,4 @@ from .user_info import *
 from .category_progress_info import *
 from .meaning_progress_info import *
 from .definition_progress_info import *
+from .image import *
