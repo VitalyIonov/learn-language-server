@@ -9,6 +9,7 @@ class UploadImageRequest(BaseSchema):
 
 class UploadImageResponse(BaseSchema):
     upload_url: str
+    file_key: str
     image_id: int
 
 

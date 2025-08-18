@@ -51,7 +51,7 @@ class ImageService:
             ),
         )
 
-        return UploadImageResponse(upload_url=url, image_id=image.id)
+        return UploadImageResponse(upload_url=url, file_key=file_key, image_id=image.id)
 
     async def commit(self, image_id: int) -> Asset:
         image = await self.get(image_id)

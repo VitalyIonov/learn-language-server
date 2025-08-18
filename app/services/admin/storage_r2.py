@@ -1,5 +1,9 @@
+from typing import IO
+
 import boto3
 from botocore.client import Config
+from botocore.exceptions import ClientError
+
 from app.core.config import settings
 
 s3 = boto3.client(
@@ -25,3 +29,14 @@ class StorageR2Service:
             },
             ExpiresIn=ttl,
         )
+
+    @staticmethod
+    async def upload_file(file_key: str, file_obj: IO, content_type: str) -> bool:
+        try:
+            s3.upload_fileobj(
+                file_obj, BUCKET, file_key, ExtraArgs={"ContentType": content_type}
+            )
+            return True
+        except ClientError as e:
+            print(f"Ошибка при загрузке файла в R2: {e}")
+            return False
