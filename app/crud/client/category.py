@@ -24,7 +24,7 @@ async def get_categories(
     result = await db.execute(statement)
     count = await db.execute(count_statement)
 
-    return CategoriesListResponse.validate(
+    return CategoriesListResponse.model_validate(
         {
             "items": result.scalars().all(),
             "meta": {"total_count": count.scalar_one()},

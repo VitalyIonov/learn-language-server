@@ -12,6 +12,7 @@ from app.services.admin import (
     DefinitionProgressInfoService,
     ImageService,
     StorageR2Service,
+    QuestionTypeService,
 )
 
 
@@ -67,3 +68,9 @@ async def get_image_service(
     svc_storage_r2: StorageR2Service = Depends(get_storage_r2_service),
 ) -> ImageService:
     return ImageService(db=db, svc_storage_r2=svc_storage_r2)
+
+
+async def get_question_type_service(
+    db: AsyncSession = Depends(get_db),
+) -> QuestionTypeService:
+    return QuestionTypeService(db)

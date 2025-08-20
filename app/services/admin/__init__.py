@@ -8,3 +8,4 @@ from .meaning_progress_info import *
 from .definition_progress_info import *
 from .storage_r2 import *
 from .image import *
+from .question_type import *

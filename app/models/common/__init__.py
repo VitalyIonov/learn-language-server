@@ -10,3 +10,4 @@ from .category_progress_info import *
 from .meaning_progress_info import *
 from .definition_progress_info import *
 from .asset import *
+from .question_type import *

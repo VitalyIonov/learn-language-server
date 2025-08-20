@@ -42,7 +42,6 @@ class Definition(Base):
     )
     level: Mapped[Level | None] = relationship(
         "Level",
-        back_populates="definitions",
         lazy="selectin",
     )
     meanings: Mapped[list[Meaning]] = relationship(

@@ -59,7 +59,7 @@ async def create_definition(db: AsyncSession, new_item: DefinitionCreate) -> Def
 
         q = select(Meaning).where(Meaning.id.in_(new_item.meaning_ids))
         result = await db.scalars(q)
-        definition.meanings = result.all()
+        definition.meanings = list(result.all())
 
     db.add(definition)
     await db.commit()
@@ -80,7 +80,7 @@ async def update_definition(
 
         q = select(Meaning).where(Meaning.id.in_(item_update.meaning_ids))
         result = await db.scalars(q)
-        db_item.meanings = result.all()
+        db_item.meanings = list(result.all())
 
     await db.commit()
     await db.refresh(db_item)

@@ -7,6 +7,7 @@ from app.db.seed import (
     seed_levels,
     seed_meanings,
     seed_definitions,
+    seed_question_types,
 )
 from app.core.dependencies.admin import get_image_service, get_storage_r2_service
 
@@ -17,6 +18,9 @@ print(settings.database_uri)
 
 
 async def main():
+    with open("seed_data/question_types.json", "r") as f:
+        question_types_seed_data = json.load(f)
+
     with open("seed_data/users.json", "r") as f:
         users_seed_data = json.load(f)
 
@@ -38,6 +42,7 @@ async def main():
             db=session, svc_storage_r2=storage_service
         )
 
+        await seed_question_types(session, question_types_seed_data["question_types"])
         await seed_users(session, users_seed_data["users"])
         await seed_categories(
             session,

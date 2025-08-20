@@ -7,7 +7,16 @@ from app.constants.data import DEFAULT_OFFSET, DEFAULT_LIMIT
 
 
 async def create_level(db: AsyncSession, new_level: LevelCreate) -> Level:
-    level = Level(**new_level.model_dump())
+    payload = new_level.model_dump(exclude={"question_type_ids"})
+    level = Level(**payload)
+
+    if new_level.question_type_ids:
+        from app.models.common import QuestionType
+
+        q = select(QuestionType).where(QuestionType.id.in_(new_level.question_type_ids))
+        result = await db.scalars(q)
+        level.question_types = list(result.all())
+
     db.add(level)
     await db.commit()
     await db.refresh(level)

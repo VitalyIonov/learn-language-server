@@ -7,11 +7,9 @@ from app.core.db import Base
 from .definition import Definition
 
 if TYPE_CHECKING:
-    from category import Category
-    from level import Level
-    from question import Question
-    from definition_progress_info import DefinitionProgressInfo
-    from meaning_progress_info import MeaningProgressInfo
+    from .category import Category
+    from .level import Level
+    from .question import Question
 
 
 class Meaning(Base):
@@ -34,9 +32,7 @@ class Meaning(Base):
         back_populates="meanings",
         lazy="selectin",
     )
-    level: Mapped[Level] = relationship(
-        "Level", back_populates="meanings", lazy="selectin"
-    )
+    level: Mapped[Level] = relationship("Level", lazy="selectin")
     definitions: Mapped[list[Definition]] = relationship(
         "Definition",
         secondary="definitions_meanings",

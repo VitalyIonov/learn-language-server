@@ -5,8 +5,7 @@ from sqlalchemy.orm import Mapped, mapped_column, relationship
 from app.core.db import Base
 
 if TYPE_CHECKING:
-    from .meaning import Meaning
-    from .definition import Definition
+    from .question_type import QuestionType
 
 
 class Level(Base):
@@ -17,12 +16,12 @@ class Level(Base):
     alias: Mapped[str] = mapped_column(unique=True, index=True, nullable=False)
     value: Mapped[int] = mapped_column(nullable=False, server_default="0")
 
-    meanings: Mapped[list["Meaning"]] = relationship(
-        "Meaning",
-        back_populates="level",
-    )
+    @property
+    def question_type_ids(self) -> list[int]:
+        return [d.id for d in self.question_types]
 
-    definitions: Mapped[list["Definition"]] = relationship(
-        "Definition",
-        back_populates="level",
+    question_types: Mapped[list[QuestionType]] = relationship(
+        "QuestionType",
+        secondary="levels_question_types",
+        lazy="selectin",
     )
