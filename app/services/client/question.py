@@ -30,6 +30,8 @@ from app.models import (
     Level,
     MeaningProgressInfo,
     TextDefinition,
+    QuestionTypeName,
+    ImageDefinition,
 )
 from app.crud.client import (
     create_question as crud_create_question,
@@ -40,6 +42,7 @@ from app.services.admin import (
     CategoryProgressInfoService,
     MeaningProgressInfoService,
     DefinitionProgressInfoService,
+    LevelService,
 )
 from app.services.common import StatisticService
 
@@ -52,12 +55,14 @@ class QuestionService:
         svc_meaning_progress_info: MeaningProgressInfoService,
         svc_definition_progress_info: DefinitionProgressInfoService,
         svc_statistic: StatisticService,
+        svc_level: LevelService,
     ):
         self.db = db
         self.svc_category_progress_info = svc_category_progress_info
         self.svc_meaning_progress_info = svc_meaning_progress_info
         self.svc_definition_progress_info = svc_definition_progress_info
         self.svc_statistic = svc_statistic
+        self.svc_level = svc_level
 
     def _build_meaning_query(
         self,
@@ -100,27 +105,10 @@ class QuestionService:
     async def generate(
         self, payload: QuestionGenerate, current_user: User
     ) -> QuestionOut:
-        cpi_max_level_id = None
-        min_level_id = None
-
-        if payload.level_id is None:
-            cpi_max_level_id = (
-                await self.svc_category_progress_info.get_top_category_progress_info(
-                    user_id=current_user.id, category_id=payload.category_id
-                )
-            ).level_id
-
-        if cpi_max_level_id is None:
-            level_stmt = select(Level.id).order_by(Level.value.asc()).limit(1)
-            min_level_id = (await self.db.execute(level_stmt)).scalar()
-
-            if min_level_id is None:
-                raise NoResultFound("No levels configured")
-
-        question_level_id = payload.level_id or cpi_max_level_id or min_level_id
+        question_level = await self.svc_level.get(payload.level_id)
 
         meaning_stmt = self._build_meaning_query(
-            question_level_id=question_level_id,
+            question_level_id=question_level.id,
             category_id=payload.category_id,
             user_id=current_user.id,
         )
@@ -129,23 +117,40 @@ class QuestionService:
         if meaning is None:
             raise NoResultFound("Meaning not found")
 
+        question_type = question_level.question_types[0]
+        definition_class = (
+            TextDefinition
+            if question_type.name == QuestionTypeName.TEXT
+            else ImageDefinition
+        )
+
+        if question_type.name == QuestionTypeName.TEXT:
+            load_fields = [definition_class.id, definition_class.text]
+        else:
+            load_fields = [definition_class.id, definition_class.image_id]
+
+        if question_type.name == QuestionTypeName.TEXT:
+            false_definitions_count = 2
+        else:
+            false_definitions_count = 3
+
         definition_false_stmt = (
-            select(TextDefinition)
-            .options(load_only(TextDefinition.id, TextDefinition.text))
+            select(definition_class)
+            .options(load_only(*load_fields))
             .where(
-                TextDefinition.level_id == question_level_id,
-                ~TextDefinition.meanings.any(Meaning.id == meaning.id),
+                definition_class.level_id == question_level.id,
+                ~definition_class.meanings.any(Meaning.id == meaning.id),
             )
             .order_by(func.random())
-            .limit(2)
+            .limit(false_definitions_count)
         )
 
         definition_true_stmt = (
-            select(TextDefinition)
-            .options(load_only(TextDefinition.id, TextDefinition.text))
+            select(definition_class)
+            .options(load_only(*load_fields))
             .where(
-                TextDefinition.level_id == question_level_id,
-                TextDefinition.meanings.any(Meaning.id == meaning.id),
+                definition_class.level_id == question_level.id,
+                definition_class.meanings.any(Meaning.id == meaning.id),
             )
             .order_by(func.random())
             .limit(1)
@@ -167,9 +172,10 @@ class QuestionService:
 
         question_data = QuestionCreate(
             user_id=current_user.id,
+            type=question_type.name,
             meaning_id=cast(int, meaning.id),
             category_id=payload.category_id,
-            level_id=question_level_id,
+            level_id=question_level.id,
             correct_definition_id=cast(int, true_definition.id),
         )
 
@@ -178,6 +184,7 @@ class QuestionService:
         return QuestionOut.model_validate(
             {
                 "id": question.id,
+                "type": question.type,
                 "meaning": meaning,
                 "definitions": definitions,
             }

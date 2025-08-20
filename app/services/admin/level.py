@@ -10,6 +10,7 @@ from app.crud.admin import (
     delete_level as crud_delete_level,
     get_next_level as crud_get_next_level,
     get_first_level as crud_get_first_level,
+    get_level as crud_get_level,
 )
 
 from app.models.common import Level
@@ -19,6 +20,14 @@ from app.schemas.admin import LevelCreate, LevelsListResponse
 class LevelService:
     def __init__(self, db: AsyncSession):
         self.db = db
+
+    async def get(self, level_id: int) -> Level:
+        entity = await crud_get_level(self.db, level_id)
+        if entity is None:
+            raise HTTPException(
+                status_code=status.HTTP_404_NOT_FOUND, detail="Level not found"
+            )
+        return entity
 
     async def get_all(self, offset: int, limit: int, q: str) -> LevelsListResponse:
         return await crud_get_levels(self.db, offset, limit, q)

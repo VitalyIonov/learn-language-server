@@ -23,6 +23,10 @@ async def create_level(db: AsyncSession, new_level: LevelCreate) -> Level:
     return level
 
 
+async def get_level(db: AsyncSession, level_id: int) -> Optional[Level]:
+    return await db.get(Level, level_id)
+
+
 async def get_levels(
     db: AsyncSession,
     offset: int = DEFAULT_OFFSET,

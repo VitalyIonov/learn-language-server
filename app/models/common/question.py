@@ -6,6 +6,7 @@ from sqlalchemy import ForeignKey, func
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from app.core.db import Base
+from .question_type import QuestionTypeName
 
 if TYPE_CHECKING:
     from .definition import Definition
@@ -17,6 +18,10 @@ class Question(Base):
     __tablename__ = "questions"
 
     id: Mapped[int] = mapped_column(primary_key=True, autoincrement=True)
+    type: Mapped[QuestionTypeName] = mapped_column(
+        nullable=False,
+        index=True,
+    )
     user_id: Mapped[int] = mapped_column(
         ForeignKey("users.id", ondelete="SET NULL"), nullable=True
     )

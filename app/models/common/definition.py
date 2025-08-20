@@ -21,7 +21,6 @@ class Definition(Base):
     type: Mapped[QuestionTypeName] = mapped_column(
         nullable=False,
         index=True,
-        default=QuestionTypeName.TEXT,
     )
 
     category_id: Mapped[int] = mapped_column(

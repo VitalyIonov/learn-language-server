@@ -5,6 +5,7 @@ from app.schemas.common import BaseSchema
 from .level import LevelOutBase
 from .definition import DefinitionOut
 from .meaning import MeaningOut
+from app.models import QuestionTypeName
 
 
 class LevelUpInfo(BaseModel):
@@ -17,12 +18,13 @@ Info = Annotated[Union[LevelUpInfo], Field(discriminator="type")]
 
 class QuestionOut(BaseSchema):
     id: int
+    type: QuestionTypeName
     meaning: MeaningOut | None = None
-    definitions: list[DefinitionOut] = Field(default_factory=list)
+    definitions: list[DefinitionOut]
 
 
 class QuestionGenerate(BaseSchema):
-    level_id: Optional[int] = None
+    level_id: int
     category_id: int
 
 
@@ -32,6 +34,7 @@ class QuestionCreate(BaseSchema):
     level_id: int
     category_id: int
     correct_definition_id: int
+    type: QuestionTypeName
 
 
 class QuestionUpdate(BaseSchema):
