@@ -2,6 +2,8 @@ import os
 import mimetypes
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy import select
+
+from app.models import CategoryProgressInfo
 from app.models.common import Category
 from app.schemas.admin import UploadImageRequest
 from app.services.admin import StorageR2Service, ImageService
@@ -51,8 +53,6 @@ async def seed_categories(
 
                     if upload_success:
                         await image_service.commit(image_asset.image_id)
-
-                        print(f"✅ Загружена картинка для {category_data['name']}")
                     else:
                         print(
                             f"❌ Не удалось загрузить картинку для {category_data['name']}"
@@ -69,8 +69,4 @@ async def seed_categories(
             )
 
             session.add(category)
-            print(f"✅ Создана категория: {category.name}")
-
-            # stmt = insert(Category).values(**category)
-            # await session.execute(stmt)
     await session.commit()

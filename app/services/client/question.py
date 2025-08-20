@@ -22,7 +22,15 @@ from app.schemas.client import (
     LevelUpInfo,
     LevelOutBase,
 )
-from app.models import User, Meaning, Definition, Question, Level, MeaningProgressInfo
+from app.models import (
+    User,
+    Meaning,
+    Definition,
+    Question,
+    Level,
+    MeaningProgressInfo,
+    TextDefinition,
+)
 from app.crud.client import (
     create_question as crud_create_question,
     get_question as crud_get_question,
@@ -122,22 +130,22 @@ class QuestionService:
             raise NoResultFound("Meaning not found")
 
         definition_false_stmt = (
-            select(Definition)
-            .options(load_only(Definition.id, Definition.text))
+            select(TextDefinition)
+            .options(load_only(TextDefinition.id, TextDefinition.text))
             .where(
-                Definition.level_id == question_level_id,
-                ~Definition.meanings.any(Meaning.id == meaning.id),
+                TextDefinition.level_id == question_level_id,
+                ~TextDefinition.meanings.any(Meaning.id == meaning.id),
             )
             .order_by(func.random())
             .limit(2)
         )
 
         definition_true_stmt = (
-            select(Definition)
-            .options(load_only(Definition.id, Definition.text))
+            select(TextDefinition)
+            .options(load_only(TextDefinition.id, TextDefinition.text))
             .where(
-                Definition.level_id == question_level_id,
-                Definition.meanings.any(Meaning.id == meaning.id),
+                TextDefinition.level_id == question_level_id,
+                TextDefinition.meanings.any(Meaning.id == meaning.id),
             )
             .order_by(func.random())
             .limit(1)

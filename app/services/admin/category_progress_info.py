@@ -80,6 +80,18 @@ class CategoryProgressInfoService:
     ) -> CategoryProgressInfo:
         cpi = await crud_get_top_category_progress_info(self.db, user_id, category_id)
 
+        # toDo | Удалить! Подумать как инициализировать при создании пользователя
+        if cpi is None:
+            level = await self.svc_level.get_first_level()
+
+            cpi = (
+                await self.get_or_create(
+                    user_id=user_id, category_id=category_id, level_id=level.id
+                )
+                if level
+                else None
+            )
+
         if cpi is None:
             raise NoResultFound("CategoryProgressInfo non found")
 

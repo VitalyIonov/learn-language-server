@@ -52,7 +52,12 @@ async def main():
         )
         await seed_levels(session, levels_seed_data["levels"])
         await seed_meanings(session, meanings_seed_data["meanings"])
-        await seed_definitions(session, definitions_seed_data["definitions"])
+        await seed_definitions(
+            session,
+            definitions_seed_data["definitions"],
+            storage_service,
+            image_service,
+        )
 
 
 if __name__ == "__main__":

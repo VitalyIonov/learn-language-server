@@ -1,9 +1,10 @@
 from app.schemas.common import BaseSchema
+from app.models.common.question_type import QuestionTypeName
 
 
 class QuestionTypeOut(BaseSchema):
     id: int
-    name: str
+    name: QuestionTypeName
 
     class Config:
         from_attributes = True

@@ -73,3 +73,11 @@ async def get_next_level(db: AsyncSession, level_id: int) -> Optional[Level]:
     next_level = (await db.execute(level_stmt)).scalar_one_or_none()
 
     return next_level
+
+
+async def get_first_level(db: AsyncSession) -> Optional[Level]:
+    level_stmt = select(Level).order_by(Level.value.asc()).limit(1)
+
+    first_level = (await db.execute(level_stmt)).scalar_one_or_none()
+
+    return first_level

@@ -1,13 +1,14 @@
 from __future__ import annotations
+
 from typing import TYPE_CHECKING
 
-from sqlalchemy import ForeignKey
+from sqlalchemy import ForeignKey, Enum
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 from app.core.db import Base
-from .associations import DefinitionsMeanings
+from .question_type import QuestionTypeName
 
 if TYPE_CHECKING:
-    from app.models.common.category import Category
+    from .category import Category
     from .level import Level
     from .meaning import Meaning
     from .question import Question
@@ -17,7 +18,11 @@ class Definition(Base):
     __tablename__ = "definitions"
 
     id: Mapped[int] = mapped_column(primary_key=True)
-    text: Mapped[str] = mapped_column(index=True, nullable=False)
+    type: Mapped[QuestionTypeName] = mapped_column(
+        nullable=False,
+        index=True,
+        default=QuestionTypeName.TEXT,
+    )
 
     category_id: Mapped[int] = mapped_column(
         ForeignKey("categories.id", ondelete="SET NULL"),
@@ -47,7 +52,7 @@ class Definition(Base):
     meanings: Mapped[list[Meaning]] = relationship(
         "Meaning",
         back_populates="definitions",
-        secondary=DefinitionsMeanings.__tablename__,
+        secondary="definitions_meanings",
         lazy="selectin",
     )
     questions: Mapped[list[Question]] = relationship(
@@ -55,3 +60,8 @@ class Definition(Base):
         back_populates="definitions",
         secondary="definitions_questions",
     )
+
+    __mapper_args__ = {
+        "polymorphic_on": type,
+        "with_polymorphic": "*",
+    }
