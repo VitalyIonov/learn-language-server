@@ -1,3 +1,5 @@
+from typing import Optional
+
 from fastapi import HTTPException
 from sqlalchemy.ext.asyncio import AsyncSession
 from starlette import status
@@ -25,7 +27,12 @@ class CategoryService:
 
         return entity
 
-    async def get_all(self, offset: int, limit: int, q: str) -> CategoriesListResponse:
+    async def get_all(
+        self,
+        offset: Optional[int] = None,
+        limit: Optional[int] = None,
+        q: Optional[str] = None,
+    ) -> CategoriesListResponse:
         return await crud_get_categories(self.db, offset, limit, q)
 
     async def create(self, payload: CategoryCreate) -> Category:

@@ -43,7 +43,6 @@ async def main():
         )
 
         await seed_question_types(session, question_types_seed_data["question_types"])
-        await seed_users(session, users_seed_data["users"])
         await seed_categories(
             session,
             categories_seed_data["categories"],
@@ -58,6 +57,7 @@ async def main():
             storage_service,
             image_service,
         )
+        await seed_users(session, users_seed_data["users"])
 
 
 if __name__ == "__main__":

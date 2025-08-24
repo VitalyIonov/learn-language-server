@@ -1,11 +1,18 @@
 from fastapi import HTTPException
+from sqlalchemy import select, literal, exists
 from sqlalchemy.ext.asyncio import AsyncSession
 from starlette import status
+from sqlalchemy.dialects.postgresql import insert
 
 from sqlalchemy.exc import NoResultFound
 
+from app.models import Level, Category
 from app.models.common import CategoryProgressInfo
-from app.schemas.admin import CategoryProgressInfoCreate, CategoryProgressInfoUpdate
+from app.schemas.admin import (
+    CategoryProgressInfoCreate,
+    CategoryProgressInfoUpdate,
+    UpdateCategoryLevelResult,
+)
 from app.crud.admin import (
     get_category_progress_info as crud_get_category_progress_info,
     create_category_progress_info as crud_create_category_progress_info,
@@ -16,7 +23,11 @@ from app.services.admin import LevelService
 
 
 class CategoryProgressInfoService:
-    def __init__(self, db: AsyncSession, svc_level: LevelService):
+    def __init__(
+        self,
+        db: AsyncSession,
+        svc_level: LevelService,
+    ):
         self.db = db
         self.svc_level = svc_level
 
@@ -102,14 +113,53 @@ class CategoryProgressInfoService:
         user_id: int,
         category_id: int,
         current_level_id: int,
-    ) -> CategoryProgressInfo | None:
+    ) -> UpdateCategoryLevelResult:
         next_level = await self.svc_level.get_next_level(current_level_id)
 
         if next_level is None:
-            return None
+            return UpdateCategoryLevelResult()
 
-        entity = await self.get_or_create(
+        next_cpi = await self.get(
             user_id=user_id, category_id=category_id, level_id=next_level.id
         )
 
-        return entity
+        if next_cpi is not None:
+            return UpdateCategoryLevelResult(next_level=next_level)
+
+        new_next_cpi = await self.create(
+            CategoryProgressInfoCreate(
+                user_id=user_id, category_id=category_id, level_id=next_level.id
+            )
+        )
+
+        return UpdateCategoryLevelResult(
+            next_level=next_level, new_next_cpi=new_next_cpi
+        )
+
+    async def bootstrap(self, user_id: int) -> None:
+        first_level_sq = select(Level.id).order_by(Level.value).limit(1).subquery()
+
+        stmt = (
+            insert(CategoryProgressInfo)
+            .from_select(
+                ["user_id", "category_id", "level_id"],
+                select(
+                    literal(user_id),
+                    Category.id,
+                    first_level_sq.c.id,
+                )
+                .select_from(Category.__table__)
+                .where(
+                    ~exists().where(
+                        (CategoryProgressInfo.user_id == user_id)
+                        & (CategoryProgressInfo.category_id == Category.id)
+                        & (CategoryProgressInfo.level_id == first_level_sq.c.id)
+                    )
+                ),
+            )
+            .on_conflict_do_nothing(
+                index_elements=["user_id", "category_id", "level_id"]
+            )
+        )
+
+        await self.db.execute(stmt)

@@ -41,8 +41,8 @@ async def delete_category(db: AsyncSession, category_id: int) -> bool:
 
 async def get_categories(
     db: AsyncSession,
-    offset: int = DEFAULT_OFFSET,
-    limit: int = DEFAULT_LIMIT,
+    offset: Optional[int] = None,
+    limit: Optional[int] = None,
     q: Optional[str] = None,
 ) -> CategoriesListResponse:
     statement = select(Category).order_by(Category.name)
@@ -52,7 +52,8 @@ async def get_categories(
         statement = statement.where(Category.name.ilike(f"%{q}%"))
         count_statement = count_statement.where(Category.name.ilike(f"%{q}%"))
 
-    statement = statement.offset(offset).limit(limit)
+    if offset is not None and limit is not None:
+        statement = statement.offset(offset).limit(limit)
 
     result = await db.execute(statement)
     count = await db.execute(count_statement)

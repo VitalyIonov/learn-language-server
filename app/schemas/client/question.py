@@ -13,7 +13,11 @@ class LevelUpInfo(BaseModel):
     new_level: LevelOutBase
 
 
-Info = Annotated[Union[LevelUpInfo], Field(discriminator="type")]
+class CategoryFinishInfo(BaseModel):
+    type: Literal["category_finish"]
+
+
+Info = Annotated[Union[LevelUpInfo, CategoryFinishInfo], Field(discriminator="type")]
 
 
 class QuestionOut(BaseSchema):

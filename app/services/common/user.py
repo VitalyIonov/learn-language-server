@@ -7,13 +7,19 @@ from app.crud.common import (
 )
 from app.models.common import User
 from app.schemas.common import UsersListResponse, UserCreate
-from app.schemas.admin import UserInfoCreate
-from app.services.admin import UserInfoService
+from app.services.admin import UserInfoService, CategoryProgressInfoService
 
 
 class UserService:
-    def __init__(self, db: AsyncSession):
+    def __init__(
+        self,
+        db: AsyncSession,
+        svc_cpi: CategoryProgressInfoService,
+        svc_user_info: UserInfoService,
+    ):
         self.db = db
+        self.svc_cpi = svc_cpi
+        self.svc_user_info = svc_user_info
 
     async def get_by_email(self, email: str) -> User | None:
         return await crud_get_user_by_email(self.db, email)
@@ -23,9 +29,10 @@ class UserService:
 
     async def create(self, payload: UserCreate) -> User:
         new_user = await crud_create_user(self.db, payload)
-        user_info_service = UserInfoService(self.db)
 
-        await user_info_service.create(UserInfoCreate(user_id=new_user.id))
+        await self.svc_cpi.bootstrap(user_id=new_user.id)
+
+        await self.db.commit()
 
         return new_user
 

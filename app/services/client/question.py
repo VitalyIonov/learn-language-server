@@ -1,5 +1,5 @@
 import random
-from typing import cast
+from typing import cast, Union, Type
 
 from sqlalchemy.exc import NoResultFound
 from sqlalchemy.ext.asyncio import AsyncSession
@@ -8,7 +8,6 @@ from sqlalchemy.orm import load_only
 
 from app.constants.score import BASE_SCORE
 from app.schemas.admin import (
-    CategoryProgressInfoUpdate,
     MeaningProgressInfoUpdate,
     DefinitionProgressInfoUpdate,
 )
@@ -21,6 +20,8 @@ from app.schemas.client import (
     QuestionUpdateOut,
     LevelUpInfo,
     LevelOutBase,
+    CategoryFinishInfo,
+    Info,
 )
 from app.models import (
     User,
@@ -118,20 +119,15 @@ class QuestionService:
             raise NoResultFound("Meaning not found")
 
         question_type = question_level.question_types[0]
-        definition_class = (
-            TextDefinition
-            if question_type.name == QuestionTypeName.TEXT
-            else ImageDefinition
-        )
+        definition_class: Union[Type[TextDefinition], Type[ImageDefinition]]
 
         if question_type.name == QuestionTypeName.TEXT:
+            definition_class = TextDefinition
             load_fields = [definition_class.id, definition_class.text]
-        else:
-            load_fields = [definition_class.id, definition_class.image_id]
-
-        if question_type.name == QuestionTypeName.TEXT:
             false_definitions_count = 2
         else:
+            definition_class = ImageDefinition
+            load_fields = [definition_class.id, definition_class.image_id]
             false_definitions_count = 3
 
         definition_false_stmt = (
@@ -205,11 +201,11 @@ class QuestionService:
         current_user: User,
     ) -> QuestionUpdateOut:
         entity = await self.get(question_id)
-        category_progress_info = await self.svc_category_progress_info.get_or_create(
-            user_id=current_user.id,
-            category_id=entity.category_id,
-            level_id=entity.level_id,
-        )
+        # category_progress_info = await self.svc_category_progress_info.get(
+        #     user_id=current_user.id,
+        #     category_id=entity.category_id,
+        #     level_id=entity.level_id,
+        # )
         meaning_progress_info = await self.svc_meaning_progress_info.get_or_create(
             user_id=current_user.id,
             meaning_id=entity.meaning_id,
@@ -224,14 +220,14 @@ class QuestionService:
         )
 
         result = await crud_update_question(self.db, entity, payload)
-        cpi_new_score = max(
-            0,
-            (
-                category_progress_info.score + 2
-                if result.is_correct
-                else category_progress_info.score - 3
-            ),
-        )
+        # cpi_new_score = max(
+        #     0,
+        #     (
+        #         category_progress_info.score + 2
+        #         if result.is_correct
+        #         else category_progress_info.score - 3
+        #     ),
+        # )
         mpi_new_score = max(
             0,
             (
@@ -249,15 +245,15 @@ class QuestionService:
             ),
         )
 
-        if cpi_new_score != category_progress_info.score:
-            await self.svc_category_progress_info.update(
-                user_id=current_user.id,
-                category_id=entity.category_id,
-                level_id=entity.level_id,
-                payload=CategoryProgressInfoUpdate(
-                    score=cpi_new_score,
-                ),
-            )
+        # if cpi_new_score != category_progress_info.score:
+        #     await self.svc_category_progress_info.update(
+        #         user_id=current_user.id,
+        #         category_id=entity.category_id,
+        #         level_id=entity.level_id,
+        #         payload=CategoryProgressInfoUpdate(
+        #             score=cpi_new_score,
+        #         ),
+        #     )
         if mpi_new_score != meaning_progress_info.score:
             await self.svc_meaning_progress_info.update(
                 user_id=current_user.id,
@@ -283,24 +279,30 @@ class QuestionService:
             category_id=entity.category_id,
         )
 
-        new_cpi = None
+        update_result = None
+        update_info: Info | None = None
 
         if current_progress >= 100:
-            new_cpi = await self.svc_category_progress_info.update_category_level(
+            update_result = await self.svc_category_progress_info.update_category_level(
                 user_id=current_user.id,
                 category_id=entity.category_id,
                 current_level_id=entity.level_id,
             )
 
-        info = (
-            LevelUpInfo(
-                type="level_up", new_level=LevelOutBase.model_validate(new_cpi.level)
-            )
-            if new_cpi
-            else None
-        )
+        if update_result is not None:
+            if update_result.new_next_cpi is not None:
+                update_info = LevelUpInfo(
+                    type="level_up",
+                    new_level=LevelOutBase.model_validate(
+                        update_result.new_next_cpi.level
+                    ),
+                )
+            elif update_result.next_level is None:
+                update_info = CategoryFinishInfo(
+                    type="category_finish",
+                )
 
         return QuestionUpdateOut(
             is_correct=result.is_correct,
-            info=info,
+            info=update_info,
         )
