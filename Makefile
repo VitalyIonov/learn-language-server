@@ -1,5 +1,5 @@
 start:
-	docker compose --env-file .env.docker up
+	docker compose up
 
 db-connect:
 	docker exec -it postgres-db psql -U postgres -d app

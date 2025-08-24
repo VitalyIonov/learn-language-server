@@ -1,5 +1,3 @@
 seed_data
-.env.base
-.env.docker
-.env.local
+.env
 postgres_data

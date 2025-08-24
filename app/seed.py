@@ -14,8 +14,6 @@ from app.core.dependencies.admin import get_image_service, get_storage_r2_servic
 
 from app.core.config import settings
 
-print(settings.database_uri)
-
 
 async def main():
     with open("seed_data/question_types.json", "r") as f:
