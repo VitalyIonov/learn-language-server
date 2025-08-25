@@ -1,0 +1,13 @@
+.git
+__pycache__/
+*.pyc
+.env
+.env.*
+.mypy_cache/
+.pytest_cache/
+.dist/
+build/
+.cache/
+.idea/
+.vscode/
+node_modules/

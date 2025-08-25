@@ -1,16 +1,21 @@
 services:
   web:
     command: uvicorn app.main:app --host 0.0.0.0 --port 8000 --reload
+    build:
+      context: .
+      target: dev
     ports:
       - "8000:8000"
     volumes:
       - .:/app
       - ./static/images:/app/static/images
 
-  nginx:
-    ports:
-      - "80:80"
-
   db:
     ports:
       - "5433:5432"
+
+  nginx:
+    ports:
+      - "80:80"
+    volumes:
+      - ./nginx/conf.d/base.conf:/etc/nginx/conf.d/base.conf:ro
