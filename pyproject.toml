@@ -13,7 +13,6 @@ dependencies = [
     "fastapi (>=0.116.1,<0.117.0)",
     "authlib (>=1.6.0,<2.0.0)",
     "uvicorn (>=0.35.0,<0.36.0)",
-    "gunicorn>=21.2,<22.0",
     "python-multipart (>=0.0.20,<0.0.21)",
     "itsdangerous (>=2.2.0,<3.0.0)",
     "sqlalchemy[mypy] (>=2.0.42,<3.0.0)",
@@ -30,6 +29,7 @@ dependencies = [
     "sentencepiece (>=0.2.0,<0.3.0)",
     "sacremoses (>=0.1.1,<0.2.0)",
     "boto3 (>=1.40.11,<2.0.0)",
+    "gunicorn (>=23.0.0,<24.0.0)",
 ]
 
 
