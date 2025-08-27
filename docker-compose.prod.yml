@@ -2,7 +2,7 @@ services:
   web:
     command: gunicorn -k uvicorn.workers.UvicornWorker app.main:app -b 0.0.0.0:8000 --workers 4
     restart: always
-    image: ghcr.io/vitalyionov/learn-language-server:latest
+    image: ghcr.io/vitalyionov/learn-language-server:${IMAGE_TAG:-latest}
     volumes:
       - ./static/images:/app/static/images
     depends_on:
