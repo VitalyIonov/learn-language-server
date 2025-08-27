@@ -45,7 +45,7 @@ jobs:
           script: |
             cd /opt/learn-language
             sed -i '/^IMAGE_TAG=/d' /opt/learn-language/.env
-            echo -e "\nIMAGE_TAG=${{ github.sha }}" | tee -a /opt/learn-language/.env
+            printf "\nIMAGE_TAG=${{ github.sha }}\n" >> .env
             docker compose -f docker-compose.yml -f docker-compose.prod.yml pull
             docker compose -f docker-compose.yml -f docker-compose.prod.yml up -d
             docker system prune -f
