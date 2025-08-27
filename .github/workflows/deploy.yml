@@ -44,7 +44,8 @@ jobs:
           key: ${{ secrets.SERVER_SSH_KEY }}
           script: |
             cd /opt/learn-language
-            echo "IMAGE_TAG=${{ github.sha }}" > .env
+            sed -i '/^IMAGE_TAG=/d' /opt/learn-language/.env
+            echo "IMAGE_TAG=${{ github.sha }}" >> /opt/learn-language/.env
             docker compose -f docker-compose.yml -f docker-compose.prod.yml pull
             docker compose -f docker-compose.yml -f docker-compose.prod.yml up -d
             docker system prune -f
