@@ -1,6 +1,6 @@
 from fastapi import APIRouter, Query
 from app.schemas.client import TranslateOut
-from app.services.client import TranslateService
+from app.services.client import DeepLTranslateService
 
 router = APIRouter(tags=["translations"])
 
@@ -9,6 +9,6 @@ router = APIRouter(tags=["translations"])
 async def translate_text(
     text: str = Query(description="text to translate"),
 ):
-    result = TranslateService.translate(text)
+    result = DeepLTranslateService.translate(text)
 
     return {"translation": result}

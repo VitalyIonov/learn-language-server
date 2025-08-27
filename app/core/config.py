@@ -56,7 +56,7 @@ class Settings(BaseSettings):
         )
 
     SESSION_SECRET_KEY: str
-    OPENAI_API_KEY: str
+    DEEPL_API_KEY: str
     R2_ACCOUNT_ID: str
     R2_ACCESS_KEY_ID: str
     R2_SECRET_ACCESS_KEY: str

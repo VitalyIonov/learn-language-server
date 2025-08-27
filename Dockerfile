@@ -19,11 +19,11 @@ CMD ["uvicorn", "app.main:app", "--host", "0.0.0.0", "--port", "8000", "--reload
 
 FROM base AS prod
 
-RUN pip install "poetry==2.1.3" "poetry-plugin-export==1.8.0"
+RUN pip install pip-tools
 
 COPY pyproject.toml poetry.lock* /app/
 
-RUN poetry export -f requirements.txt --without-hashes -o requirements.txt \
+RUN pip-compile pyproject.toml -o requirements.txt \
  && pip install --no-cache-dir -r requirements.txt
 
 COPY app /app/app

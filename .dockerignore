@@ -1,13 +1,60 @@
+# --- VCS ---
 .git
+.gitignore
+
+# --- Python мусор ---
 __pycache__/
-*.pyc
+*.py[cod]
+*.pyo
+*.pyd
+*.so
+*.egg
+*.egg-info/
+.eggs/
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.cache/
+.coverage
+.coverage.*
+htmlcov/
+
+# --- Виртуальные окружения ---
+.venv/
+venv/
+env/
+
+# --- Секреты/переменные окружения ---
 .env
 .env.*
-.mypy_cache/
-.pytest_cache/
-.dist/
+.envrc
+
+# --- Артефакты сборки ---
+dist/
 build/
-.cache/
+pip-wheel-metadata/
+wheels/
+
+# --- IDE/OS ---
 .idea/
 .vscode/
-node_modules/
+*.swp
+.DS_Store
+Thumbs.db
+
+# --- Проектные папки, не нужные внутри образа приложения ---
+postgres_data/
+seed_data/
+nginx/
+static/
+
+# Если статик должен попадать в образ — убери строку выше ↑
+
+# --- Docker/прочее, что не нужно в build-контексте приложения ---
+docker-compose*.yml
+Makefile
+*.log
+logs/
+tmp/
+*.sqlite
+*.sqlite3
