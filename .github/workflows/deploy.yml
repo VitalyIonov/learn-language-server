@@ -35,6 +35,12 @@ jobs:
             ghcr.io/vitalyionov/learn-language-server:latest
             ghcr.io/vitalyionov/learn-language-server:${{ github.sha }}
 
+      - name: Show workspace files
+        run: |
+          pwd
+          ls -la
+          ls -la ./nginx/conf.d
+
       - name: Copy files to server
         uses: appleboy/scp-action@v0.1.7
         with:
