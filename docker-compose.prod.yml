@@ -64,12 +64,6 @@ services:
     networks:
       - backend_net
 
-  volumes:
-    netdataconfig:
-    netdatalib:
-    netdatacache:
-
-
 networks:
   backend_net:
     driver: bridge
@@ -78,3 +72,6 @@ volumes:
   pg_data: { }
   certbot-www: { }
   letsencrypt: { }
+  netdataconfig: { }
+  netdatalib: { }
+  netdatacache: { }
