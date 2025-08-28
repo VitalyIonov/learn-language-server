@@ -44,7 +44,9 @@ jobs:
           key: ${{ secrets.SERVER_SSH_KEY }}
           script: |
             cd /opt/learn-language
-            echo "IMAGE_TAG=${{ github.sha }}" > .env.temp
+            echo "IMAGE_TAG received: $IMAGE_TAG"
             docker compose -f docker-compose.yml -f docker-compose.prod.yml pull
             docker compose -f docker-compose.yml -f docker-compose.prod.yml up -d
             docker system prune -f
+        env:
+          IMAGE_TAG: ${{ github.sha }}
