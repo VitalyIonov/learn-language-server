@@ -46,13 +46,10 @@ services:
       - "19999:19999"
     cap_add:
       - SYS_PTRACE
-      - SYS_ADMIN
     security_opt:
       - apparmor:unconfined
     environment:
       - DOCKER_HOST=unix:///var/run/docker.sock
-      - PGID=999
-      - NETDATA_DISABLE_CLOUD=1
     volumes:
       - netdataconfig:/etc/netdata
       - netdatalib:/var/lib/netdata
@@ -63,12 +60,9 @@ services:
       - /sys/fs/cgroup:/host/sys/fs/cgroup:ro
       - /etc/os-release:/host/etc/os-release:ro
       - /var/run/docker.sock:/var/run/docker.sock:ro
-      - /var/lib/docker:/var/lib/docker:ro
-      - ./netdata-config:/etc/netdata/go.d:ro
     restart: always
     networks:
       - backend_net
-
 
 networks:
   backend_net:
