@@ -35,6 +35,9 @@ jobs:
             ghcr.io/vitalyionov/learn-language-server:latest
             ghcr.io/vitalyionov/learn-language-server:${{ github.sha }}
 
+      - name: List files
+        run: ls -R
+
       - name: Copy files to server
         uses: appleboy/scp-action@v0.1.7
         with:
