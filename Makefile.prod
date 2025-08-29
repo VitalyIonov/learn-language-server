@@ -1,11 +1,25 @@
+COMPOSE = docker compose -f docker-compose.yml -f docker-compose.prod.yml
+APP_SVC = web
+DB_SVC  = postgres-db
+ALEMBIC_INI = /app/alembic.ini
+PYTHONPATH  = /app
+
+.PHONY: up db-connect db-migrate db-seed logs
+
+up:
+	$(COMPOSE) up -d
+
 db-connect:
-	docker exec -it postgres-db psql -U postgres -d app
+	$(COMPOSE) exec $(DB_SVC) psql -U postgres -d app
 
 db-migrate:
-	PYTHONPATH=. poetry run alembic upgrade head
+	$(COMPOSE) exec -e PYTHONPATH=$(PYTHONPATH) $(APP_SVC) sh -lc "alembic -c $(ALEMBIC_INI) upgrade head"
 
 db-seed:
-	PYTHONPATH=. poetry run python app/seed.py
+	$(COMPOSE) exec -e PYTHONPATH=$(PYTHONPATH) $(APP_SVC) python -m app.seed
 
 reset-db:
-	docker exec -i postgres-db psql -U postgres -d app -c "DROP SCHEMA public CASCADE; CREATE SCHEMA public;"
+	$(COMPOSE) exec $(DB_SVC) psql -U postgres -d app -c "DROP SCHEMA public CASCADE; CREATE SCHEMA public;"
+
+logs:
+	$(COMPOSE) logs -f $(APP_SVC) $(DB_SVC)

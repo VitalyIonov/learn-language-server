@@ -3,7 +3,6 @@ import mimetypes
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy import select
 
-from app.models import CategoryProgressInfo
 from app.models.common import Category
 from app.schemas.admin import UploadImageRequest
 from app.services.admin import StorageR2Service, ImageService
