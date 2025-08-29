@@ -60,3 +60,17 @@ jobs:
             IMAGE_TAG=${{ github.sha }} docker compose -f docker-compose.yml -f docker-compose.prod.yml pull
             IMAGE_TAG=${{ github.sha }} docker compose -f docker-compose.yml -f docker-compose.prod.yml up -d --no-deps --force-recreate
             docker system prune -f
+
+      - name: Telegram notify
+        if: ${{ always() }}
+        uses: appleboy/telegram-action@v1.0.1
+        with:
+          to: ${{ secrets.TELEGRAM_CHAT_ID }}
+          token: ${{ secrets.TELEGRAM_BOT_TOKEN }}
+          format: markdown
+          disable_web_page_preview: true
+          message: |
+            ${{ job.status == 'success' && '✅' || '❌' }} Deploy *${{ job.status }}* for *${{ github.repository }}*
+            *Branch:* ${{ github.ref_name }}
+            *Commit:* ${{ github.sha }}
+            [Run](${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }})
