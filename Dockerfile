@@ -27,5 +27,6 @@ RUN pip-compile pyproject.toml -o requirements.txt \
  && pip install --no-cache-dir -r requirements.txt
 
 COPY app /app/app
+COPY alembic.ini /app/alembic.ini
 
 CMD ["gunicorn", "-k", "uvicorn.workers.UvicornWorker", "app.main:app", "-b", "0.0.0.0:8000", "--workers", "4"]
