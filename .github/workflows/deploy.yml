@@ -73,4 +73,4 @@ jobs:
             ${{ job.status == 'success' && '✅' || '❌' }} Deploy *${{ job.status }}* for *${{ github.repository }}*
             *Branch:* ${{ github.ref_name }}
             *Commit:* ${{ github.sha }}
-            [Run](${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }})
+            [Action](${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }})
