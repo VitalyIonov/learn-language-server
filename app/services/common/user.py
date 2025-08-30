@@ -24,8 +24,8 @@ class UserService:
     async def get_by_email(self, email: str) -> User | None:
         return await crud_get_user_by_email(self.db, email)
 
-    async def get_all(self) -> UsersListResponse:
-        return await crud_get_users(self.db)
+    async def get_all(self, offset: int, limit: int, q: str) -> UsersListResponse:
+        return await crud_get_users(self.db, offset, limit, q)
 
     async def create(self, payload: UserCreate) -> User:
         new_user = await crud_create_user(self.db, payload)

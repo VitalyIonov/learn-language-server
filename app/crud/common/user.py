@@ -1,5 +1,7 @@
+from typing import Optional
+
 from sqlalchemy.ext.asyncio import AsyncSession
-from sqlalchemy import select
+from sqlalchemy import select, func
 from app.models.common import User
 from app.constants.data import DEFAULT_OFFSET, DEFAULT_LIMIT
 from app.schemas.common import UsersListResponse, UserCreate
@@ -20,8 +22,27 @@ async def create_user(db: AsyncSession, new_item: UserCreate) -> User:
 
 
 async def get_users(
-    db: AsyncSession, offset: int = DEFAULT_OFFSET, limit: int = DEFAULT_LIMIT
+    db: AsyncSession,
+    offset: int = DEFAULT_OFFSET,
+    limit: int = DEFAULT_LIMIT,
+    q: Optional[str] = None,
 ) -> UsersListResponse:
-    result = await db.execute(select(User).offset(offset).limit(limit))
+    statement = select(User).offset(offset).limit(limit)
+    count_statement = select(func.count()).select_from(User)
 
-    return UsersListResponse.model_validate({"items": result})
+    if q:
+        statement = statement.where(User.name.ilike(f"%{q}%"))
+        count_statement = count_statement.where(User.name.ilike(f"%{q}%"))
+
+    statement = statement.offset(offset).limit(limit)
+
+    result = await db.execute(statement)
+    total = (await db.execute(count_statement)).scalar_one()
+    orm_items = result.scalars().all()
+
+    return UsersListResponse.model_validate(
+        {
+            "items": orm_items,
+            "meta": {"total_count": total},
+        }
+    )
