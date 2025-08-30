@@ -19,7 +19,7 @@ services:
       db:
         condition: service_healthy
     entrypoint: [ "sh","-lc" ]
-    command: "PYTHONUNBUFFERED=1 PYTHONPATH=. alembic upgrade head -v"
+    command: "PYTHONUNBUFFERED=1 PYTHONPATH=/app alembic -c /app/alembic.ini upgrade head -v"
     networks:
       - backend_net
 
