@@ -3,7 +3,8 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from app.core.db import get_db
 from app.services.admin import (
     MeaningService,
-    DefinitionService,
+    TextDefinitionService,
+    ImageDefinitionService,
     LevelService,
     CategoryService,
     UserInfoService,
@@ -20,10 +21,16 @@ async def get_meaning_service(db: AsyncSession = Depends(get_db)) -> MeaningServ
     return MeaningService(db)
 
 
-async def get_definition_service(
+async def get_text_definition_service(
     db: AsyncSession = Depends(get_db),
-) -> DefinitionService:
-    return DefinitionService(db)
+) -> TextDefinitionService:
+    return TextDefinitionService(db)
+
+
+async def get_image_definition_service(
+    db: AsyncSession = Depends(get_db),
+) -> ImageDefinitionService:
+    return ImageDefinitionService(db)
 
 
 async def get_level_service(db: AsyncSession = Depends(get_db)) -> LevelService:

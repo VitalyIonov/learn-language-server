@@ -5,10 +5,10 @@ db-connect:
 	docker exec -it postgres-db psql -U postgres -d app
 
 db-migrate-gen:
-	PYTHONPATH=. poetry run alembic revision --autogenerate
+	docker compose run --rm web bash -lc 'PYTHONPATH=. alembic revision --autogenerate'
 
 db-migrate:
-	PYTHONPATH=. poetry run alembic upgrade head
+	docker compose run --rm web sh -lc 'PYTHONPATH=. poetry run alembic upgrade head'
 
 db-seed:
 	PYTHONPATH=. poetry run python app/seed.py

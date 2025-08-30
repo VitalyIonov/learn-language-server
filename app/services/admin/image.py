@@ -1,4 +1,4 @@
-from http.client import HTTPException
+from fastapi import HTTPException
 from uuid import uuid4
 
 from sqlalchemy.ext.asyncio import AsyncSession

@@ -48,7 +48,7 @@ async def read_categories(
 
 
 @router.patch("/categories/{category_id}", response_model=CategoryOut)
-async def update_meaning_endpoint(
+async def update_category_endpoint(
     category_id: int,
     payload: CategoryUpdate,
     svc_category: CategoryService = Depends(get_category_service),
@@ -57,7 +57,7 @@ async def update_meaning_endpoint(
 
 
 @router.delete("/categories/{category_id}")
-async def delete_meaning_endpoint(
+async def delete_category_endpoint(
     category_id: int,
     svc_category: CategoryService = Depends(get_category_service),
 ):
