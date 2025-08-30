@@ -13,7 +13,7 @@ services:
       - backend_net
 
   migrate:
-    build: .
+    image: ghcr.io/vitalyionov/learn-language-server:${IMAGE_TAG:-latest}
     depends_on:
       db:
         condition: service_healthy
