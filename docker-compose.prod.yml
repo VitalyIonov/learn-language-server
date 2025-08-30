@@ -12,6 +12,16 @@ services:
     networks:
       - backend_net
 
+  migrate:
+    build: .
+    depends_on:
+      db:
+        condition: service_healthy
+    entrypoint: [ "sh","-lc" ]
+    command: "PYTHONPATH=. alembic upgrade head"
+    networks:
+      - backend_net
+
   admin:
     image: ghcr.io/vitalyionov/learn-language-admin:${ADMIN_IMAGE_TAG:-latest}
     environment:
@@ -36,7 +46,7 @@ services:
       test: [ "CMD-SHELL", "pg_isready -U ${POSTGRES_USER} -d ${POSTGRES_DB} -h 127.0.0.1" ]
       interval: 10s
       timeout: 5s
-      retries: 5
+      retries: 20
 
   nginx:
     image: nginx:alpine
