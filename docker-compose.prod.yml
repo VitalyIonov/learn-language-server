@@ -14,11 +14,12 @@ services:
 
   migrate:
     image: ghcr.io/vitalyionov/learn-language-server:${IMAGE_TAG:-latest}
+    profiles: ["migrate"]
     depends_on:
       db:
         condition: service_healthy
     entrypoint: [ "sh","-lc" ]
-    command: "PYTHONPATH=. alembic upgrade head"
+    command: "PYTHONUNBUFFERED=1 PYTHONPATH=. alembic upgrade head -v"
     networks:
       - backend_net
 
