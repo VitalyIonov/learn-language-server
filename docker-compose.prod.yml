@@ -74,31 +74,31 @@ services:
     networks:
       - backend_net
 
-#  netdata:
-#    image: netdata/netdata
-#    container_name: netdata
-#    hostname: learn-language
-#    ports:
-#      - "19999:19999"
-#    cap_add:
-#      - SYS_PTRACE
-#    security_opt:
-#      - apparmor:unconfined
-#    environment:
-#      - DOCKER_HOST=unix:///var/run/docker.sock
-#    volumes:
-#      - netdataconfig:/etc/netdata
-#      - netdatalib:/var/lib/netdata
-#      - netdatacache:/var/cache/netdata
-#      - /etc/passwd:/host/etc/passwd:ro
-#      - /etc/group:/host/etc/group:ro
-#      - /proc:/host/proc:ro
-#      - /sys/fs/cgroup:/host/sys/fs/cgroup:ro
-#      - /etc/os-release:/host/etc/os-release:ro
-#      - /var/run/docker.sock:/var/run/docker.sock:ro
-#    restart: always
-#    networks:
-#      - backend_net
+  netdata:
+    image: netdata/netdata
+    container_name: netdata
+    hostname: learn-language
+    ports:
+      - "19999:19999"
+    cap_add:
+      - SYS_PTRACE
+    security_opt:
+      - apparmor:unconfined
+    environment:
+      - DO_NOT_TRACK=1
+      - NETDATA_CLOUD_DISABLE=1
+      - DISABLE_TELEMETRY=1
+      - MEMORY_MODE=none
+      - PAGE_CACHE_SIZE=16
+    volumes:
+      - netdataconfig:/etc/netdata
+      - netdatalib:/var/lib/netdata
+      - netdatacache:/var/cache/netdata
+      - /proc:/host/proc:ro
+      - /sys/fs/cgroup:/host/sys/fs/cgroup:ro
+    restart: unless-stopped
+    networks:
+      - backend_net
 
 networks:
   backend_net:
