@@ -34,6 +34,17 @@ services:
     networks:
       - backend_net
 
+  client:
+    image: ghcr.io/vitalyionov/learn-language-client:${CLIENT_IMAGE_TAG:-latest}
+    environment:
+      NODE_ENV: production
+      PORT: "8080"
+    expose:
+      - "8080"
+    restart: unless-stopped
+    networks:
+      - backend_net
+
   db:
     image: postgres:15
     restart: always
