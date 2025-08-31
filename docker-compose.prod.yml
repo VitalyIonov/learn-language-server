@@ -1,5 +1,7 @@
 services:
   web:
+    env_file:
+      - .env
     command: gunicorn -k uvicorn.workers.UvicornWorker app.main:app -b 0.0.0.0:8000 --workers 2
     restart: always
     image: ghcr.io/vitalyionov/learn-language-server:${IMAGE_TAG:-latest}
@@ -11,6 +13,24 @@ services:
         condition: service_healthy
     networks:
       - backend_net
+
+  db:
+    image: postgres:15
+    env_file:
+      - .env
+    restart: always
+    ports:
+      - "5432:5432"
+    volumes:
+      - pg_data:/var/lib/postgresql/data
+    networks:
+      - backend_net
+    healthcheck:
+      test: [ "CMD-SHELL", "pg_isready -U ${POSTGRES_USER} -d ${POSTGRES_DB} -h 127.0.0.1" ]
+      interval: 10s
+      timeout: 5s
+      retries: 20
+
 
   migrate:
     image: ghcr.io/vitalyionov/learn-language-server:${IMAGE_TAG:-latest}
@@ -44,21 +64,6 @@ services:
     restart: unless-stopped
     networks:
       - backend_net
-
-  db:
-    image: postgres:15
-    restart: always
-    ports:
-      - "5432:5432"
-    volumes:
-      - pg_data:/var/lib/postgresql/data
-    networks:
-      - backend_net
-    healthcheck:
-      test: [ "CMD-SHELL", "pg_isready -U ${POSTGRES_USER} -d ${POSTGRES_DB} -h 127.0.0.1" ]
-      interval: 10s
-      timeout: 5s
-      retries: 20
 
   nginx:
     image: nginx:alpine
