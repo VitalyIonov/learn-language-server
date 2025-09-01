@@ -14,4 +14,4 @@ db-seed:
 	PYTHONPATH=. poetry run python app/seed.py
 
 reset-db:
-	docker exec -i postgres-db psql -U postgres -d app -c "DROP SCHEMA public CASCADE; CREATE SCHEMA public;"
+	docker exec -i learn-language-db-1 psql -U postgres -d app -c "DROP SCHEMA public CASCADE; CREATE SCHEMA public;"

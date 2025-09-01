@@ -12,9 +12,9 @@ class Level(Base):
     __tablename__ = "levels"
 
     id: Mapped[int] = mapped_column(primary_key=True)
-    name: Mapped[str] = mapped_column(unique=True, index=True, nullable=False)
+    name: Mapped[str] = mapped_column(index=True, nullable=False)
     alias: Mapped[str] = mapped_column(unique=True, index=True, nullable=False)
-    value: Mapped[int] = mapped_column(nullable=False, server_default="0")
+    value: Mapped[int] = mapped_column(unique=True, nullable=False, server_default="0")
 
     @property
     def question_type_ids(self) -> list[int]:
