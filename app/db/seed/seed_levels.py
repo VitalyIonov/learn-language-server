@@ -8,7 +8,7 @@ async def seed_levels(session: AsyncSession, data: list[dict]):
     async with session.begin():
         for item in data:
             result = await session.execute(
-                select(Level).where(Level.name == item["name"])
+                select(Level).where(Level.alias == item["alias"])
             )
             if result.scalars().first():
                 continue

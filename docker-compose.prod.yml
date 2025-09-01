@@ -35,6 +35,8 @@ services:
   migrate:
     image: ghcr.io/vitalyionov/learn-language-server:${IMAGE_TAG:-latest}
     profiles: ["migrate"]
+    env_file:
+      - .env
     depends_on:
       db:
         condition: service_healthy
