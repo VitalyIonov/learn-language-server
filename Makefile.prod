@@ -1,6 +1,6 @@
-COMPOSE = docker compose -f docker-compose.yml -f docker-compose.prod.yml
+COMPOSE = docker compose
 APP_SVC = web
-DB_SVC  = postgres-db
+DB_SVC  = db
 ALEMBIC_INI = /app/alembic.ini
 PYTHONPATH  = /app
 
