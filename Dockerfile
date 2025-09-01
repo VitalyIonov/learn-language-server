@@ -9,7 +9,7 @@ FROM base AS dev
 
 RUN pip install poetry
 
-COPY pyproject.toml poetry.lock* /app/
+COPY pyproject.toml alembic.ini poetry.lock* /app/
 RUN poetry config virtualenvs.create false \
  && poetry install --no-interaction --no-root
 
