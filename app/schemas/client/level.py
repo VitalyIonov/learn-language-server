@@ -9,7 +9,7 @@ class LevelOutBase(BaseSchema):
     id: int
     name: str
     alias: str
-    value: int
+    value: float
 
     class Config:
         from_attributes = True

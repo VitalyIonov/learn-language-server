@@ -8,7 +8,7 @@ class LevelOut(BaseSchema):
     id: int
     name: str
     alias: str
-    value: int
+    value: float
     question_types: list[QuestionTypeOut]
 
     class Config:
