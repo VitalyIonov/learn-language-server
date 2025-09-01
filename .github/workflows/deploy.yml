@@ -64,10 +64,10 @@ jobs:
             sed -i '/^IMAGE_TAG=/d' .env || true
             echo "IMAGE_TAG=${{ github.sha }}" >> .env
       
-            IMAGE_TAG=${{ github.sha }} docker compose pull
-            IMAGE_TAG=${{ github.sha }} docker compose up -d db
-            IMAGE_TAG=${{ github.sha }} docker compose --profile migrate run --rm migrate
-            IMAGE_TAG=${{ github.sha }} docker compose up -d --no-deps --force-recreate
+            docker compose pull
+            docker compose up -d db
+            docker compose --profile migrate run --rm migrate
+            docker compose up -d --no-deps --force-recreate
             docker system prune -f
 
       - name: Telegram notify
