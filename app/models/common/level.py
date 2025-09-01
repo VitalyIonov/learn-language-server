@@ -14,7 +14,7 @@ class Level(Base):
     id: Mapped[int] = mapped_column(primary_key=True)
     name: Mapped[str] = mapped_column(index=True, nullable=False)
     alias: Mapped[str] = mapped_column(unique=True, index=True, nullable=False)
-    value: Mapped[int] = mapped_column(unique=True, nullable=False, server_default="0")
+    value: Mapped[float] = mapped_column(unique=True, nullable=False)
 
     @property
     def question_type_ids(self) -> list[int]:

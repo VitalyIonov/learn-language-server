@@ -11,7 +11,7 @@ db-migrate:
 	docker compose run --rm web sh -lc 'PYTHONPATH=. poetry run alembic upgrade head'
 
 db-seed:
-	PYTHONPATH=. poetry run python app/seed.py
+	docker compose run --rm web sh -lc 'PYTHONPATH=. python app/seed.py'
 
 reset-db:
 	docker exec -i learn-language-db-1 psql -U postgres -d app -c "DROP SCHEMA public CASCADE; CREATE SCHEMA public;"
