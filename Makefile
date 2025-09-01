@@ -5,7 +5,7 @@ db-connect:
 	docker exec -it postgres-db psql -U postgres -d app
 
 db-migrate-gen:
-	docker compose run --rm web bash -lc 'PYTHONPATH=. alembic revision --autogenerate'
+	docker compose run --rm web bash -lc 'PYTHONPATH=. alembic revision --autogenerate' && git add 'app/db/migrations'
 
 db-migrate:
 	docker compose run --rm web sh -lc 'PYTHONPATH=. poetry run alembic upgrade head'
