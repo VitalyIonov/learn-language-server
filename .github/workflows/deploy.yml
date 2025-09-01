@@ -61,8 +61,14 @@ jobs:
             cd /opt/learn-language
             echo ${{ secrets.GHCR_PAT }} | docker login ghcr.io -u vitalyionov --password-stdin
             
-            sed -i '/^IMAGE_TAG=/d' .env || true
-            echo "IMAGE_TAG=${{ github.sha }}" >> .env
+            tail -c1 .env | tr -d '\n' | grep -q '^$' || echo >> .env
+
+            SHA="${{ github.sha }}"
+            if grep -q '^IMAGE_TAG=' .env; then
+              sed -i 's/^IMAGE_TAG=.*/IMAGE_TAG='"$SHA"'/g' .env
+            else
+              printf 'IMAGE_TAG=%s\n' "$SHA" >> .env
+            fi
       
             docker compose pull
             docker compose up -d db
