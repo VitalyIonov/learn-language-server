@@ -21,12 +21,11 @@ FROM base AS prod
 
 RUN pip install pip-tools
 
-COPY pyproject.toml poetry.lock* /app/
+COPY pyproject.toml alembic.ini poetry.lock* /app/
 
 RUN pip-compile pyproject.toml -o requirements.txt \
  && pip install --no-cache-dir -r requirements.txt
 
 COPY app /app/app
-COPY alembic.ini /app/alembic.ini
 
 CMD ["gunicorn", "-k", "uvicorn.workers.UvicornWorker", "app.main:app", "-b", "0.0.0.0:8000", "--workers", "4"]
