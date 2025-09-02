@@ -95,7 +95,7 @@ jobs:
               sh -lc 'alembic -c /app/alembic.ini upgrade head -v'
             docker compose up -d --no-deps --force-recreate
             docker compose run --rm -e PYTHONPATH=/app web \
-              sh -lc 'alembic -c /app/alembic.ini current -v || true'
+              sh -lc 'alembic -c /app/alembic.ini current || true'
             docker system prune -f
 
       - name: Telegram notify
