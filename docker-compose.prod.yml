@@ -34,7 +34,7 @@ services:
 
   migrate:
     image: ghcr.io/vitalyionov/learn-language-server:${IMAGE_TAG:-latest}
-    profiles: ["migrate"]
+    profiles: [ "migrate" ]
     env_file:
       - .env
     depends_on:
@@ -42,7 +42,9 @@ services:
         condition: service_healthy
     working_dir: /app
     entrypoint: [ "sh","-lc" ]
-    command: "PYTHONUNBUFFERED=1 PYTHONPATH=. alembic upgrade head -v"
+    command: >
+      PYTHONUNBUFFERED=1 PYTHONPATH=/app
+      alembic -c /app/alembic.ini upgrade head -v
     networks:
       - backend_net
 

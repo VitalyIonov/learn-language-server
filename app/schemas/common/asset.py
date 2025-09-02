@@ -8,6 +8,7 @@ class AssetOut(BaseSchema):
     status: AssetStatus
     mime_type: str
     size_bytes: int
+    alt: str
     width: int | None = None
     height: int | None = None
     file_key: str
