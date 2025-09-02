@@ -23,6 +23,7 @@ class Asset(Base):
     )
     mime_type: Mapped[str] = mapped_column(String(100), nullable=False)
     size_bytes: Mapped[int] = mapped_column(nullable=False)
+    alt: Mapped[str] = mapped_column(String(100), nullable=True)
     width: Mapped[int | None]
     height: Mapped[int | None]
     file_key: Mapped[str] = mapped_column(String(512), nullable=False)
