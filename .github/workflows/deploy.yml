@@ -74,14 +74,20 @@ jobs:
             docker compose up -d db
             
             echo "Waiting for Postgres to be healthy..."
-              for i in {1..60}; do
-                if docker compose ps --format json | jq -r '.[] | select(.Name|test("db")) | .Health' | grep -q 'healthy'; then
-                  echo "Postgres is healthy."
-                  break
+              for i in $(seq 1 60); do
+                CID="$(docker compose ps -q db || true)"
+                if [ -n "${CID}" ]; then
+                  STATUS="$(docker inspect -f '{{.State.Health.Status}}' "${CID}" 2>/dev/null || echo unknown)"
+                  if [ "${STATUS}" = "healthy" ]; then
+                    echo "Postgres is healthy."
+                    break
+                  fi
                 fi
                 sleep 2
-                if [ $i -eq 60 ]; then
-                  echo "Postgres did not become healthy in time"; exit 1
+                if [ "$i" -eq 60 ]; then
+                  echo "Postgres did not become healthy in time"
+                  docker compose logs --no-color db | tail -n 200 || true
+                  exit 1
                 fi
               done
       
