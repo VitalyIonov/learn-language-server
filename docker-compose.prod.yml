@@ -40,6 +40,7 @@ services:
     depends_on:
       db:
         condition: service_healthy
+    working_dir: /app
     entrypoint: [ "sh","-lc" ]
     command: "PYTHONUNBUFFERED=1 PYTHONPATH=. alembic upgrade head -v"
     networks:
