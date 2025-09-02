@@ -92,7 +92,7 @@ jobs:
               done
       
             docker compose run --rm -e PYTHONPATH=/app web \
-              sh -lc 'alembic -c /app/alembic.ini upgrade head -v'
+              sh -lc 'alembic -c /app/alembic.ini upgrade head'
             docker compose up -d --no-deps --force-recreate
             docker compose run --rm -e PYTHONPATH=/app web \
               sh -lc 'alembic -c /app/alembic.ini current || true'
