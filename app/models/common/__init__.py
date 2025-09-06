@@ -13,3 +13,5 @@ from .asset import *
 from .question_type import *
 from .text_definition import *
 from .image_definition import *
+from .image_asset import *
+from .audio_asset import *

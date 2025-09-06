@@ -4,7 +4,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy import select
 
 from app.models.common import Category
-from app.schemas.admin import UploadImageRequest
+from app.schemas.common import ImageAssetUpload
 from app.services.admin import StorageR2Service, ImageService
 
 
@@ -39,7 +39,7 @@ async def seed_categories(
                 try:
                     metadata = get_image_metadata(image_path)
                     image_asset = await image_service.create(
-                        UploadImageRequest(
+                        ImageAssetUpload(
                             content_type=metadata["mime_type"],
                             size_bytes=metadata["size_bytes"],
                         )

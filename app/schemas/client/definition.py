@@ -3,7 +3,7 @@ from typing import Union, Annotated, Literal, TypeAlias
 from pydantic import ConfigDict, Field
 
 from app.models import QuestionTypeName
-from app.schemas.common import BaseSchema, AssetOut
+from app.schemas.common import BaseSchema, ImageAssetOut
 
 
 class BaseDefinitionOut(BaseSchema):
@@ -20,7 +20,7 @@ class TextDefinitionOut(BaseDefinitionOut):
 class ImageDefinitionOut(BaseDefinitionOut):
     type: Literal[QuestionTypeName.IMAGE] = QuestionTypeName.IMAGE
     image_id: int
-    image: AssetOut
+    image: ImageAssetOut
 
 
 DefinitionOut: TypeAlias = Annotated[

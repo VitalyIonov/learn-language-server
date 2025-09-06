@@ -1,7 +1,7 @@
 from typing import Literal
 
 from pydantic import ConfigDict, Field
-from app.schemas.common import BaseSchema, Meta, AssetOut
+from app.schemas.common import BaseSchema, Meta, ImageAssetOut
 from .meaning import MeaningOut
 from .category import CategoryOut
 from .level import LevelOut
@@ -11,7 +11,7 @@ from app.models import QuestionTypeName
 class ImageDefinitionOutBase(BaseSchema):
     id: int
     image_id: int
-    image: AssetOut
+    image: ImageAssetOut
     category_id: int | None = None
     level_id: int | None = None
     meaning_ids: list[int] = Field(default_factory=list)

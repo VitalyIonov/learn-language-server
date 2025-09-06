@@ -16,8 +16,8 @@ class AssetStatus(enum.Enum):
 
 
 class AssetType(str, enum.Enum):
-    AUDIO = "audio"
-    IMAGE = "image"
+    AUDIO = "AUDIO"
+    IMAGE = "IMAGE"
 
 
 class Asset(Base):
@@ -27,7 +27,7 @@ class Asset(Base):
     type: Mapped[AssetType] = mapped_column(
         Enum(AssetType, native_enum=False),
         nullable=False,
-        server_default=AssetType.IMAGE.value,
+        server_default=AssetType.IMAGE,
         index=True,
     )
     status: Mapped[AssetStatus] = mapped_column(

@@ -31,12 +31,4 @@ from .definition_progress_info import (
     DefinitionProgressInfoCreate,
     DefinitionProgressInfoUpdate,
 )
-from .image import (
-    ImageCreate,
-    ImageUpdate,
-    UploadImageResponse,
-    UploadImageRequest,
-    CommitImageResponse,
-    CommitImageRequest,
-)
 from .question_type import QuestionTypeOut, QuestionTypeListResponse, QuestionTypeName

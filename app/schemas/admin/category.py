@@ -1,12 +1,12 @@
 from typing import List
 
-from app.schemas.common import Meta, BaseSchema, AssetOut
+from app.schemas.common import Meta, BaseSchema, ImageAssetOut
 
 
 class CategoryOut(BaseSchema):
     id: int
     name: str
-    image: AssetOut | None = None
+    image: ImageAssetOut | None = None
 
     class Config:
         from_attributes = True

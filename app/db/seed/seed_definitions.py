@@ -1,4 +1,6 @@
 import os
+from typing import Union
+
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy import select
 
@@ -11,7 +13,7 @@ from app.models import (
     ImageDefinition,
     QuestionTypeName,
 )
-from app.schemas.admin import UploadImageRequest
+from app.schemas.common import ImageAssetUpload
 from app.services.admin import StorageR2Service, ImageService
 
 
@@ -36,7 +38,7 @@ async def seed_definitions(
 
         def_type = item.get("type")
 
-        result = None
+        result: Union[TextDefinition, ImageDefinition] | None = None
 
         if def_type == QuestionTypeName.TEXT:
             result = TextDefinition(
@@ -53,7 +55,7 @@ async def seed_definitions(
                 try:
                     metadata = get_image_metadata(image_path)
                     image_asset = await image_service.create(
-                        UploadImageRequest(
+                        ImageAssetUpload(
                             content_type=metadata["mime_type"],
                             size_bytes=metadata["size_bytes"],
                         )
@@ -78,6 +80,6 @@ async def seed_definitions(
                 level_id=level_id,
             )
 
-        result.meanings.extend(meaning_objs)
+        result.meanings.extend(meaning_objs) if result else None
         session.add(result)
     await session.commit()

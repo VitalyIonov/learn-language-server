@@ -13,4 +13,4 @@ class ImageAsset(Asset):
     width: Mapped[int | None] = mapped_column(nullable=True)
     height: Mapped[int | None] = mapped_column(nullable=True)
 
-    __mapper_args__ = {"polymorphic_identity": AssetType.IMAGE.value}
+    __mapper_args__ = {"polymorphic_identity": AssetType.IMAGE}

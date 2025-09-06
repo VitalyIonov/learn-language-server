@@ -2,7 +2,7 @@ from typing import List
 
 from app.models import Level, Category
 from .level import LevelOutBase
-from app.schemas.common import Meta, BaseSchema, AssetOut
+from app.schemas.common import Meta, BaseSchema, ImageAssetOut
 
 
 class CategoryOut(BaseSchema):
@@ -25,7 +25,7 @@ class CategoryOut(BaseSchema):
 class CategoryOutBase(BaseSchema):
     id: int
     name: str
-    image: AssetOut | None = None
+    image: ImageAssetOut | None = None
 
     class Config:
         from_attributes = True

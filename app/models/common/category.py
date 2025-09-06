@@ -9,7 +9,7 @@ if TYPE_CHECKING:
     from .definition import Definition
     from .meaning import Meaning
     from .question import Question
-    from .asset import Asset
+    from .image_asset import ImageAsset
 
 
 class Category(Base):
@@ -21,7 +21,7 @@ class Category(Base):
         ForeignKey("assets.id", ondelete="SET NULL")
     )
 
-    image: Mapped[Asset | None] = relationship("Asset", lazy="selectin")
+    image: Mapped[ImageAsset | None] = relationship("Asset", lazy="selectin")
     meanings: Mapped[list[Meaning]] = relationship(
         "Meaning",
         back_populates="category",

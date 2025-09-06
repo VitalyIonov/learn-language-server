@@ -11,4 +11,4 @@ class AudioAsset(Asset):
     )
     duration: Mapped[int]
 
-    __mapper_args__ = {"polymorphic_identity": AssetType.AUDIO.value}
+    __mapper_args__ = {"polymorphic_identity": AssetType.AUDIO}
