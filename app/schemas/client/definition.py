@@ -1,9 +1,9 @@
-from typing import Union, Annotated, Literal, TypeAlias
+from typing import Union, Annotated, Literal, TypeAlias, Optional
 
 from pydantic import ConfigDict, Field
 
 from app.models import QuestionTypeName
-from app.schemas.common import BaseSchema, ImageAssetOut
+from app.schemas.common import BaseSchema, ImageAssetOut, AudioAssetOut
 
 
 class BaseDefinitionOut(BaseSchema):
@@ -15,6 +15,7 @@ class BaseDefinitionOut(BaseSchema):
 class TextDefinitionOut(BaseDefinitionOut):
     type: Literal[QuestionTypeName.TEXT] = QuestionTypeName.TEXT
     text: str
+    audio: Optional[AudioAssetOut] = None
 
 
 class ImageDefinitionOut(BaseDefinitionOut):

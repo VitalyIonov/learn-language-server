@@ -10,7 +10,9 @@ class ImageDefinition(Definition):
     id: Mapped[int] = mapped_column(
         ForeignKey("definitions.id", ondelete="CASCADE"), primary_key=True
     )
-    image_id: Mapped[int] = mapped_column(ForeignKey("assets.id", ondelete="CASCADE"))
+    image_id: Mapped[int] = mapped_column(
+        ForeignKey("assets.id", ondelete="SET NULL"), nullable=True
+    )
 
     image: Mapped[ImageAsset] = relationship("Asset", lazy="selectin")
     __mapper_args__ = {"polymorphic_identity": "image"}

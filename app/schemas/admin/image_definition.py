@@ -8,22 +8,21 @@ from .level import LevelOut
 from app.models import QuestionTypeName
 
 
-class ImageDefinitionOutBase(BaseSchema):
+class ImageDefinitionOut(BaseSchema):
     id: int
+
+    type: Literal[QuestionTypeName.IMAGE] = QuestionTypeName.IMAGE
     image_id: int
-    image: ImageAssetOut
     category_id: int | None = None
     level_id: int | None = None
     meaning_ids: list[int] = Field(default_factory=list)
 
-    model_config = ConfigDict(from_attributes=True)
-
-
-class ImageDefinitionOut(ImageDefinitionOutBase):
-    type: Literal[QuestionTypeName.IMAGE] = QuestionTypeName.IMAGE
+    image: ImageAssetOut
     category: CategoryOut | None = None
     level: LevelOut | None = None
     meanings: list[MeaningOut] = Field(default_factory=list)
+
+    model_config = ConfigDict(from_attributes=True)
 
 
 class ImageDefinitionOutIds(BaseSchema):

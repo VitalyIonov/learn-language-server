@@ -1,7 +1,7 @@
 from typing import Literal
 
 from pydantic import ConfigDict, Field
-from app.schemas.common import BaseSchema, Meta
+from app.schemas.common import BaseSchema, Meta, AudioAssetOut
 from .meaning import MeaningOut
 from .category import CategoryOut
 from .level import LevelOut
@@ -11,8 +11,8 @@ from app.models import QuestionTypeName
 class TextDefinitionOut(BaseSchema):
     id: int
 
-    text: str
     type: Literal[QuestionTypeName.TEXT] = QuestionTypeName.TEXT
+    text: str
 
     category: CategoryOut | None = None
     level: LevelOut | None = None

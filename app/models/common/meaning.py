@@ -10,6 +10,7 @@ if TYPE_CHECKING:
     from .category import Category
     from .level import Level
     from .question import Question
+    from .audio_asset import AudioAsset
 
 
 class Meaning(Base):
@@ -26,6 +27,9 @@ class Meaning(Base):
         ForeignKey("levels.id", ondelete="SET NULL"),
         nullable=True,
     )
+    audio_id: Mapped[int] = mapped_column(
+        ForeignKey("assets.id", ondelete="SET NULL"), nullable=True
+    )
 
     category: Mapped[Category] = relationship(
         "Category",
@@ -33,6 +37,7 @@ class Meaning(Base):
         lazy="selectin",
     )
     level: Mapped[Level] = relationship("Level", lazy="selectin")
+    audio: Mapped[AudioAsset] = relationship("Asset", lazy="selectin")
     definitions: Mapped[list[Definition]] = relationship(
         "Definition",
         secondary="definitions_meanings",
