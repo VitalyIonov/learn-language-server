@@ -15,7 +15,6 @@ client_router.include_router(client_routes.levels.router)
 client_router.include_router(client_routes.translate.router)
 client_router.include_router(client_routes.question.router)
 client_router.include_router(client_routes.statistic.router)
-client_router.include_router(admin_routes.test_tts.router)
 
 admin_router = APIRouter(
     dependencies=[Depends(require_admin), Depends(get_current_user)]
