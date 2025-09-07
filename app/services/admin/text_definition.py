@@ -13,14 +13,17 @@ from app.crud.admin import (
     delete_text_definition as delete_definition_crud,
 )
 
-from app.models.common import Definition
+from app.models.common import TextDefinition
+from app.schemas.common import AudioAssetUpload
+from app.services.admin.audio import AudioService
 
 
 class TextDefinitionService:
-    def __init__(self, db: AsyncSession):
+    def __init__(self, db: AsyncSession, svc_audio: AudioService):
         self.db = db
+        self.svc_audio = svc_audio
 
-    async def get(self, definition_id: int) -> Definition:
+    async def get(self, definition_id: int) -> TextDefinition:
         result = await get_definition_crud(self.db, definition_id)
         if result is None:
             raise HTTPException(status_code=404, detail="Definition not found")
@@ -37,10 +40,24 @@ class TextDefinitionService:
             raise HTTPException(status_code=404, detail="Definition not found")
         return await update_definition_crud(self.db, result, payload)
 
-    async def create(self, payload: TextDefinitionCreate) -> Definition:
+    async def create(self, payload: TextDefinitionCreate) -> TextDefinition:
         return await create_definition_crud(self.db, payload)
 
     async def delete(self, definition_id: int):
         success = await delete_definition_crud(self.db, definition_id)
         if not success:
             raise HTTPException(status_code=404, detail="Definition not found")
+
+    async def generate_audio(self, definition_id: int):
+        entity = await self.get(definition_id)
+
+        if entity.audio_id is not None:
+            raise HTTPException(
+                status_code=400, detail="Audio already generated for this definition"
+            )
+
+        result = await self.svc_audio.create(AudioAssetUpload(text=entity.text))
+
+        return await self.update(
+            definition_id, TextDefinitionUpdate(audio_id=result.audio_id)
+        )

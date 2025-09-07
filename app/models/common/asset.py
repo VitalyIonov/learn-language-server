@@ -9,7 +9,7 @@ from app.core.db import Base
 from app.utils.url_generator import public_url
 
 
-class AssetStatus(enum.Enum):
+class AssetStatus(str, enum.Enum):
     PENDING = "pending"
     READY = "ready"
     FAILED = "failed"
@@ -28,16 +28,20 @@ class Asset(Base):
         Enum(AssetType, native_enum=False),
         nullable=False,
         server_default=AssetType.IMAGE,
+        demos_default=AssetType.IMAGE,
         index=True,
     )
     status: Mapped[AssetStatus] = mapped_column(
         Enum(AssetStatus, native_enum=False),
         nullable=False,
-        server_default=AssetStatus.PENDING.value,
+        server_default=AssetStatus.PENDING,
+        default=AssetStatus.PENDING,
     )
     mime_type: Mapped[str] = mapped_column(String(100), nullable=False)
     size_bytes: Mapped[int] = mapped_column(nullable=False)
-    file_key: Mapped[str] = mapped_column(String(512), nullable=False)
+    file_key: Mapped[str] = mapped_column(
+        String(512), nullable=False, index=True, unique=True
+    )
     created_at: Mapped[datetime] = mapped_column(server_default=func.now())
     updated_at: Mapped[datetime] = mapped_column(
         server_default=func.now(), onupdate=func.now()

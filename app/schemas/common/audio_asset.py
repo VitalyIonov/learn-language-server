@@ -7,9 +7,6 @@ class AudioAssetOut(BaseSchema):
     status: AssetStatus
     mime_type: str
     size_bytes: int
-    alt: str
-    width: int | None = None
-    height: int | None = None
     file_key: str
     url: str
 
@@ -18,13 +15,10 @@ class AudioAssetOut(BaseSchema):
 
 
 class AudioAssetUpload(BaseSchema):
-    content_type: str
-    size_bytes: int
+    text: str
 
 
 class AudioAssetUploadOut(BaseSchema):
-    upload_url: str
-    file_key: str
     audio_id: int
 
 

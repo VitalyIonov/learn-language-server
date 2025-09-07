@@ -14,17 +14,13 @@ from app.services.admin import (
     ImageService,
     StorageR2Service,
     QuestionTypeService,
+    TTSService,
+    AudioService,
 )
 
 
 async def get_meaning_service(db: AsyncSession = Depends(get_db)) -> MeaningService:
     return MeaningService(db)
-
-
-async def get_text_definition_service(
-    db: AsyncSession = Depends(get_db),
-) -> TextDefinitionService:
-    return TextDefinitionService(db)
 
 
 async def get_image_definition_service(
@@ -81,3 +77,22 @@ async def get_question_type_service(
     db: AsyncSession = Depends(get_db),
 ) -> QuestionTypeService:
     return QuestionTypeService(db)
+
+
+async def get_tts_service() -> TTSService:
+    return TTSService()
+
+
+async def get_audio_service(
+    db: AsyncSession = Depends(get_db),
+    svc_storage_r2: StorageR2Service = Depends(get_storage_r2_service),
+    svc_tts: TTSService = Depends(get_tts_service),
+) -> AudioService:
+    return AudioService(db=db, svc_storage_r2=svc_storage_r2, svc_tts=svc_tts)
+
+
+async def get_text_definition_service(
+    db: AsyncSession = Depends(get_db),
+    svc_audio: AudioService = Depends(get_audio_service),
+) -> TextDefinitionService:
+    return TextDefinitionService(db, svc_audio=svc_audio)

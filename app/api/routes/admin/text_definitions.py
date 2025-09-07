@@ -58,3 +58,14 @@ async def delete_text_definition(
     svc: TextDefinitionService = Depends(get_text_definition_service),
 ):
     return await svc.delete(definition_id)
+
+
+@router.post(
+    "/text_definitions/{definition_id}/generate_audio",
+    response_model=TextDefinitionOutIds,
+)
+async def generate_audio(
+    definition_id: int,
+    svc: TextDefinitionService = Depends(get_text_definition_service),
+):
+    return await svc.generate_audio(definition_id)

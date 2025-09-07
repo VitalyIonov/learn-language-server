@@ -9,6 +9,5 @@ class AudioAsset(Asset):
     id: Mapped[int] = mapped_column(
         ForeignKey("assets.id", ondelete="CASCADE"), primary_key=True
     )
-    duration: Mapped[int]
 
     __mapper_args__ = {"polymorphic_identity": AssetType.AUDIO}

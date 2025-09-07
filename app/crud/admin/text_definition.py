@@ -78,7 +78,7 @@ async def create_text_definition(
 async def update_text_definition(
     db: AsyncSession, db_item: TextDefinition, item_update: TextDefinitionUpdate
 ) -> TextDefinition:
-    payload = item_update.model_dump(exclude={"meaning_ids"})
+    payload = item_update.model_dump(exclude={"meaning_ids"}, exclude_unset=True)
 
     for field, value in payload.items():
         setattr(db_item, field, value)

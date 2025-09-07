@@ -22,9 +22,9 @@ class Settings(BaseSettings):
     POSTGRES_USER: str
     POSTGRES_PASSWORD: str = ""
     POSTGRES_DB: str = ""
-
     LOGIN_REDIRECT_URL: str
 
+    OPENAI_API_KEY: str
     SECRET_KEY: str
 
     @computed_field

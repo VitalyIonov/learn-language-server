@@ -1,4 +1,4 @@
-from typing import Literal
+from typing import Literal, Optional
 
 from pydantic import ConfigDict, Field
 from app.schemas.common import BaseSchema, Meta, AudioAssetOut
@@ -14,6 +14,7 @@ class TextDefinitionOut(BaseSchema):
     type: Literal[QuestionTypeName.TEXT] = QuestionTypeName.TEXT
     text: str
 
+    audio: AudioAssetOut | None = None
     category: CategoryOut | None = None
     level: LevelOut | None = None
     meanings: list[MeaningOut] = Field(default_factory=list)
@@ -25,6 +26,7 @@ class TextDefinitionOutIds(BaseSchema):
     id: int
     text: str
     type: Literal[QuestionTypeName.TEXT] = QuestionTypeName.TEXT
+    audio_id: int | None = None
     category_id: int | None = None
     level_id: int | None = None
     meaning_ids: list[int] = Field(default_factory=list)
@@ -39,13 +41,17 @@ class TextDefinitionListResponse(BaseSchema):
 
 class TextDefinitionCreate(BaseSchema):
     text: str
-    category_id: int | None = None
-    level_id: int | None = None
+
+    audio_id: Optional[int] = None
+    category_id: Optional[int] = None
+    level_id: Optional[int] = None
     meaning_ids: list[int] = Field(default_factory=list)
 
 
 class TextDefinitionUpdate(BaseSchema):
-    text: str | None = None
-    category_id: int | None = None
-    level_id: int | None = None
-    meaning_ids: list[int] | None = None
+    text: Optional[str] = None
+
+    audio_id: Optional[int] = None
+    category_id: Optional[int] = None
+    level_id: Optional[int] = None
+    meaning_ids: Optional[list[int]] = None
