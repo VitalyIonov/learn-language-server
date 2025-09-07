@@ -28,7 +28,7 @@ class Asset(Base):
         Enum(AssetType, native_enum=False),
         nullable=False,
         server_default=AssetType.IMAGE,
-        demos_default=AssetType.IMAGE,
+        default=AssetType.IMAGE,
         index=True,
     )
     status: Mapped[AssetStatus] = mapped_column(
