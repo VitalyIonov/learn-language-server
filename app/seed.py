@@ -12,9 +12,6 @@ from app.db.seed import (
 from app.core.dependencies.admin import get_image_service, get_storage_r2_service
 
 
-from app.core.config import settings
-
-
 async def main():
     with open("seed_data/question_types.json", "r") as f:
         question_types_seed_data = json.load(f)

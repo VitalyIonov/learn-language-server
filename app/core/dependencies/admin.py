@@ -19,10 +19,6 @@ from app.services.admin import (
 )
 
 
-async def get_meaning_service(db: AsyncSession = Depends(get_db)) -> MeaningService:
-    return MeaningService(db)
-
-
 async def get_image_definition_service(
     db: AsyncSession = Depends(get_db),
 ) -> ImageDefinitionService:
@@ -96,3 +92,10 @@ async def get_text_definition_service(
     svc_audio: AudioService = Depends(get_audio_service),
 ) -> TextDefinitionService:
     return TextDefinitionService(db, svc_audio=svc_audio)
+
+
+async def get_meaning_service(
+    db: AsyncSession = Depends(get_db),
+    svc_audio: AudioService = Depends(get_audio_service),
+) -> MeaningService:
+    return MeaningService(db, svc_audio=svc_audio)

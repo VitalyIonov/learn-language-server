@@ -14,9 +14,9 @@ class TextDefinitionOut(BaseSchema):
     type: Literal[QuestionTypeName.TEXT] = QuestionTypeName.TEXT
     text: str
 
-    audio: AudioAssetOut | None = None
-    category: CategoryOut | None = None
-    level: LevelOut | None = None
+    audio: Optional[AudioAssetOut] = None
+    category: Optional[CategoryOut] = None
+    level: Optional[LevelOut] = None
     meanings: list[MeaningOut] = Field(default_factory=list)
 
     model_config = ConfigDict(from_attributes=True)
@@ -26,9 +26,9 @@ class TextDefinitionOutIds(BaseSchema):
     id: int
     text: str
     type: Literal[QuestionTypeName.TEXT] = QuestionTypeName.TEXT
-    audio_id: int | None = None
-    category_id: int | None = None
-    level_id: int | None = None
+    audio_id: Optional[int] = None
+    category_id: Optional[int] = None
+    level_id: Optional[int] = None
     meaning_ids: list[int] = Field(default_factory=list)
 
     model_config = ConfigDict(from_attributes=True)

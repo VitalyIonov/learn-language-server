@@ -9,11 +9,14 @@ from app.crud.admin import (
 )
 from app.schemas.admin import MeaningUpdate, MeaningCreate, MeaningsListResponse
 from app.models.common import Meaning
+from app.schemas.common import AudioAssetUpload
+from app.services.admin.audio import AudioService
 
 
 class MeaningService:
-    def __init__(self, db: AsyncSession):
+    def __init__(self, db: AsyncSession, svc_audio: AudioService):
         self.db = db
+        self.svc_audio = svc_audio
 
     async def get(self, meaning_id: int) -> Meaning:
         entity = await crud_get_meaning(self.db, meaning_id)
@@ -40,3 +43,15 @@ class MeaningService:
             raise HTTPException(
                 status_code=status.HTTP_404_NOT_FOUND, detail="Meaning not found"
             )
+
+    async def generate_audio(self, meaning_id: int):
+        entity = await self.get(meaning_id)
+
+        if entity.audio_id is not None:
+            raise HTTPException(
+                status_code=400, detail="Audio already generated for this definition"
+            )
+
+        result = await self.svc_audio.create(AudioAssetUpload(text=entity.name))
+
+        return await self.update(meaning_id, MeaningUpdate(audio_id=result.audio_id))

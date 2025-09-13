@@ -60,3 +60,14 @@ async def delete_meaning_endpoint(
     svc: MeaningService = Depends(get_meaning_service),
 ):
     await svc.delete(meaning_id)
+
+
+@router.post(
+    "/meanings/{meaning_id}/generate_audio",
+    response_model=MeaningOut,
+)
+async def generate_audio(
+    meaning_id: int,
+    svc: MeaningService = Depends(get_meaning_service),
+):
+    return await svc.generate_audio(meaning_id)

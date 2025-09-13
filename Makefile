@@ -1,6 +1,9 @@
 start:
 	docker compose up
 
+bash:
+	docker compose run --rm web bash
+
 db-connect:
 	docker exec -it postgres-db psql -U postgres -d app
 
