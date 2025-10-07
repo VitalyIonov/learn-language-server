@@ -15,6 +15,13 @@ from app.models import (
 )
 from app.schemas.common import ImageAssetUpload
 from app.services.admin import StorageR2Service, ImageService
+from app.core.dependencies.admin import (
+    get_tts_service,
+    get_storage_r2_service,
+    get_audio_service,
+    get_text_definition_service,
+)
+from app.utils.generate_audio import run_audio_generator
 
 
 async def seed_definitions(
@@ -58,6 +65,7 @@ async def seed_definitions(
                         ImageAssetUpload(
                             content_type=metadata["mime_type"],
                             size_bytes=metadata["size_bytes"],
+                            alt=item["meanings"][0],
                         )
                     )
 
@@ -80,6 +88,25 @@ async def seed_definitions(
                 level_id=level_id,
             )
 
-        result.meanings.extend(meaning_objs) if result else None
-        session.add(result)
-    await session.commit()
+        if result:
+            result.meanings.extend(meaning_objs)
+            session.add(result)
+
+    rows = await session.execute(
+        select(TextDefinition.id).where(TextDefinition.audio_id.is_(None))
+    )
+    ids_to_insert_audio: list[int] = [r[0] for r in rows]
+
+    if not ids_to_insert_audio:
+        return
+
+    svc_storage_r2 = await get_storage_r2_service()
+    svc_tts = await get_tts_service()
+    svc_audio = await get_audio_service(
+        db=session, svc_storage_r2=svc_storage_r2, svc_tts=svc_tts
+    )
+    svc_text_definitions = await get_text_definition_service(
+        db=session, svc_audio=svc_audio
+    )
+
+    await run_audio_generator(ids_to_insert_audio, svc_text_definitions.generate_audio)

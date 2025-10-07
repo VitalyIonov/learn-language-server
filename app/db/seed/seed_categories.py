@@ -42,6 +42,7 @@ async def seed_categories(
                         ImageAssetUpload(
                             content_type=metadata["mime_type"],
                             size_bytes=metadata["size_bytes"],
+                            alt=category_data["name"],
                         )
                     )
 

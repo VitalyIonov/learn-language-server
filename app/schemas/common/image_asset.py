@@ -21,6 +21,7 @@ class ImageAssetOut(BaseSchema):
 class ImageAssetUpload(BaseSchema):
     content_type: str
     size_bytes: int
+    alt: str
 
 
 class ImageAssetUploadOut(BaseSchema):
@@ -33,6 +34,7 @@ class ImageAssetCreate(BaseSchema):
     mime_type: str
     size_bytes: int
     file_key: str
+    alt: str
 
 
 class ImageAssetUpdate(BaseSchema):

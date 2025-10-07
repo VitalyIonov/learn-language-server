@@ -47,6 +47,7 @@ class ImageService:
             ImageAssetCreate(
                 mime_type=payload.content_type,
                 size_bytes=payload.size_bytes,
+                alt=payload.alt,
                 file_key=file_key,
             ),
         )

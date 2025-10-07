@@ -1,4 +1,6 @@
 import asyncio
+from pathlib import Path
+from app.scripts.merge_jsons import merge_json_folder
 import json
 from app.core.db import async_session
 from app.db.seed import (
@@ -12,23 +14,50 @@ from app.db.seed import (
 from app.core.dependencies.admin import get_image_service, get_storage_r2_service
 
 
+def run_merge():
+    merge_json_folder(
+        folder=Path("seed_data/definitions"),
+        output_name="all_definitions.json",
+        indent=2,
+    )
+    merge_json_folder(
+        folder=Path("seed_data/categories"), output_name="all_categories.json", indent=2
+    )
+    merge_json_folder(
+        folder=Path("seed_data/levels"), output_name="all_levels.json", indent=2
+    )
+    merge_json_folder(
+        folder=Path("seed_data/meanings"), output_name="all_meanings.json", indent=2
+    )
+    merge_json_folder(
+        folder=Path("seed_data/question_types"),
+        output_name="all_question_types.json",
+        indent=2,
+    )
+    merge_json_folder(
+        folder=Path("seed_data/users"), output_name="all_users.json", indent=2
+    )
+
+
 async def main():
-    with open("seed_data/question_types.json", "r") as f:
+    run_merge()
+
+    with open("seed_data/all_question_types.json", "r") as f:
         question_types_seed_data = json.load(f)
 
-    with open("seed_data/users.json", "r") as f:
+    with open("seed_data/all_users.json", "r") as f:
         users_seed_data = json.load(f)
 
-    with open("seed_data/categories.json", "r") as f:
+    with open("seed_data/all_categories.json", "r") as f:
         categories_seed_data = json.load(f)
 
-    with open("seed_data/levels.json", "r") as f:
+    with open("seed_data/all_levels.json", "r") as f:
         levels_seed_data = json.load(f)
 
-    with open("seed_data/meanings.json", "r") as f:
+    with open("seed_data/all_meanings.json", "r") as f:
         meanings_seed_data = json.load(f)
 
-    with open("seed_data/definitions.json", "r") as f:
+    with open("seed_data/all_definitions.json", "r") as f:
         definitions_seed_data = json.load(f)
 
     async with async_session() as session:
@@ -37,22 +66,22 @@ async def main():
             db=session, svc_storage_r2=storage_service
         )
 
-        await seed_question_types(session, question_types_seed_data["question_types"])
+        await seed_question_types(session, question_types_seed_data)
         await seed_categories(
             session,
-            categories_seed_data["categories"],
+            categories_seed_data,
             storage_service,
             image_service,
         )
-        await seed_levels(session, levels_seed_data["levels"])
-        await seed_meanings(session, meanings_seed_data["meanings"])
+        await seed_levels(session, levels_seed_data)
+        await seed_meanings(session, meanings_seed_data)
         await seed_definitions(
             session,
-            definitions_seed_data["definitions"],
+            definitions_seed_data,
             storage_service,
             image_service,
         )
-        await seed_users(session, users_seed_data["users"])
+        await seed_users(session, users_seed_data)
 
 
 if __name__ == "__main__":
