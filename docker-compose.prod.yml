@@ -7,7 +7,7 @@ services:
     image: ghcr.io/vitalyionov/learn-language-server:${IMAGE_TAG:-latest}
     volumes:
       - ./static/images:/app/static/images
-      - ./seed_data:/app/seed_data:ro
+      - ./seed_data:/app/seed_data
     depends_on:
       db:
         condition: service_healthy
