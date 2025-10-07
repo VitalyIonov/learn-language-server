@@ -1,13 +1,18 @@
 from sqlalchemy.ext.asyncio import AsyncSession
-from sqlalchemy import select, case, literal, and_
+from sqlalchemy import select, case, literal, and_, exists
 
-from app.models import CategoryProgressInfo, Level
+from app.models import CategoryProgressInfo, Level, Definition
 from app.schemas.client import LevelsListResponse
 
 
 async def get_levels(
     db: AsyncSession, user_id: int, category_id: int
 ) -> LevelsListResponse:
+    defs_exists = exists().where(
+        Definition.level_id == Level.id,
+        Definition.category_id == category_id,
+    )
+
     statement = (
         select(
             Level.id,
@@ -28,6 +33,7 @@ async def get_levels(
             ),
             isouter=True,
         )
+        .where(defs_exists)
         .order_by(Level.alias)
     )
 
