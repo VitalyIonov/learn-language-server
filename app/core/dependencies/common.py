@@ -8,7 +8,12 @@ from app.core.dependencies.admin import (
 from app.models.common import User
 from app.core.db import get_db
 from app.services.admin import CategoryProgressInfoService, UserInfoService
-from app.services.common import UserService, AuthService, StatisticService
+from app.services.common import (
+    UserService,
+    AuthService,
+    StatisticService,
+    TranslationService,
+)
 from app.core.dependencies.auth import oauth2_scheme
 
 
@@ -38,3 +43,7 @@ async def require_admin(
 
 def get_statistic_service(db: AsyncSession = Depends(get_db)) -> StatisticService:
     return StatisticService(db)
+
+
+def get_translation_service(db: AsyncSession = Depends(get_db)) -> TranslationService:
+    return TranslationService(db)
