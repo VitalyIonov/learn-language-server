@@ -135,6 +135,7 @@ class QuestionService:
             .options(load_only(*load_fields))
             .where(
                 definition_class.level_id == question_level.id,
+                definition_class.category_id == payload.category_id,
                 ~definition_class.meanings.any(Meaning.id == meaning.id),
             )
             .order_by(func.random())
@@ -201,11 +202,7 @@ class QuestionService:
         current_user: User,
     ) -> QuestionUpdateOut:
         entity = await self.get(question_id)
-        # category_progress_info = await self.svc_category_progress_info.get(
-        #     user_id=current_user.id,
-        #     category_id=entity.category_id,
-        #     level_id=entity.level_id,
-        # )
+
         meaning_progress_info = await self.svc_meaning_progress_info.get_or_create(
             user_id=current_user.id,
             meaning_id=entity.meaning_id,
@@ -220,14 +217,7 @@ class QuestionService:
         )
 
         result = await crud_update_question(self.db, entity, payload)
-        # cpi_new_score = max(
-        #     0,
-        #     (
-        #         category_progress_info.score + 2
-        #         if result.is_correct
-        #         else category_progress_info.score - 3
-        #     ),
-        # )
+
         mpi_new_score = max(
             0,
             (
@@ -245,15 +235,6 @@ class QuestionService:
             ),
         )
 
-        # if cpi_new_score != category_progress_info.score:
-        #     await self.svc_category_progress_info.update(
-        #         user_id=current_user.id,
-        #         category_id=entity.category_id,
-        #         level_id=entity.level_id,
-        #         payload=CategoryProgressInfoUpdate(
-        #             score=cpi_new_score,
-        #         ),
-        #     )
         if mpi_new_score != meaning_progress_info.score:
             await self.svc_meaning_progress_info.update(
                 user_id=current_user.id,
