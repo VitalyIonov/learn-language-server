@@ -8,6 +8,7 @@ class Translation(Base):
 
     id: Mapped[int] = mapped_column(primary_key=True)
     text: Mapped[str] = mapped_column(index=True, nullable=False)
+    context: Mapped[str | None] = mapped_column(index=True, nullable=True)
     translated_text: Mapped[str] = mapped_column(nullable=False)
     lang_from: Mapped[str] = mapped_column(index=True, nullable=False)
     lang_to: Mapped[str] = mapped_column(index=True, nullable=False)

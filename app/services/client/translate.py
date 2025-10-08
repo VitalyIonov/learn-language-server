@@ -1,6 +1,5 @@
 import httpx
 from fastapi import HTTPException
-from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.core.config import settings
 
@@ -42,15 +41,38 @@ class TranslateService:
         return result["translations"][0]["text"]
 
     async def translate_by_open_ai(
-        self, text: str, lang_from: str = "ES", lang_to: str = "RU"
+        self,
+        text: str,
+        lang_from: str = "ES",
+        lang_to: str = "RU",
+        context: str | None = None,
     ) -> str:
         if not text:
             raise HTTPException(status_code=400, detail="Missing 'text' parameter")
 
-        translated_text = await self.svc_translation.get(text, lang_from, lang_to)
+        translated_text = await self.svc_translation.get(
+            text, lang_from, lang_to, context
+        )
 
         if translated_text:
             return translated_text
+
+        if context:
+            user_input = (
+                "Стиль: нейтрально-разговорно.\n\n"
+                "CONTEXT (do not translate):\n"
+                "-----\n"
+                f"{context}\n"
+                "-----\n\n"
+                "TEXT (translate only this):\n"
+                f"{text}"
+            )
+        else:
+            user_input = (
+                "Стиль: нейтрально-разговорно.\n\n"
+                "TEXT (translate only this):\n"
+                f"{text}"
+            )
 
         open_ai_response = self._client.responses.create(
             model=DEFAULT_TRANSLATION_MODEL,
@@ -59,7 +81,7 @@ class TranslateService:
                 "Выводи ТОЛЬКО перевод — без кавычек, без пояснений, без префиксов. "
                 "Сохраняй числовые форматы, эмодзи и разметку."
             ),
-            input=f"Стиль: нейтрально-разговорно.\n\nТекст:\n{text}",
+            input=user_input,
             temperature=0.1,
             max_output_tokens=2000,
         )
@@ -67,7 +89,7 @@ class TranslateService:
         open_ai_response_translation = (open_ai_response.output_text or "").strip()
 
         translated_text = await self.svc_translation.create(
-            text, open_ai_response_translation, lang_from, lang_to
+            text, open_ai_response_translation, lang_from, lang_to, context
         )
 
         return translated_text

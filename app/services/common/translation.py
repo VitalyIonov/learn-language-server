@@ -12,18 +12,26 @@ class TranslationService:
     def __init__(self, db: AsyncSession):
         self.db = db
 
-    async def get(self, text: str, lang_from: str, lang_to: str) -> Optional[str]:
-        result = await crud_get_translation(self.db, text, lang_from, lang_to)
+    async def get(
+        self, text: str, lang_from: str, lang_to: str, context: str | None = None
+    ) -> Optional[str]:
+        result = await crud_get_translation(self.db, text, lang_from, lang_to, context)
 
         return result.translated_text if result else None
 
     async def create(
-        self, text: str, translated_text, lang_from: str, lang_to: str
+        self,
+        text: str,
+        translated_text,
+        lang_from: str,
+        lang_to: str,
+        context: str | None = None,
     ) -> str:
         result = await crud_create_translation(
             self.db,
             TranslationCreate(
                 text=text,
+                context=context,
                 translated_text=translated_text,
                 lang_from=lang_from,
                 lang_to=lang_to,
