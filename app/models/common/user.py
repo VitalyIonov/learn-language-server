@@ -1,9 +1,14 @@
 import enum
 from datetime import datetime
+from typing import TYPE_CHECKING
 
 import sqlalchemy as sa
-from sqlalchemy.orm import Mapped, mapped_column
+from sqlalchemy.orm import Mapped, mapped_column, relationship
+
 from app.core.db import Base
+
+if TYPE_CHECKING:
+    from .issue import Issue
 
 
 class AuthProvider(enum.Enum):
@@ -29,5 +34,9 @@ class User(Base):
         default=UserRole.USER,
         server_default=sa.text(f"'{UserRole.USER.name}'"),
         nullable=False,
+    )
+    issues: Mapped[list["Issue"]] = relationship(
+        "Issue",
+        back_populates="reporter",
     )
     created_at: Mapped[datetime] = mapped_column(default=datetime.utcnow)

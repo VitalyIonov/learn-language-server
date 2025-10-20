@@ -1,4 +1,4 @@
-from app.schemas.common import BaseSchema
+from app.schemas.base import BaseSchema
 
 
 class MeaningProgressInfoCreate(BaseSchema):

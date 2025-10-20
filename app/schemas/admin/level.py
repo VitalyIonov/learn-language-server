@@ -1,6 +1,7 @@
 from typing import List
 
-from app.schemas.common import Meta, BaseSchema
+from app.schemas.common import Meta
+from app.schemas.base import BaseSchema
 from .question_type import QuestionTypeOut
 
 

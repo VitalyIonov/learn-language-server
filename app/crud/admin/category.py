@@ -3,7 +3,6 @@ from sqlalchemy import select, func, delete
 from app.models.common import Category
 from app.schemas.admin import CategoryCreate, CategoriesListResponse, CategoryUpdate
 from typing import Optional
-from app.constants.data import DEFAULT_OFFSET, DEFAULT_LIMIT
 
 
 async def get_category(db: AsyncSession, category_id: int) -> Optional[Category]:
@@ -58,7 +57,7 @@ async def get_categories(
     result = await db.execute(statement)
     count = await db.execute(count_statement)
 
-    return CategoriesListResponse.validate(
+    return CategoriesListResponse.model_validate(
         {
             "items": result.scalars().all(),
             "meta": {"total_count": count.scalar_one()},

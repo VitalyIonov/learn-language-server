@@ -1,4 +1,4 @@
-from app.schemas.common import BaseSchema
+from app.schemas.base import BaseSchema
 from app.models.common.question_type import QuestionTypeName
 
 

@@ -1,7 +1,7 @@
 from typing import Optional, Literal, Annotated, Union
 
 from pydantic import Field, BaseModel
-from app.schemas.common import BaseSchema
+from app.schemas.base import BaseSchema
 from .level import LevelOutBase
 from .definition import DefinitionOut
 from .meaning import MeaningOut
@@ -23,7 +23,7 @@ Info = Annotated[Union[LevelUpInfo, CategoryFinishInfo], Field(discriminator="ty
 class QuestionOut(BaseSchema):
     id: int
     type: QuestionTypeName
-    meaning: MeaningOut | None = None
+    meaning: MeaningOut
     definitions: list[DefinitionOut]
 
 

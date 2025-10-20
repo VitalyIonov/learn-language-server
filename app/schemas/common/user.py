@@ -1,6 +1,7 @@
 from pydantic import EmailStr
 from typing import List
-from .common import BaseSchema, Meta
+from app.schemas.common import Meta
+from app.schemas.base import BaseSchema
 from app.models.common.user import UserRole
 
 

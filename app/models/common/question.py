@@ -12,6 +12,7 @@ if TYPE_CHECKING:
     from .definition import Definition
     from .category import Category
     from .meaning import Meaning
+    from .level import Level
 
 
 class Question(Base):
@@ -51,6 +52,7 @@ class Question(Base):
         server_default=func.now(), onupdate=func.now()
     )
 
+    level: Mapped[Level | None] = relationship("Level", lazy="selectin")
     meaning: Mapped[Meaning | None] = relationship(
         "Meaning", back_populates="questions"
     )

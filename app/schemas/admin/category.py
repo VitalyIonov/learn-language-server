@@ -1,6 +1,7 @@
 from typing import List
 
-from app.schemas.common import Meta, BaseSchema, ImageAssetOut
+from app.schemas.common import ImageAssetOut, Meta
+from app.schemas.base import BaseSchema
 
 
 class CategoryOut(BaseSchema):

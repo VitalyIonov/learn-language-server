@@ -1,7 +1,8 @@
 from typing import Literal
 
 from pydantic import ConfigDict, Field
-from app.schemas.common import BaseSchema, Meta, ImageAssetOut
+from app.schemas.common import ImageAssetOut, Meta
+from app.schemas.base import BaseSchema
 from .meaning import MeaningOut
 from .category import CategoryOut
 from .level import LevelOut

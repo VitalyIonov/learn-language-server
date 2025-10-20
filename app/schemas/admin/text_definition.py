@@ -1,7 +1,8 @@
 from typing import Literal, Optional
 
 from pydantic import ConfigDict, Field
-from app.schemas.common import BaseSchema, Meta, AudioAssetOut
+from app.schemas.common import Meta, AudioAssetOut
+from app.schemas.base import BaseSchema
 from .meaning import MeaningOut
 from .category import CategoryOut
 from .level import LevelOut

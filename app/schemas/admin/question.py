@@ -1,6 +1,15 @@
 from pydantic import Field
 from typing import List
-from app.schemas.common import BaseSchema, Meta
+
+from app.models import QuestionTypeName
+from app.schemas.admin import CategoryOut, LevelOut
+from app.schemas.base import BaseSchema
+
+
+class QuestionOut(BaseSchema):
+    type: QuestionTypeName
+    category: CategoryOut
+    level: LevelOut
 
 
 class QuestionCreate(BaseSchema):

@@ -13,6 +13,8 @@ from app.services.common import (
     AuthService,
     StatisticService,
     TranslationService,
+    IssueTypeService,
+    IssueStatusService,
 )
 from app.core.dependencies.auth import oauth2_scheme
 
@@ -47,3 +49,11 @@ def get_statistic_service(db: AsyncSession = Depends(get_db)) -> StatisticServic
 
 def get_translation_service(db: AsyncSession = Depends(get_db)) -> TranslationService:
     return TranslationService(db)
+
+
+def get_issue_type_service(db: AsyncSession = Depends(get_db)) -> IssueTypeService:
+    return IssueTypeService(db)
+
+
+def get_issue_status_service(db: AsyncSession = Depends(get_db)) -> IssueStatusService:
+    return IssueStatusService(db)

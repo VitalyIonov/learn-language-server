@@ -1,5 +1,5 @@
 from pydantic import ConfigDict
-from app.schemas.common import BaseSchema
+from app.schemas.base import BaseSchema
 
 
 class UserInfoOut(BaseSchema):

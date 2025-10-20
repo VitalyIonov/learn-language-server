@@ -2,7 +2,8 @@ from typing import List
 
 from app.models import Level, Category
 from .level import LevelOutBase
-from app.schemas.common import Meta, BaseSchema, ImageAssetOut
+from app.schemas.common import Meta, ImageAssetOut
+from app.schemas.base import BaseSchema
 
 
 class CategoryOut(BaseSchema):

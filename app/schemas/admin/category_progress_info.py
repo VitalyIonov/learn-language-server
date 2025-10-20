@@ -1,7 +1,7 @@
 from typing import Optional
 
 from app.schemas.admin import LevelOut
-from app.schemas.common import BaseSchema
+from app.schemas.base import BaseSchema
 
 
 class CategoryProgressInfoOut(BaseSchema):

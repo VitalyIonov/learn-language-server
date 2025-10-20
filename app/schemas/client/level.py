@@ -2,7 +2,7 @@ from typing import List, Optional
 
 from pydantic import Field
 
-from app.schemas.common import BaseSchema
+from app.schemas.base import BaseSchema
 
 
 class LevelOutBase(BaseSchema):

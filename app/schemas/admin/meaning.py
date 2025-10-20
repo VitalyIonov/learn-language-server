@@ -1,6 +1,7 @@
 from pydantic import ConfigDict, Field
 from typing import List, Optional
-from app.schemas.common import BaseSchema, Meta
+from app.schemas.common import Meta
+from app.schemas.base import BaseSchema
 from .category import CategoryOut
 from .level import LevelOut
 

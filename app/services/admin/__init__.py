@@ -12,3 +12,4 @@ from .image import ImageService
 from .question_type import QuestionTypeService
 from .tts import TTSService
 from .audio import AudioService
+from .issue import IssueService

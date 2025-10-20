@@ -5,7 +5,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.models import Definition
 from app.models.common import Question
-from app.schemas.client import QuestionCreate, QuestionUpdate, QuestionUpdateOut
+from app.schemas.client import QuestionCreate, QuestionUpdate
 
 
 async def get_question(db: AsyncSession, question_id: int) -> Question | None:

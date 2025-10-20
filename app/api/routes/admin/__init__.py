@@ -1,8 +1,9 @@
-from .categories import *
-from .text_definitions import *
-from .image_definitions import *
-from .levels import *
-from .meanings import *
-from .users import *
-from .images import *
-from .question_types import *
+from .categories import router as categories_router
+from .text_definitions import router as text_definitions_router
+from .image_definitions import router as image_definitions_router
+from .levels import router as levels_router
+from .meanings import router as meanings_router
+from .users import router as users_router
+from .images import router as images_router
+from .question_types import router as question_types_router
+from .issues import router as issues_router

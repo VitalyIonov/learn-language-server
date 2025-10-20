@@ -7,13 +7,18 @@ from app.core.dependencies.admin import (
     get_definition_progress_info_service,
     get_level_service as get_level_service_admin,
 )
-from app.core.dependencies.common import get_statistic_service, get_translation_service
+from app.core.dependencies.common import (
+    get_statistic_service,
+    get_translation_service,
+    get_issue_status_service,
+)
 
 from app.services.client import (
     CategoryService,
     QuestionService,
     LevelService,
     TranslateService,
+    IssueService,
 )
 
 from app.services.common import TranslationService
@@ -52,3 +57,10 @@ async def get_question_service(
 
 async def get_level_service(db: AsyncSession = Depends(get_db)) -> LevelService:
     return LevelService(db)
+
+
+async def get_issue_service(
+    db: AsyncSession = Depends(get_db),
+    svc_issue_status=Depends(get_issue_status_service),
+) -> IssueService:
+    return IssueService(db, svc_issue_status)

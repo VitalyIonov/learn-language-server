@@ -1,5 +1,5 @@
 from app.models import AssetStatus
-from app.schemas.common import BaseSchema
+from app.schemas.base import BaseSchema
 
 
 class AudioAssetOut(BaseSchema):

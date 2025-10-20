@@ -16,6 +16,7 @@ from app.services.admin import (
     QuestionTypeService,
     TTSService,
     AudioService,
+    IssueService,
 )
 
 
@@ -99,3 +100,7 @@ async def get_meaning_service(
     svc_audio: AudioService = Depends(get_audio_service),
 ) -> MeaningService:
     return MeaningService(db, svc_audio=svc_audio)
+
+
+async def get_issue_service(db: AsyncSession = Depends(get_db)) -> IssueService:
+    return IssueService(db)
