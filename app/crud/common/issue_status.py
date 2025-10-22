@@ -2,6 +2,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy import select
 
 from app.models import IssueStatus
+from app.schemas.common import IssueStatusListResponse
 
 
 async def get_issue_status(
@@ -24,3 +25,17 @@ async def get_issue_status_by_value(
     result = await db.execute(statement)
 
     return result.scalar_one_or_none()
+
+
+async def get_issue_statuses(
+    db: AsyncSession,
+) -> IssueStatusListResponse:
+    statement = select(IssueStatus).order_by(IssueStatus.value)
+
+    result = await db.execute(statement)
+
+    return IssueStatusListResponse.model_validate(
+        {
+            "items": result.scalars().all(),
+        }
+    )

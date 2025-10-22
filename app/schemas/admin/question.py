@@ -11,6 +11,9 @@ class QuestionOut(BaseSchema):
     category: CategoryOut
     level: LevelOut
 
+    class Config:
+        from_attributes = True
+
 
 class QuestionCreate(BaseSchema):
     user_id: int

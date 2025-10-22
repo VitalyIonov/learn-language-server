@@ -1,5 +1,4 @@
 from fastapi import HTTPException
-from typing import Sequence
 
 from sqlalchemy.ext.asyncio import AsyncSession
 from starlette import status
@@ -30,7 +29,5 @@ class IssueService:
 
         return await update_issue_crud(self.db, entity, payload)
 
-    async def get_all(
-        self, user_id: int, offset: int, limit: int, q: str
-    ) -> IssuesListResponse:
-        return await get_issues_crud(self.db, user_id, offset, limit, q)
+    async def get_all(self, offset: int, limit: int, q: str) -> IssuesListResponse:
+        return await get_issues_crud(self.db, offset, limit, q)

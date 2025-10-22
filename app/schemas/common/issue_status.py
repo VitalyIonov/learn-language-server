@@ -7,3 +7,7 @@ class IssueStatusOut(BaseSchema):
 
     class Config:
         from_attributes = True
+
+
+class IssueStatusListResponse(BaseSchema):
+    items: list[IssueStatusOut]

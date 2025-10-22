@@ -30,6 +30,7 @@ class Issue(Base):
         ForeignKey("issue_types.id", ondelete="SET NULL"), nullable=True
     )
     text: Mapped[str] = mapped_column(nullable=True)
+    decision: Mapped[str] = mapped_column(nullable=True)
     meaning: Mapped[str] = mapped_column(nullable=False)
     definitions: Mapped[list[str]] = mapped_column(
         ARRAY(String), default=list, nullable=False

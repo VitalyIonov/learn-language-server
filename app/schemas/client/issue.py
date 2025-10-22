@@ -7,6 +7,7 @@ from app.schemas.common import IssueTypeOut, IssueStatusOut
 class IssueOut(BaseSchema):
     id: int
     text: Optional[str] = None
+    decision: Optional[str] = None
     status: Optional[IssueStatusOut] = None
     type: Optional[IssueTypeOut] = None
     meaning: str

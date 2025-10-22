@@ -2,6 +2,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.crud.common import (
     get_issue_status as get_issue_status_crud,
+    get_issue_statuses as get_issue_statuses_crud,
     get_issue_status_by_value as get_issue_type_by_value_crud,
 )
 
@@ -15,3 +16,6 @@ class IssueStatusService:
 
     async def get_by_value(self, value: int):
         return await get_issue_type_by_value_crud(self.db, value)
+
+    async def get_all(self):
+        return await get_issue_statuses_crud(self.db)

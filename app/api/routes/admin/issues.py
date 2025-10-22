@@ -18,13 +18,12 @@ async def get_issue(
 
 @router.get("/issues", response_model=IssuesListResponse)
 async def get_issues(
-    user_id: int,
     offset: int = Query(DEFAULT_OFFSET, description="offset"),
     limit: int = Query(DEFAULT_LIMIT, description="page size"),
     q: str = Query("", description="Search query"),
     svc: IssueService = Depends(get_issue_service),
 ):
-    return await svc.get_all(user_id, offset, limit, q)
+    return await svc.get_all(offset, limit, q)
 
 
 @router.patch("/issues/{issue_id}", response_model=IssueOut)
