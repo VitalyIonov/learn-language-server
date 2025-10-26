@@ -1,3 +1,5 @@
+from typing import Optional
+
 from pydantic import ConfigDict
 
 from app.models import AssetStatus
@@ -8,7 +10,7 @@ class ImageAssetOut(BaseSchema):
     id: int
     status: AssetStatus
     mime_type: str
-    size_bytes: int
+    size_bytes: int | None = None
     alt: str
     width: int | None = None
     height: int | None = None
@@ -18,23 +20,33 @@ class ImageAssetOut(BaseSchema):
     model_config = ConfigDict(from_attributes=True)
 
 
-class ImageAssetUpload(BaseSchema):
+class ImageAssetUploadInit(BaseSchema):
     content_type: str
     size_bytes: int
     alt: str
 
 
-class ImageAssetUploadOut(BaseSchema):
+class ImageAssetUploadInitOut(BaseSchema):
     upload_url: str
     file_key: str
     image_id: int
 
 
+class ImageAssetUploadPayload(BaseSchema):
+    text: str
+
+
+class ImageAssetUploadOut(BaseSchema):
+    image_id: int
+    image_url: str
+
+
 class ImageAssetCreate(BaseSchema):
     mime_type: str
-    size_bytes: int
     file_key: str
     alt: str
+    size_bytes: Optional[int] = None
+    status: Optional[AssetStatus] = None
 
 
 class ImageAssetUpdate(BaseSchema):

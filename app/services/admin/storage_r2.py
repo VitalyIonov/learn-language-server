@@ -80,6 +80,11 @@ class StorageR2Service:
 
     @staticmethod
     async def upload_file(file_key: str, file_obj: IO, content_type: str) -> bool:
+        is_uploaded = await StorageR2Service.file_exists(file_key)
+
+        if is_uploaded:
+            return True
+
         try:
             s3.upload_fileobj(
                 file_obj, BUCKET, file_key, ExtraArgs={"ContentType": content_type}

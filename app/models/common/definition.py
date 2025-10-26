@@ -22,6 +22,7 @@ class Definition(Base):
         nullable=False,
         index=True,
     )
+    text: Mapped[str] = mapped_column(nullable=False, index=True, server_default="")
 
     category_id: Mapped[int] = mapped_column(
         ForeignKey("categories.id", ondelete="SET NULL"),

@@ -17,4 +17,4 @@ db-seed:
 	docker compose run --rm web sh -lc 'PYTHONPATH=. python app/seed.py'
 
 reset-db:
-	docker exec -i learn-language-db-1 psql -U postgres -d app -c "DROP SCHEMA public CASCADE; CREATE SCHEMA public;"
+	docker exec -i learn-language-db-1 psql -U postgres -d app -v ON_ERROR_STOP=1 -f - < scripts/reset_db.sql

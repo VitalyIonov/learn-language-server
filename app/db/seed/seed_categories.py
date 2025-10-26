@@ -1,11 +1,13 @@
 import os
 import mimetypes
+
+from fastapi import UploadFile
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy import select
 
 from app.models.common import Category
-from app.schemas.common import ImageAssetUpload
-from app.services.admin import StorageR2Service, ImageService
+from app.schemas.common import ImageAssetUploadPayload
+from app.services.admin import ImageService
 
 
 def get_image_metadata(file_path: str) -> dict:
@@ -23,50 +25,46 @@ def get_image_metadata(file_path: str) -> dict:
 async def seed_categories(
     session: AsyncSession,
     data: list[dict],
-    storage_service: StorageR2Service,
     image_service: ImageService,
 ):
     for category_data in data:
-        result = await session.execute(
+        existing_category = await session.scalar(
             select(Category).where(Category.name == category_data["name"])
         )
 
-        if not result.scalar():
-            image_asset = None
-            image_path = category_data.get("image_path")
+        if existing_category and existing_category.image_id:
+            continue
 
-            if image_path and os.path.exists(image_path):
-                try:
-                    metadata = get_image_metadata(image_path)
-                    image_asset = await image_service.create(
-                        ImageAssetUpload(
-                            content_type=metadata["mime_type"],
-                            size_bytes=metadata["size_bytes"],
-                            alt=category_data["name"],
-                        )
+        image_asset = None
+        image_path = category_data.get("image_path")
+
+        if image_path and os.path.exists(image_path):
+            try:
+                with open(image_path, "rb") as file_obj:
+                    upload_file = UploadFile(
+                        filename=os.path.basename(image_path),
+                        file=file_obj,
+                    )
+                    image_asset = await image_service.create_and_upload(
+                        file=upload_file,
+                        payload=ImageAssetUploadPayload(text=category_data.get("name")),
                     )
 
-                    with open(image_path, "rb") as file_obj:
-                        upload_success = await storage_service.upload_file(
-                            image_asset.file_key, file_obj, metadata["mime_type"]
-                        )
+            except Exception as e:
+                print(
+                    f"❌ Ошибка при загрузке картинки {category_data['image_path']}: {e}"
+                )
 
-                    if upload_success:
-                        await image_service.commit(image_asset.image_id)
-                    else:
-                        print(
-                            f"❌ Не удалось загрузить картинку для {category_data['name']}"
-                        )
+        if existing_category and not existing_category.image_id and image_asset:
+            existing_category.image_id = image_asset.image_id
 
-                except Exception as e:
-                    print(
-                        f"❌ Ошибка при загрузке картинки для {category_data['name']}: {e}"
-                    )
+            session.add(existing_category)
+            continue
 
-            category = Category(
-                name=category_data["name"],
-                image_id=image_asset.image_id if image_asset else None,
-            )
+        result = Category(
+            name=category_data["name"],
+            image_id=image_asset.image_id if image_asset else None,
+        )
 
-            session.add(category)
+        session.add(result)
     await session.commit()

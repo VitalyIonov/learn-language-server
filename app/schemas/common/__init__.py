@@ -11,10 +11,12 @@ from .common import Meta
 from .image_asset import (
     ImageAssetOut,
     ImageAssetUpdate,
-    ImageAssetUpload,
+    ImageAssetUploadInit,
     ImageAssetCommit,
     ImageAssetCreate,
+    ImageAssetUploadPayload,
     ImageAssetUploadOut,
+    ImageAssetUploadInitOut,
     ImageAssetCommitOut,
 )
 from .issue_status import IssueStatusOut, IssueStatusListResponse

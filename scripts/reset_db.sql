@@ -1,0 +1,14 @@
+BEGIN;
+
+CREATE SCHEMA IF NOT EXISTS keep;
+
+ALTER TABLE IF EXISTS public.translations    SET SCHEMA keep;
+
+DROP SCHEMA public CASCADE;
+CREATE SCHEMA public;
+
+ALTER TABLE IF EXISTS keep.translations    SET SCHEMA public;
+
+DROP SCHEMA keep;
+
+COMMIT;

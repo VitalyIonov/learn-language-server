@@ -10,7 +10,6 @@ class TextDefinition(Definition):
     id: Mapped[int] = mapped_column(
         ForeignKey("definitions.id", ondelete="CASCADE"), primary_key=True
     )
-    text: Mapped[str] = mapped_column(nullable=False, index=True)
     audio_id: Mapped[int] = mapped_column(
         ForeignKey("assets.id", ondelete="SET NULL"), nullable=True
     )

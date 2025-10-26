@@ -1,8 +1,9 @@
-from fastapi import APIRouter, Depends
+from fastapi import APIRouter, Depends, UploadFile, File
 
 from app.core.dependencies.admin import get_image_service
 from app.schemas.common import (
-    ImageAssetUpload,
+    ImageAssetUploadInit,
+    ImageAssetUploadInitOut,
     ImageAssetUploadOut,
     ImageAssetCommit,
     ImageAssetCommitOut,
@@ -13,12 +14,20 @@ from app.utils.url_generator import public_url
 router = APIRouter(tags=["images"])
 
 
-@router.post("/images/upload-init", response_model=ImageAssetUploadOut)
+@router.post("/images/upload-init", response_model=ImageAssetUploadInitOut)
 async def init_image_upload(
-    body: ImageAssetUpload,
+    body: ImageAssetUploadInit,
     svc_image: ImageService = Depends(get_image_service),
 ):
     return await svc_image.create(payload=body)
+
+
+@router.post("/images/upload", response_model=ImageAssetUploadOut)
+async def image_upload(
+    file: UploadFile = File(...),
+    svc_image: ImageService = Depends(get_image_service),
+):
+    return await svc_image.create_and_upload(file=file)
 
 
 @router.post("/images/upload-commit", response_model=ImageAssetCommitOut)

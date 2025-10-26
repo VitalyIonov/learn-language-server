@@ -38,7 +38,7 @@ class Asset(Base):
         default=AssetStatus.PENDING,
     )
     mime_type: Mapped[str] = mapped_column(String(100), nullable=False)
-    size_bytes: Mapped[int] = mapped_column(nullable=False)
+    size_bytes: Mapped[int] = mapped_column(nullable=True)
     file_key: Mapped[str] = mapped_column(
         String(512), nullable=False, index=True, unique=True
     )

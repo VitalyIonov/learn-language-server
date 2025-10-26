@@ -1,10 +1,10 @@
 import os
 from typing import Union
 
+from fastapi import UploadFile
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy import select
 
-from app.db.seed import get_image_metadata
 from app.models import (
     Category,
     Level,
@@ -13,8 +13,8 @@ from app.models import (
     ImageDefinition,
     QuestionTypeName,
 )
-from app.schemas.common import ImageAssetUpload
-from app.services.admin import StorageR2Service, ImageService
+from app.schemas.common import ImageAssetUploadPayload
+from app.services.admin import ImageService
 from app.core.dependencies.admin import (
     get_tts_service,
     get_storage_r2_service,
@@ -27,7 +27,6 @@ from app.utils.generate_audio import run_audio_generator
 async def seed_definitions(
     session: AsyncSession,
     data: list[dict],
-    storage_service: StorageR2Service,
     image_service: ImageService,
 ) -> None:
     for item in data:
@@ -48,6 +47,15 @@ async def seed_definitions(
         result: Union[TextDefinition, ImageDefinition] | None = None
 
         if def_type == QuestionTypeName.TEXT:
+            existing_text_def: TextDefinition | None = await session.scalar(
+                select(TextDefinition).where(TextDefinition.text == item["text"])
+            )
+
+            if existing_text_def:
+                existing_text_def.meanings.extend(meaning_objs)
+
+                continue
+
             result = TextDefinition(
                 text=item["text"],
                 category_id=category_id,
@@ -55,35 +63,44 @@ async def seed_definitions(
             )
 
         if def_type == QuestionTypeName.IMAGE:
+            existing_img_def: ImageDefinition | None = await session.scalar(
+                select(ImageDefinition).where(ImageDefinition.text == item["text"])
+            )
+
+            if existing_img_def and existing_img_def.image_id:
+                existing_img_def.meanings.extend(meaning_objs)
+
+                continue
+
             image_asset = None
             image_path = item.get("image_path")
 
             if image_path and os.path.exists(image_path):
                 try:
-                    metadata = get_image_metadata(image_path)
-                    image_asset = await image_service.create(
-                        ImageAssetUpload(
-                            content_type=metadata["mime_type"],
-                            size_bytes=metadata["size_bytes"],
-                            alt=item["meanings"][0],
-                        )
-                    )
-
                     with open(image_path, "rb") as file_obj:
-                        upload_success = await storage_service.upload_file(
-                            image_asset.file_key, file_obj, metadata["mime_type"]
+                        upload_file = UploadFile(
+                            filename=os.path.basename(image_path),
+                            file=file_obj,
                         )
-
-                    if upload_success:
-                        await image_service.commit(image_asset.image_id)
-                    else:
-                        print(f"❌ Не удалось загрузить картинку {item['image_path']}")
+                        image_asset = await image_service.create_and_upload(
+                            file=upload_file,
+                            payload=ImageAssetUploadPayload(text=item.get("text")),
+                        )
 
                 except Exception as e:
                     print(f"❌ Ошибка при загрузке картинки {item['image_path']}: {e}")
 
+            if existing_img_def and not existing_img_def.image_id and image_asset:
+                existing_img_def.image_id = image_asset.image_id
+
+                existing_img_def.meanings.extend(meaning_objs)
+
+                session.add(existing_img_def)
+                continue
+
             result = ImageDefinition(
                 image_id=image_asset.image_id if image_asset else None,
+                text=item["text"],
                 category_id=category_id,
                 level_id=level_id,
             )

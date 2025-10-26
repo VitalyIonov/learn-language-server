@@ -51,7 +51,7 @@ from .definition_progress_info import (
     create_definition_progress_info,
     update_definition_progress_info,
 )
-from .image import get_image, create_image, update_image
+from .image import get_image, create_image, update_image, get_image_by_file_key
 from .question_type import get_question_types
 from .audio import get_audio, get_audio_by_file_key, create_audio, update_audio
 from .issue import update_issue, get_issues, get_issue

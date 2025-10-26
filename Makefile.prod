@@ -19,7 +19,7 @@ db-seed:
 	$(COMPOSE) exec -e PYTHONPATH=$(PYTHONPATH) $(APP_SVC) python -m app.seed
 
 reset-db:
-	$(COMPOSE) exec $(DB_SVC) psql -U postgres -d app -c "DROP SCHEMA public CASCADE; CREATE SCHEMA public;"
+	docker exec $(DB_SVC) psql -U postgres -d app -v ON_ERROR_STOP=1 -f - < scripts/reset_db.sql
 
 logs:
 	$(COMPOSE) logs -f $(APP_SVC) $(DB_SVC)
