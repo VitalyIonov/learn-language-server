@@ -23,8 +23,8 @@ from app.schemas.common import (
     ImageAssetUploadPayload,
 )
 from app.constants.data import MAX_IMAGE_SIZE_BYTES
-from app.services.admin import StorageR2Service
 from app.utils import make_image_file_hash
+from .storage_r2 import StorageR2Service
 
 
 class ImageService:

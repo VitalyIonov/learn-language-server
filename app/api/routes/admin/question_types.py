@@ -1,6 +1,6 @@
 from fastapi import APIRouter, Depends
 
-from app.core.dependencies.admin import get_question_type_service
+from app.core.dependencies.service_factories import get_question_type_service
 from app.schemas.admin import QuestionTypeListResponse
 from app.services.admin import QuestionTypeService
 

@@ -13,7 +13,10 @@ from app.db.seed import (
     seed_issue_types,
     seed_issue_statuses,
 )
-from app.core.dependencies.admin import get_image_service, get_storage_r2_service
+from app.core.dependencies.service_factories import (
+    get_image_service,
+    get_storage_r2_service,
+)
 
 
 def run_merge():

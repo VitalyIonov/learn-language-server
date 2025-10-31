@@ -7,7 +7,7 @@ from app.schemas.admin import (
 )
 from fastapi import Query
 from app.constants.data import DEFAULT_OFFSET, DEFAULT_LIMIT
-from app.core.dependencies.admin import get_meaning_service
+from app.core.dependencies.service_factories import get_meaning_service
 from app.services.admin import MeaningService
 
 

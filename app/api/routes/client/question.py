@@ -1,6 +1,6 @@
 from fastapi import APIRouter, Depends
 
-from app.core.dependencies.common import get_current_user
+from app.core.dependencies.service_factories import get_current_user
 from app.models import User
 from app.schemas.client import (
     QuestionOut,
@@ -8,7 +8,7 @@ from app.schemas.client import (
     QuestionUpdate,
     QuestionUpdateOut,
 )
-from app.core.dependencies.client import get_question_service
+from app.core.dependencies.service_factories import get_question_service
 from app.services.client import QuestionService
 
 

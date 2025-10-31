@@ -54,7 +54,7 @@ class Question(Base):
 
     level: Mapped[Level | None] = relationship("Level", lazy="selectin")
     meaning: Mapped[Meaning | None] = relationship(
-        "Meaning", back_populates="questions"
+        "Meaning", back_populates="questions", lazy="selectin"
     )
     category: Mapped[Category | None] = relationship(
         "Category", lazy="selectin", back_populates="questions"

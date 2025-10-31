@@ -1,12 +1,13 @@
 from fastapi import APIRouter, Depends
 
-from app.core.dependencies.common import get_current_user, get_statistic_service
-from app.core.dependencies.admin import (
+from app.core.dependencies.service_factories import (
     get_category_progress_info_service,
-    get_level_service,
+    get_level_service_admin,
+    get_current_user,
+    get_statistic_service,
 )
 from app.schemas.common import UserOut
-from app.services.common import StatisticService
+from app.services.client import StatisticService
 from app.services.admin import CategoryProgressInfoService, LevelService
 from app.schemas.client import LevelProgressByCategoryStatistic, ProgressByUserStatistic
 
@@ -25,7 +26,7 @@ async def get_category_current_progress(
     svc_category_progress_info: CategoryProgressInfoService = Depends(
         get_category_progress_info_service
     ),
-    svc_level: LevelService = Depends(get_level_service),
+    svc_level: LevelService = Depends(get_level_service_admin),
 ):
     cpi = await svc_category_progress_info.get_top_category_progress_info(
         user_id=current_user.id, category_id=category_id

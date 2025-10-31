@@ -1,6 +1,6 @@
 from fastapi import APIRouter, Depends
 
-from app.core.dependencies.common import get_issue_type_service
+from app.core.dependencies.service_factories import get_issue_type_service
 from app.schemas.common import IssueTypeListResponse
 from app.services.common import IssueTypeService
 

@@ -8,7 +8,8 @@ from app.crud.client import (
 )
 from app.models import Issue
 from app.schemas.client import IssueCreate
-from app.services.common import IssueStatusService
+
+from ..common.issue_status import IssueStatusService
 
 INITIAL_ISSUE_STATUS_VALUE = 0
 

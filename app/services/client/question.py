@@ -39,13 +39,12 @@ from app.crud.client import (
     get_question as crud_get_question,
     update_question as crud_update_question,
 )
-from app.services.admin import (
-    CategoryProgressInfoService,
-    MeaningProgressInfoService,
-    DefinitionProgressInfoService,
-    LevelService,
-)
-from app.services.common import StatisticService
+
+from ..admin.category_progress_info import CategoryProgressInfoService
+from ..admin.meaning_progress_info import MeaningProgressInfoService
+from ..admin.definition_progress_info import DefinitionProgressInfoService
+from ..admin.level import LevelService
+from .statistic import StatisticService
 
 
 class QuestionService:

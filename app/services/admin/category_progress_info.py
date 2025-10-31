@@ -19,7 +19,7 @@ from app.crud.admin import (
     update_category_progress_info as crud_update_category_progress_info,
     get_top_category_progress_info as crud_get_top_category_progress_info,
 )
-from app.services.admin import LevelService
+from .level import LevelService
 
 
 class CategoryProgressInfoService:

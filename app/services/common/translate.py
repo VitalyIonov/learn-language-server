@@ -5,17 +5,61 @@ from app.core.config import settings
 
 from openai import OpenAI
 
-from app.services.common import TranslationService
-
 DEEPL_API_KEY = settings.DEEPL_API_KEY
 DEEPL_API_URL = "https://api-free.deepl.com/v2/translate"
 DEFAULT_TRANSLATION_MODEL = "gpt-4o-mini"
 
+_LANG_MAP = {
+    "es": "Spanish",
+    "ru": "Russian",
+    "en": "English",
+    "fr": "French",
+    "de": "German",
+    "pt": "Portuguese",
+    "it": "Italian",
+}
+
+
+def _normalize_lang(lang: str) -> str:
+    if not lang:
+        return ""
+    key = lang.strip().lower()
+    return _LANG_MAP.get(key, lang.strip().title())
+
+
+ACTION_STYLE_BY_LANG: dict[str, str] = {
+    "ru": (
+        "Передавай действие в процессе: используй глаголы несовершенного вида "
+        "(отвечающие на вопрос «что делает?»), где это уместно. "
+        "Напр.: «afeitarse» → «бриться», «lavar los platos» → «мыть посуду»."
+    ),
+    "en": (
+        "Prefer action-as-process phrasing (present simple or gerund where natural), "
+        "e.g., “to shave” / “shaving”, “to wash the dishes” / “washing the dishes”."
+    ),
+    "es": (
+        "Usa el infinitivo para expresar la acción de forma general, "
+        "p. ej., «afeitarse», «lavar los platos», «leer un libro»."
+    ),
+}
+
+BASE_RULES = (
+    "Выводи ТОЛЬКО перевод — без кавычек, пояснений и префиксов. "
+    "Сохраняй числовые форматы, эмодзи и разметку."
+)
+
+
+def build_instructions(lang_from: str, lang_to: str) -> str:
+    style = ACTION_STYLE_BY_LANG.get(lang_to)
+    return (
+        f"Ты переводчик. Переводи строго с {lang_from} на {lang_to}. "
+        f"{style} {BASE_RULES}"
+    ).strip()
+
 
 class TranslateService:
-    def __init__(self, svc_translation: TranslationService):
+    def __init__(self):
         self._client = OpenAI(api_key=settings.OPENAI_API_KEY)
-        self.svc_translation = svc_translation
 
     @staticmethod
     def translate_by_deepl(
@@ -47,15 +91,8 @@ class TranslateService:
         lang_to: str = "RU",
         context: str | None = None,
     ) -> str:
-        if not text:
-            raise HTTPException(status_code=400, detail="Missing 'text' parameter")
-
-        translated_text = await self.svc_translation.get(
-            text, lang_from, lang_to, context
-        )
-
-        if translated_text:
-            return translated_text
+        src = _normalize_lang(lang_from)
+        dst = _normalize_lang(lang_to)
 
         if context:
             user_input = (
@@ -74,22 +111,14 @@ class TranslateService:
                 f"{text}"
             )
 
+        instructions = build_instructions(src, dst)
+
         open_ai_response = self._client.responses.create(
             model=DEFAULT_TRANSLATION_MODEL,
-            instructions=(
-                "Ты профессиональный переводчик. Переводи строго с испанского на русский. "
-                "Выводи ТОЛЬКО перевод — без кавычек, без пояснений, без префиксов. "
-                "Сохраняй числовые форматы, эмодзи и разметку."
-            ),
+            instructions=instructions,
             input=user_input,
             temperature=0.1,
             max_output_tokens=2000,
         )
 
-        open_ai_response_translation = (open_ai_response.output_text or "").strip()
-
-        translated_text = await self.svc_translation.create(
-            text, open_ai_response_translation, lang_from, lang_to, context
-        )
-
-        return translated_text
+        return (open_ai_response.output_text or "").strip()

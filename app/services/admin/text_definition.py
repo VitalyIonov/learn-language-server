@@ -15,7 +15,7 @@ from app.crud.admin import (
 
 from app.models.common import TextDefinition
 from app.schemas.common import AudioAssetUpload
-from app.services.admin.audio import AudioService
+from .audio import AudioService
 
 
 class TextDefinitionService:

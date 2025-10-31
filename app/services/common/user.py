@@ -7,7 +7,8 @@ from app.crud.common import (
 )
 from app.models.common import User
 from app.schemas.common import UsersListResponse, UserCreate
-from app.services.admin import UserInfoService, CategoryProgressInfoService
+from ..admin.user_info import UserInfoService
+from ..admin.category_progress_info import CategoryProgressInfoService
 
 
 class UserService:

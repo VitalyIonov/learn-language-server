@@ -8,7 +8,6 @@ from .definition import (
 from .level import LevelOut, LevelOutBase, LevelsListResponse
 from .meaning import MeaningOut
 from .statistic import LevelProgressByCategoryStatistic, ProgressByUserStatistic
-from .translate import TranslateOut
 from .question import (
     QuestionCreate,
     QuestionUpdate,

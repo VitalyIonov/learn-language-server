@@ -2,7 +2,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy import select
 
 from app.models.common import Category, Level, Meaning
-from app.core.dependencies.admin import (
+from app.core.dependencies.service_factories import (
     get_tts_service,
     get_storage_r2_service,
     get_audio_service,

@@ -1,9 +1,11 @@
 from fastapi import APIRouter, Depends
 
-from app.core.dependencies.common import get_current_user
 from app.models import User
 from app.schemas.client import CategoriesListResponse, CategoryOut
-from app.core.dependencies.client import get_category_service
+from app.core.dependencies.service_factories import (
+    get_category_service_client,
+    get_current_user,
+)
 from app.services.client import CategoryService
 
 
@@ -16,7 +18,7 @@ router = APIRouter(tags=["categories"])
 )
 async def read_category(
     category_id: int,
-    svc_category: CategoryService = Depends(get_category_service),
+    svc_category: CategoryService = Depends(get_category_service_client),
     current_user: User = Depends(get_current_user),
 ):
     return await svc_category.get(current_user, category_id)
@@ -27,6 +29,6 @@ async def read_category(
     response_model=CategoriesListResponse,
 )
 async def read_categories(
-    svc: CategoryService = Depends(get_category_service),
+    svc: CategoryService = Depends(get_category_service_client),
 ):
     return await svc.get_all()

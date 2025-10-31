@@ -1,5 +1,4 @@
 from typing import IO, Dict, Optional, Tuple, Any
-import io
 
 import boto3
 from botocore.client import Config

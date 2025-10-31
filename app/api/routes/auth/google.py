@@ -4,7 +4,7 @@ from app.core.config import settings
 from app.core.security import create_access_token
 from datetime import timedelta
 from fastapi.responses import RedirectResponse
-from app.core.dependencies.common import get_user_service
+from app.core.dependencies.service_factories import get_user_service
 from app.schemas.common import UserCreate
 from app.services.common import UserService
 

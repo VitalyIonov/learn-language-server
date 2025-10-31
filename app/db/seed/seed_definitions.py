@@ -15,7 +15,7 @@ from app.models import (
 )
 from app.schemas.common import ImageAssetUploadPayload
 from app.services.admin import ImageService
-from app.core.dependencies.admin import (
+from app.core.dependencies.service_factories import (
     get_tts_service,
     get_storage_r2_service,
     get_audio_service,

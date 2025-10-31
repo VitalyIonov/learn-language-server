@@ -10,7 +10,7 @@ from app.crud.admin import (
 from app.schemas.admin import MeaningUpdate, MeaningCreate, MeaningsListResponse
 from app.models.common import Meaning
 from app.schemas.common import AudioAssetUpload
-from app.services.admin.audio import AudioService
+from .audio import AudioService
 
 
 class MeaningService:

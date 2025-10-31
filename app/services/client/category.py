@@ -6,7 +6,7 @@ from app.crud.client import (
 )
 from app.models import User
 from app.schemas.client import CategoriesListResponse, CategoryOut
-from app.services.admin import CategoryProgressInfoService
+from ..admin.category_progress_info import CategoryProgressInfoService
 
 
 class CategoryService:

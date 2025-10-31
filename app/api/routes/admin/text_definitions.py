@@ -8,7 +8,7 @@ from app.schemas.admin import (
 from fastapi import Query
 from app.constants.data import DEFAULT_OFFSET, DEFAULT_LIMIT
 from app.services.admin import TextDefinitionService
-from app.core.dependencies.admin import get_text_definition_service
+from app.core.dependencies.service_factories import get_text_definition_service
 
 
 router = APIRouter(tags=["text_definitions"])

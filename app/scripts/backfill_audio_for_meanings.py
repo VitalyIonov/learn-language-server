@@ -4,7 +4,7 @@ from fastapi import HTTPException
 
 from app.core.db import async_session
 from app.models import Meaning
-from app.core.dependencies.admin import (
+from app.core.dependencies.service_factories import (
     get_tts_service,
     get_storage_r2_service,
     get_audio_service,

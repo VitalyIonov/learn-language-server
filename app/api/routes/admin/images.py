@@ -1,6 +1,6 @@
 from fastapi import APIRouter, Depends, UploadFile, File
 
-from app.core.dependencies.admin import get_image_service
+from app.core.dependencies.service_factories import get_image_service
 from app.schemas.common import (
     ImageAssetUploadInit,
     ImageAssetUploadInitOut,

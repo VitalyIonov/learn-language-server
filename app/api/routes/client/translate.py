@@ -1,8 +1,8 @@
 from fastapi import APIRouter, Query, Depends
 
-from app.core.dependencies.client import get_translate_service
-from app.schemas.client import TranslateOut
-from app.services.client import TranslateService
+from app.core.dependencies.service_factories import get_translation_service
+from app.schemas.common import TranslateOut
+from app.services.common import TranslationService
 
 router = APIRouter(tags=["translations"])
 
@@ -10,9 +10,8 @@ router = APIRouter(tags=["translations"])
 @router.get("/translate", response_model=TranslateOut)
 async def translate_text(
     text: str = Query(description="text to translate"),
-    context: str | None = None,
-    svc_translate: TranslateService = Depends(get_translate_service),
+    svc_translation: TranslationService = Depends(get_translation_service),
 ):
-    result = await svc_translate.translate_by_open_ai(text=text, context=context)
+    result = await svc_translation.translate(text=text)
 
     return {"translation": result}

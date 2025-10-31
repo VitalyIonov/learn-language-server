@@ -1,8 +1,7 @@
 from fastapi import APIRouter, Depends, Query
-from typing import List
 
 from app.constants.data import DEFAULT_OFFSET, DEFAULT_LIMIT
-from app.core.dependencies.common import get_user_service, get_current_user
+from app.core.dependencies.service_factories import get_user_service, get_current_user
 from app.schemas.common import UserOut, UsersListResponse
 from app.services.common import UserService
 
