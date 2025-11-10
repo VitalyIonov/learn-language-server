@@ -51,5 +51,15 @@ async def auth_callback(request: Request, svc: UserService = Depends(get_user_se
         expires_delta=timedelta(minutes=ACCESS_TOKEN_EXPIRE_MINUTES),
     )
 
-    redirect_url = f"{settings.LOGIN_REDIRECT_URL}?access_token={access_token}"
-    return RedirectResponse(url=redirect_url)
+    redirect_url = f"{settings.LOGIN_REDIRECT_URL}"
+    redirect = RedirectResponse(url=redirect_url, status_code=303)
+
+    redirect.set_cookie(
+        key="access_token",
+        value=access_token,
+        max_age=ACCESS_TOKEN_EXPIRE_MINUTES * 60,
+        path="/",
+        httponly=True,
+        samesite="lax",
+    )
+    return redirect

@@ -6,3 +6,4 @@ from .statistic import router as statistic_router
 from .levels import router as levels_router
 from .issues import router as issues_router
 from .issue_types import router as issue_types_router
+from .settings import router as settings_router

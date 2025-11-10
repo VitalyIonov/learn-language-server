@@ -9,6 +9,7 @@ class UserOut(BaseSchema):
     id: int
     email: EmailStr
     name: str | None = None
+    lang: str
     role: UserRole
 
     class Config:

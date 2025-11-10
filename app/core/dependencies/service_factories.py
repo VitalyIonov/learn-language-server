@@ -27,6 +27,7 @@ from app.services.client import (
     StatisticService,
     LevelService as LevelServiceClient,
     IssueService as IssueServiceClient,
+    SettingsService,
 )
 
 from app.services.common import (
@@ -215,3 +216,9 @@ async def get_translation_service(
     svc_translate: TranslateService = Depends(get_translate_service),
 ) -> TranslationService:
     return TranslationService(db, svc_translate)
+
+
+async def get_settings_service(
+    db: AsyncSession = Depends(get_db),
+) -> SettingsService:
+    return SettingsService(db)

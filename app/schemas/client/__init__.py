@@ -19,3 +19,4 @@ from .question import (
     Info,
 )
 from .issue import IssueCreate, IssuesListResponse
+from .settings import SettingsUpdate, SettingsLangUpdate

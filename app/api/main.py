@@ -7,6 +7,7 @@ import app.api.routes.admin as admin_routes
 
 auth_router = APIRouter()
 auth_router.include_router(auth_routes.google_router)
+auth_router.include_router(auth_routes.auth_router)
 
 client_router = APIRouter(dependencies=[Depends(get_current_user)])
 client_router.include_router(client_routes.users_router)
@@ -17,6 +18,7 @@ client_router.include_router(client_routes.question_router)
 client_router.include_router(client_routes.statistic_router)
 client_router.include_router(client_routes.issues_router)
 client_router.include_router(client_routes.issue_types_router)
+client_router.include_router(client_routes.settings_router)
 
 admin_router = APIRouter(
     dependencies=[Depends(require_admin), Depends(get_current_user)]

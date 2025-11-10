@@ -27,6 +27,7 @@ class User(Base):
     id: Mapped[int] = mapped_column(primary_key=True, autoincrement=True)
     email: Mapped[str] = mapped_column(unique=True, index=True, nullable=False)
     name: Mapped[str] = mapped_column(nullable=True)
+    lang: Mapped[str] = mapped_column(server_default="ru", nullable=False)
     auth_provider: Mapped[AuthProvider] = mapped_column(
         default=AuthProvider.GOOGLE, nullable=False
     )

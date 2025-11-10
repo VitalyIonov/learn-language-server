@@ -23,6 +23,7 @@ class Settings(BaseSettings):
     POSTGRES_PASSWORD: str = ""
     POSTGRES_DB: str = ""
     LOGIN_REDIRECT_URL: str
+    LOGOUT_REDIRECT_URL: str
 
     OPENAI_API_KEY: str
     SECRET_KEY: str
