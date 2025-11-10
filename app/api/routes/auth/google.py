@@ -59,6 +59,7 @@ async def auth_callback(request: Request, svc: UserService = Depends(get_user_se
         value=access_token,
         max_age=ACCESS_TOKEN_EXPIRE_MINUTES * 60,
         path="/",
+        secure=True,
         httponly=True,
         samesite="lax",
     )
