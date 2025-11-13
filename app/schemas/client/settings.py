@@ -1,6 +1,8 @@
-from typing import Optional
+from typing import Optional, Literal
 
 from app.schemas.base import BaseSchema
+
+AllowedLang = Literal["en", "ru", "es", "fr", "it"]
 
 
 class SettingsUpdate(BaseSchema):
@@ -8,4 +10,4 @@ class SettingsUpdate(BaseSchema):
 
 
 class SettingsLangUpdate(SettingsUpdate):
-    lang: str
+    lang: AllowedLang
