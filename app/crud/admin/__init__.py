@@ -23,7 +23,7 @@ from .level import (
     get_level,
     get_levels,
     get_first_level,
-    get_next_level,
+    get_next_available_level,
     create_level,
     delete_level,
 )
