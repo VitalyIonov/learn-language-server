@@ -8,7 +8,7 @@ from app.crud.admin import (
     get_levels as crud_get_levels,
     create_level as crud_create_level,
     delete_level as crud_delete_level,
-    get_next_level as crud_get_next_level,
+    get_next_available_level as crud_get_next_available_level,
     get_first_level as crud_get_first_level,
     get_level as crud_get_level,
 )
@@ -42,8 +42,8 @@ class LevelService:
                 status_code=status.HTTP_404_NOT_FOUND, detail="Level not found"
             )
 
-    async def get_next_level(self, level_id: int) -> Optional[Level]:
-        return await crud_get_next_level(self.db, level_id)
+    async def get_next_available_level(self, category_id: int) -> Optional[Level]:
+        return await crud_get_next_available_level(self.db, category_id)
 
     async def get_first_level(self) -> Optional[Level]:
         return await crud_get_first_level(self.db)

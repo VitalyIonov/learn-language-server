@@ -1,5 +1,7 @@
 from sqlalchemy.ext.asyncio import AsyncSession
-from sqlalchemy import select, func, delete
+from sqlalchemy import select, func, delete, exists, case
+
+from app.models import Definition
 from app.models.common import Level
 from app.schemas.admin import LevelCreate, LevelsListResponse
 from typing import Optional
@@ -62,21 +64,19 @@ async def delete_level(db: AsyncSession, level_id: int) -> bool:
     return deleted_id is not None
 
 
-async def get_next_level(db: AsyncSession, level_id: int) -> Optional[Level]:
-    current_value_stmt = (
-        select(Level.value).where(Level.id == level_id).scalar_subquery()
+async def get_next_available_level(
+    db: AsyncSession, category_id: int
+) -> Optional[Level]:
+    defs_exists = exists().where(
+        Definition.level_id == Level.id,
+        Definition.category_id == category_id,
     )
 
-    level_stmt = (
-        select(Level)
-        .where(Level.value > current_value_stmt)
-        .order_by(Level.value.asc())
-        .limit(1)
-    )
+    statement = select(Level).where(defs_exists).order_by(Level.value.desc()).limit(1)
 
-    next_level = (await db.execute(level_stmt)).scalar_one_or_none()
+    level = (await db.execute(statement)).scalar_one_or_none()
 
-    return next_level
+    return level
 
 
 async def get_first_level(db: AsyncSession) -> Optional[Level]:

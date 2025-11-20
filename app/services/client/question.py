@@ -105,10 +105,8 @@ class QuestionService:
     async def generate(
         self, payload: QuestionGenerate, current_user: User
     ) -> QuestionOut:
-        question_level = await self.svc_level.get(payload.level_id)
-
         meaning_stmt = self._build_meaning_query(
-            question_level_id=question_level.id,
+            question_level_id=payload.level_id,
             category_id=payload.category_id,
             user_id=current_user.id,
         )
@@ -117,6 +115,7 @@ class QuestionService:
         if meaning is None:
             raise NoResultFound("Meaning not found")
 
+        question_level = await self.svc_level.get(payload.level_id)
         question_type = question_level.question_types[0]
         definition_class: Union[Type[TextDefinition], Type[ImageDefinition]]
 
@@ -266,7 +265,6 @@ class QuestionService:
             update_result = await self.svc_category_progress_info.update_category_level(
                 user_id=current_user.id,
                 category_id=entity.category_id,
-                current_level_id=entity.level_id,
             )
 
         if update_result is not None:

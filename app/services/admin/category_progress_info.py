@@ -112,9 +112,8 @@ class CategoryProgressInfoService:
         self,
         user_id: int,
         category_id: int,
-        current_level_id: int,
     ) -> UpdateCategoryLevelResult:
-        next_level = await self.svc_level.get_next_level(current_level_id)
+        next_level = await self.svc_level.get_next_available_level(category_id)
 
         if next_level is None:
             return UpdateCategoryLevelResult()
