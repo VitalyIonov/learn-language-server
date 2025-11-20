@@ -265,6 +265,7 @@ class QuestionService:
             update_result = await self.svc_category_progress_info.update_category_level(
                 user_id=current_user.id,
                 category_id=entity.category_id,
+                level_id=payload.level_id,
             )
 
         if update_result is not None:

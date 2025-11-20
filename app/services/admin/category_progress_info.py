@@ -109,11 +109,11 @@ class CategoryProgressInfoService:
         return cpi
 
     async def update_category_level(
-        self,
-        user_id: int,
-        category_id: int,
+        self, user_id: int, category_id: int, level_id: int
     ) -> UpdateCategoryLevelResult:
-        next_level = await self.svc_level.get_next_available_level(category_id)
+        next_level = await self.svc_level.get_next_available_level(
+            category_id=category_id, level_id=level_id
+        )
 
         if next_level is None:
             return UpdateCategoryLevelResult()

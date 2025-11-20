@@ -42,8 +42,12 @@ class LevelService:
                 status_code=status.HTTP_404_NOT_FOUND, detail="Level not found"
             )
 
-    async def get_next_available_level(self, category_id: int) -> Optional[Level]:
-        return await crud_get_next_available_level(self.db, category_id)
+    async def get_next_available_level(
+        self, category_id: int, level_id: int
+    ) -> Optional[Level]:
+        return await crud_get_next_available_level(
+            self.db, category_id, level_id=level_id
+        )
 
     async def get_first_level(self) -> Optional[Level]:
         return await crud_get_first_level(self.db)

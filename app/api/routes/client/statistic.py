@@ -36,7 +36,9 @@ async def get_category_current_progress(
         user_id=current_user.id, category_id=category_id, level_id=cpi.level_id
     )
 
-    next_level = await svc_level.get_next_available_level(cpi.level_id)
+    next_level = await svc_level.get_next_available_level(
+        category_id=category_id, level_id=cpi.level_id
+    )
 
     return LevelProgressByCategoryStatistic(
         progress=progress,
