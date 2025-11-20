@@ -18,6 +18,7 @@ router = APIRouter(tags=["questions"])
 @router.post(
     "/questions/generate",
     response_model=QuestionOut,
+    operation_id="generateQuestion",
 )
 async def generate_question(
     payload: QuestionGenerate,
@@ -27,7 +28,11 @@ async def generate_question(
     return await svc_question.generate(payload, current_user=current_user)
 
 
-@router.patch("/questions/{question_id}", response_model=QuestionUpdateOut)
+@router.patch(
+    "/questions/{question_id}",
+    response_model=QuestionUpdateOut,
+    operation_id="updateQuestion",
+)
 async def update_question_endpoint(
     question_id: int,
     payload: QuestionUpdate,

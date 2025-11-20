@@ -7,7 +7,7 @@ from app.services.common import TranslationService
 router = APIRouter(tags=["translations"])
 
 
-@router.get("/translate", response_model=TranslateOut)
+@router.get("/translate", response_model=TranslateOut, operation_id="getTranslate")
 async def translate_text(
     text: str = Query(description="text to translate"),
     svc_translation: TranslationService = Depends(get_translation_service),

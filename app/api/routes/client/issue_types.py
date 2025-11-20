@@ -7,7 +7,11 @@ from app.services.common import IssueTypeService
 router = APIRouter(tags=["issue_types"])
 
 
-@router.get("/issue_types", response_model=IssueTypeListResponse)
+@router.get(
+    "/issue_types",
+    response_model=IssueTypeListResponse,
+    operation_id="getIssueTypesList",
+)
 async def get_issue_types(
     svc: IssueTypeService = Depends(get_issue_type_service),
 ):

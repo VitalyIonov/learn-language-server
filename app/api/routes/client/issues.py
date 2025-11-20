@@ -11,7 +11,7 @@ from app.services.client import IssueService
 router = APIRouter(tags=["issues"])
 
 
-@router.post("/issues", response_model=IssueOut)
+@router.post("/issues", response_model=IssueOut, operation_id="createIssue")
 async def add_issue(
     new_issue: IssueCreate,
     current_user: UserOut = Depends(get_current_user),
@@ -20,7 +20,7 @@ async def add_issue(
     return await svc.create(new_issue, current_user.id)
 
 
-@router.get("/issues", response_model=IssuesListResponse)
+@router.get("/issues", response_model=IssuesListResponse, operation_id="getIssuesList")
 async def get_issue(
     current_user: UserOut = Depends(get_current_user),
     svc: IssueService = Depends(get_issue_service_client),

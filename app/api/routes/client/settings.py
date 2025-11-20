@@ -27,7 +27,9 @@ def build_lang_cookie(lang: str, *, request: Request) -> dict:
     return cookie
 
 
-@router.patch("/settings/lang", response_model=bool)
+@router.patch(
+    "/settings/lang", response_model=bool, operation_id="updateSettingsLanguage"
+)
 async def update_language(
     payload: SettingsLangUpdate,
     request: Request,

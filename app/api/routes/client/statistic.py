@@ -17,7 +17,7 @@ router = APIRouter(tags=["statistics"])
 @router.get(
     "/statistics/category-current-progress/{category_id}",
     response_model=LevelProgressByCategoryStatistic,
-    operation_id="getCategoryCurrentProgress",
+    operation_id="getStatisticsCategoryCurrentProgress",
 )
 async def get_category_current_progress(
     category_id: int,
@@ -48,7 +48,7 @@ async def get_category_current_progress(
 @router.get(
     "/statistics/progress/",
     response_model=ProgressByUserStatistic,
-    operation_id="getProgressByUser",
+    operation_id="getStatisticsProgress",
 )
 async def get_progress_by_user(
     current_user: UserOut = Depends(get_current_user),
@@ -62,7 +62,7 @@ async def get_progress_by_user(
 @router.get(
     "/statistics/today_progress/",
     response_model=ProgressByUserStatistic,
-    operation_id="getTodayProgressByUser",
+    operation_id="getStatisticsTodayProgress",
 )
 async def get_today_progress_by_user(
     current_user: UserOut = Depends(get_current_user),

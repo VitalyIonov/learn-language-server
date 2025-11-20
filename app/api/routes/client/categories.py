@@ -13,8 +13,7 @@ router = APIRouter(tags=["categories"])
 
 
 @router.get(
-    "/categories/{category_id}",
-    response_model=CategoryOut,
+    "/categories/{category_id}", response_model=CategoryOut, operation_id="getCategory"
 )
 async def read_category(
     category_id: int,
@@ -27,6 +26,7 @@ async def read_category(
 @router.get(
     "/categories",
     response_model=CategoriesListResponse,
+    operation_id="getCategoriesList",
 )
 async def read_categories(
     svc: CategoryService = Depends(get_category_service_client),

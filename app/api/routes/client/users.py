@@ -5,7 +5,7 @@ from app.schemas.common import UserOut
 router = APIRouter(tags=["users"])
 
 
-@router.get("/current_user", response_model=UserOut)
+@router.get("/current_user", response_model=UserOut, operation_id="getCurrentUser")
 async def read_user(
     current_user: UserOut = Depends(get_current_user),
 ):

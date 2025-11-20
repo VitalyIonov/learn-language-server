@@ -14,7 +14,7 @@ from app.services.admin import CategoryProgressInfoService
 router = APIRouter(tags=["levels"])
 
 
-@router.get("/levels", response_model=LevelsListResponse)
+@router.get("/levels", response_model=LevelsListResponse, operation_id="getLevelsList")
 async def read_levels(
     category_id: int = Query(None, description="Category ID"),
     svc: LevelService = Depends(get_level_service_client),
@@ -23,7 +23,9 @@ async def read_levels(
     return await svc.get_all(user_id=current_user.id, category_id=category_id)
 
 
-@router.post("/levels/unlock", response_model=CategoryProgressInfoOut)
+@router.post(
+    "/levels/unlock", response_model=CategoryProgressInfoOut, operation_id="LevelUnlock"
+)
 async def unlock_level(
     category_id: int,
     level_id: int,
