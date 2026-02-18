@@ -5,6 +5,7 @@ from typing import TYPE_CHECKING
 import sqlalchemy as sa
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
+from app.constants.target_language import TargetLanguageCode
 from app.core.db import Base
 
 if TYPE_CHECKING:
@@ -28,6 +29,7 @@ class User(Base):
     email: Mapped[str] = mapped_column(unique=True, index=True, nullable=False)
     name: Mapped[str] = mapped_column(nullable=True)
     interface_lang: Mapped[str] = mapped_column(server_default="ru", nullable=False)
+    target_language: Mapped[TargetLanguageCode] = mapped_column(server_default=TargetLanguageCode.ES.value, nullable=False)
     auth_provider: Mapped[AuthProvider] = mapped_column(
         default=AuthProvider.GOOGLE, nullable=False
     )

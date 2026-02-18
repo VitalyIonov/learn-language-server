@@ -2,6 +2,7 @@ from pydantic import EmailStr
 from typing import List
 from app.schemas.common import Meta
 from app.schemas.base import BaseSchema
+from app.constants.target_language import TargetLanguageCode
 from app.models.common.user import UserRole
 
 
@@ -10,6 +11,7 @@ class UserOut(BaseSchema):
     email: EmailStr
     name: str | None = None
     interface_lang: str
+    target_language: TargetLanguageCode
     role: UserRole
 
     class Config:
