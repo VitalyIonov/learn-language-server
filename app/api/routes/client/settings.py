@@ -5,15 +5,15 @@ from app.core.dependencies.service_factories import (
     get_settings_service,
 )
 from app.models import User
-from app.schemas.client import SettingsLangUpdate
+from app.schemas.client import SettingsInterfaceLangUpdate
 from app.services.client import SettingsService
 
 router = APIRouter(tags=["settings"])
 
 
-def build_lang_cookie(lang: str, *, request: Request) -> dict:
+def build_interface_lang_cookie(lang: str, *, request: Request) -> dict:
     cookie = {
-        "key": "lang",
+        "key": "interface_lang",
         "value": lang,
         "max_age": 60 * 60 * 24 * 365,
         "path": "/",
@@ -27,20 +27,17 @@ def build_lang_cookie(lang: str, *, request: Request) -> dict:
     return cookie
 
 
-@router.patch(
-    "/settings/lang", response_model=bool, operation_id="updateSettingsLanguage"
-)
+@router.patch("/settings/interface-lang", response_model=bool, operation_id="updateSettingsInterfaceLanguage")
 async def update_language(
-    payload: SettingsLangUpdate,
+    payload: SettingsInterfaceLangUpdate,
     request: Request,
     response: Response,
     current_user: User = Depends(get_current_user),
     svc: SettingsService = Depends(get_settings_service),
 ):
-    lang = payload.lang
     await svc.update_language(current_user, payload)
 
-    cookie = build_lang_cookie(lang, request=request)
+    cookie = build_interface_lang_cookie(payload.interface_lang, request=request)
     response.set_cookie(**cookie)
 
     return True

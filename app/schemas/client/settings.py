@@ -6,8 +6,8 @@ AllowedLang = Literal["en", "ru", "es", "fr", "it"]
 
 
 class SettingsUpdate(BaseSchema):
-    lang: Optional[str] = None
+    interface_lang: Optional[str] = None
 
 
-class SettingsLangUpdate(SettingsUpdate):
-    lang: AllowedLang
+class SettingsInterfaceLangUpdate(SettingsUpdate):
+    interface_lang: AllowedLang
