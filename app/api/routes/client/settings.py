@@ -7,24 +7,9 @@ from app.core.dependencies.service_factories import (
 from app.models import User
 from app.schemas.client import SettingsInterfaceLangUpdate
 from app.services.client import SettingsService
+from app.utils.cookies import build_interface_lang_cookie
 
 router = APIRouter(tags=["settings"])
-
-
-def build_interface_lang_cookie(lang: str, *, request: Request) -> dict:
-    cookie = {
-        "key": "interface_lang",
-        "value": lang,
-        "max_age": 60 * 60 * 24 * 365,
-        "path": "/",
-        "httponly": True,
-        "samesite": "lax",
-        "secure": request.url.scheme == "https",
-    }
-    host = request.url.hostname or ""
-    if host.endswith("learn-language.es"):
-        cookie["domain"] = ".learn-language.es"
-    return cookie
 
 
 @router.patch("/settings/interface-lang", response_model=bool, operation_id="updateSettingsInterfaceLanguage")

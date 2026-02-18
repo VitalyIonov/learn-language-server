@@ -2,7 +2,7 @@ from fastapi import HTTPException
 import io
 
 from sqlalchemy.ext.asyncio import AsyncSession
-from app.utils import make_tts_hash
+from app.utils.tts import make_tts_hash
 
 from app.crud.admin import (
     get_audio as crud_get_audio,
