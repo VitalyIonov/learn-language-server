@@ -13,7 +13,7 @@ router = APIRouter(tags=["target_languages"])
 )
 async def get_target_languages():
     items = [
-        TargetLanguageOut(code=lc.value, display_name=lc.display_name)
+        TargetLanguageOut(code=lc, display_name=lc.display_name)
         for lc in TargetLanguageCode
     ]
     return TargetLanguageListResponse(items=items)
