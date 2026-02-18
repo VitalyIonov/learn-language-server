@@ -8,3 +8,4 @@ from .issues import router as issues_router
 from .issue_types import router as issue_types_router
 from .settings import router as settings_router
 from .target_languages import router as target_languages_router
+from .interface_languages import router as interface_languages_router

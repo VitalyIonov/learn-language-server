@@ -22,7 +22,7 @@ async def update_interface_language(
 ):
     await svc.update_interface_language(current_user, payload)
 
-    cookie = build_interface_lang_cookie(payload.interface_lang, request=request)
+    cookie = build_interface_lang_cookie(payload.interface_lang.value, request=request)
     response.set_cookie(**cookie)
 
     return True
