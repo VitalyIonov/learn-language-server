@@ -13,17 +13,9 @@ if TYPE_CHECKING:
 class DefinitionProgressInfo(Base):
     __tablename__ = "definitions_progress_info"
 
-    user_id: Mapped[int] = mapped_column(
-        ForeignKey("users.id", ondelete="CASCADE"), nullable=False, primary_key=True
-    )
-    meaning_id: Mapped[int] = mapped_column(
-        ForeignKey("meanings.id", ondelete="CASCADE"), nullable=False, primary_key=True
-    )
-    definition_id: Mapped[int] = mapped_column(
-        ForeignKey("definitions.id", ondelete="CASCADE"),
-        nullable=False,
-        primary_key=True,
-    )
+    user_id: Mapped[int] = mapped_column(ForeignKey("users.id", ondelete="CASCADE"), nullable=False, primary_key=True)
+    meaning_id: Mapped[int] = mapped_column(ForeignKey("meanings.id", ondelete="CASCADE"), nullable=False, primary_key=True)
+    definition_id: Mapped[int] = mapped_column(ForeignKey("definitions.id", ondelete="CASCADE"), nullable=False, primary_key=True)
 
     @property
     def level_id(self) -> int:

@@ -1,6 +1,6 @@
 import hashlib, json
 
-from app.utils import normalize_text
+from app.utils.string import normalize_text
 
 def make_tts_hash(text: str) -> str:
     payload = {

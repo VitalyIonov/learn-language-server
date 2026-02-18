@@ -1,5 +1,5 @@
 from pydantic import BaseModel, ConfigDict
-from app.utils import to_camel
+from app.utils.string import to_camel
 
 
 class BaseSchema(BaseModel):
