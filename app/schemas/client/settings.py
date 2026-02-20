@@ -1,13 +1,18 @@
-from typing import Optional, Literal
+from typing import Optional
 
+from app.constants.interface_language import InterfaceLanguageCode
+from app.constants.target_language import TargetLanguageCode
 from app.schemas.base import BaseSchema
-
-AllowedLang = Literal["en", "ru", "es", "fr", "it"]
 
 
 class SettingsUpdate(BaseSchema):
-    lang: Optional[str] = None
+    interface_lang: Optional[InterfaceLanguageCode] = None
+    target_language: Optional[TargetLanguageCode] = None
 
 
-class SettingsLangUpdate(SettingsUpdate):
-    lang: AllowedLang
+class SettingsInterfaceLangUpdate(SettingsUpdate):
+    interface_lang: InterfaceLanguageCode
+
+
+class SettingsTargetLanguageUpdate(SettingsUpdate):
+    target_language: TargetLanguageCode

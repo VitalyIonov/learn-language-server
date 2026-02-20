@@ -23,24 +23,12 @@ class Question(Base):
         nullable=False,
         index=True,
     )
-    user_id: Mapped[int] = mapped_column(
-        ForeignKey("users.id", ondelete="SET NULL"), nullable=True
-    )
-    meaning_id: Mapped[int] = mapped_column(
-        ForeignKey("meanings.id", ondelete="SET NULL"), nullable=True
-    )
-    category_id: Mapped[int] = mapped_column(
-        ForeignKey("categories.id", ondelete="SET NULL"), nullable=True
-    )
-    level_id: Mapped[int] = mapped_column(
-        ForeignKey("levels.id", ondelete="SET NULL"), nullable=True
-    )
-    correct_definition_id: Mapped[int] = mapped_column(
-        ForeignKey("definitions.id", ondelete="SET NULL"), nullable=True
-    )
-    chosen_definition_id: Mapped[int] = mapped_column(
-        ForeignKey("definitions.id", ondelete="SET NULL"), nullable=True
-    )
+    user_id: Mapped[int] = mapped_column(ForeignKey("users.id", ondelete="SET NULL"), nullable=True)
+    meaning_id: Mapped[int] = mapped_column(ForeignKey("meanings.id", ondelete="SET NULL"), nullable=True)
+    category_id: Mapped[int] = mapped_column(ForeignKey("categories.id", ondelete="SET NULL"), nullable=True)
+    level_id: Mapped[int] = mapped_column(ForeignKey("levels.id", ondelete="SET NULL"), nullable=True)
+    correct_definition_id: Mapped[int] = mapped_column(ForeignKey("definitions.id", ondelete="SET NULL"), nullable=True)
+    chosen_definition_id: Mapped[int] = mapped_column(ForeignKey("definitions.id", ondelete="SET NULL"), nullable=True)
 
     @property
     def definition_ids(self) -> list[int]:
@@ -48,17 +36,9 @@ class Question(Base):
 
     is_correct: Mapped[bool] = mapped_column(nullable=True)
     created_at: Mapped[datetime] = mapped_column(server_default=func.now())
-    updated_at: Mapped[datetime] = mapped_column(
-        server_default=func.now(), onupdate=func.now()
-    )
+    updated_at: Mapped[datetime] = mapped_column(server_default=func.now(), onupdate=func.now())
 
     level: Mapped[Level | None] = relationship("Level", lazy="selectin")
-    meaning: Mapped[Meaning | None] = relationship(
-        "Meaning", back_populates="questions", lazy="selectin"
-    )
-    category: Mapped[Category | None] = relationship(
-        "Category", lazy="selectin", back_populates="questions"
-    )
-    definitions: Mapped[list["Definition"]] = relationship(
-        "Definition", back_populates="questions", secondary="definitions_questions"
-    )
+    meaning: Mapped[Meaning | None] = relationship("Meaning", lazy="selectin")
+    category: Mapped[Category | None] = relationship("Category", lazy="selectin", back_populates="questions")
+    definitions: Mapped[list["Definition"]] = relationship("Definition", secondary="definitions_questions")

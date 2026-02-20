@@ -17,15 +17,14 @@ class Category(Base):
 
     id: Mapped[int] = mapped_column(primary_key=True)
     name: Mapped[str] = mapped_column(unique=True, index=True, nullable=False)
-    image_id: Mapped[int | None] = mapped_column(
-        ForeignKey("assets.id", ondelete="SET NULL")
-    )
+    image_id: Mapped[int | None] = mapped_column(ForeignKey("assets.id", ondelete="SET NULL"))
 
     image: Mapped[ImageAsset | None] = relationship("Asset", lazy="selectin")
     meanings: Mapped[list[Meaning]] = relationship(
         "Meaning",
         back_populates="category",
     )
+
     definitions: Mapped[list["Definition"]] = relationship(
         "Definition",
         back_populates="category",
