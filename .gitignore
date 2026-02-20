@@ -1,4 +1,5 @@
 seed_data
 .env
 .env/*
+.env.*
 postgres_data
