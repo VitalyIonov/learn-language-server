@@ -1,5 +1,49 @@
-seed_data
+# --- Python ---
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+*.egg
+*.egg-info/
+.eggs/
+dist/
+build/
+
+# --- Virtual environments ---
+.venv/
+venv/
+
+# --- Testing / Linting / Type checking ---
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.coverage
+.coverage.*
+htmlcov/
+
+# --- Environment / Secrets ---
 .env
-.env/*
 .env.*
-postgres_data
+
+# --- PostgreSQL data (Docker volume) ---
+postgres_data/
+
+# --- Seed data ---
+seed_data/
+
+# --- IDE ---
+.idea/workspace.xml
+.idea/dataSources.local.xml
+.idea/usage.statistics.xml
+.idea/tasks.xml
+.idea/shelf/
+.idea/httpRequests/
+.idea/dictionaries/
+
+# --- OS ---
+.DS_Store
+Thumbs.db
+
+# --- Logs ---
+*.log
+logs/

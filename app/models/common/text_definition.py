@@ -12,6 +12,6 @@ class TextDefinition(Definition):
 
     audio_id: Mapped[int | None] = mapped_column(ForeignKey("assets.id", ondelete="SET NULL"), nullable=True)
 
-    audio: Mapped[AudioAsset] = relationship("Asset", lazy="raise")
+    audio: Mapped[AudioAsset] = relationship("Asset", lazy="selectin")
 
     __mapper_args__ = {"polymorphic_identity": "text"}

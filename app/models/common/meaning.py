@@ -26,7 +26,7 @@ class Meaning(Base):
 
     category: Mapped[Category | None] = relationship("Category", back_populates="meanings", lazy="raise")
     level: Mapped[Level | None] = relationship("Level", lazy="raise")
-    audio: Mapped[AudioAsset | None] = relationship("Asset", lazy="raise")
+    audio: Mapped[AudioAsset | None] = relationship("Asset", lazy="selectin")
     definitions: Mapped[list[Definition]] = relationship(
         "Definition", secondary="definitions_meanings", back_populates="meanings", lazy="raise"
     )
