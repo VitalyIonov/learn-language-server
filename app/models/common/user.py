@@ -30,7 +30,7 @@ class User(Base):
     id: Mapped[int] = mapped_column(primary_key=True, autoincrement=True)
     email: Mapped[str] = mapped_column(unique=True, index=True, nullable=False)
     name: Mapped[str] = mapped_column(nullable=True)
-    interface_lang: Mapped[InterfaceLanguageCode] = mapped_column(server_default=InterfaceLanguageCode.RU.value, nullable=False)
+    interface_lang: Mapped[InterfaceLanguageCode] = mapped_column(String, server_default=InterfaceLanguageCode.RU.value, nullable=False)
     target_language: Mapped[TargetLanguageCode] = mapped_column(String, server_default=TargetLanguageCode.ES.value, nullable=False)
     auth_provider: Mapped[AuthProvider] = mapped_column(
         default=AuthProvider.GOOGLE, nullable=False
