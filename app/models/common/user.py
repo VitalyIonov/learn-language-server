@@ -3,6 +3,7 @@ from datetime import datetime
 from typing import TYPE_CHECKING
 
 import sqlalchemy as sa
+from sqlalchemy import String
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from app.constants.interface_language import InterfaceLanguageCode
@@ -30,7 +31,7 @@ class User(Base):
     email: Mapped[str] = mapped_column(unique=True, index=True, nullable=False)
     name: Mapped[str] = mapped_column(nullable=True)
     interface_lang: Mapped[InterfaceLanguageCode] = mapped_column(server_default=InterfaceLanguageCode.RU.value, nullable=False)
-    target_language: Mapped[TargetLanguageCode] = mapped_column(server_default=TargetLanguageCode.ES.value, nullable=False)
+    target_language: Mapped[TargetLanguageCode] = mapped_column(String, server_default=TargetLanguageCode.ES.value, nullable=False)
     auth_provider: Mapped[AuthProvider] = mapped_column(
         default=AuthProvider.GOOGLE, nullable=False
     )

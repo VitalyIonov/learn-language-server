@@ -1,7 +1,7 @@
 from __future__ import annotations
 from typing import TYPE_CHECKING
 
-from sqlalchemy import ForeignKey
+from sqlalchemy import ForeignKey, String
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 from app.core.db import Base
 from .definition import Definition
@@ -22,7 +22,7 @@ class Meaning(Base):
     category_id: Mapped[int | None] = mapped_column(ForeignKey("categories.id", ondelete="SET NULL"), nullable=True)
     level_id: Mapped[int | None] = mapped_column(ForeignKey("levels.id", ondelete="SET NULL"), nullable=True)
     audio_id: Mapped[int | None] = mapped_column(ForeignKey("assets.id", ondelete="SET NULL"), nullable=True)
-    language: Mapped[TargetLanguageCode | None] = mapped_column(nullable=True, server_default=TargetLanguageCode.ES.value)
+    language: Mapped[TargetLanguageCode | None] = mapped_column(String, nullable=True, server_default=TargetLanguageCode.ES.value)
 
     category: Mapped[Category | None] = relationship("Category", back_populates="meanings", lazy="raise")
     level: Mapped[Level | None] = relationship("Level", lazy="raise")
