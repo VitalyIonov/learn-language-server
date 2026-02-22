@@ -10,7 +10,7 @@ class DefinitionsMeanings(Base):
         ForeignKey("definitions.id", ondelete="CASCADE"), primary_key=True
     )
     meaning_id: Mapped[int] = mapped_column(
-        ForeignKey("meanings.id", ondelete="CASCADE"), primary_key=True
+        ForeignKey("meanings.id", ondelete="CASCADE"), primary_key=True, index=True
     )
 
 

@@ -21,8 +21,8 @@ class Definition(Base):
     type: Mapped[QuestionTypeName] = mapped_column(nullable=False)
     text: Mapped[str] = mapped_column(nullable=False, index=True)
 
-    category_id: Mapped[int | None] = mapped_column(ForeignKey("categories.id", ondelete="SET NULL"), nullable=True)
-    level_id: Mapped[int | None] = mapped_column(ForeignKey("levels.id", ondelete="SET NULL"), nullable=True)
+    category_id: Mapped[int | None] = mapped_column(ForeignKey("categories.id", ondelete="SET NULL"), nullable=True, index=True)
+    level_id: Mapped[int | None] = mapped_column(ForeignKey("levels.id", ondelete="SET NULL"), nullable=True, index=True)
     language: Mapped[TargetLanguageCode | None] = mapped_column(String, nullable=True, server_default=TargetLanguageCode.ES.value)
 
     category: Mapped[Category | None] = relationship("Category", back_populates="definitions", lazy="raise")
