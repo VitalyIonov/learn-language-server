@@ -21,3 +21,12 @@ class LevelOut(LevelOutBase):
 
 class LevelsListResponse(BaseSchema):
     items: List[LevelOut]
+
+
+class LevelScoreOut(LevelOutBase):
+    current_score: int
+    max_score: int
+
+
+class LevelsScoreListResponse(BaseSchema):
+    items: List[LevelScoreOut]

@@ -5,7 +5,7 @@ from .definition import (
     TextDefinitionOut,
     ImageDefinitionOut,
 )
-from .level import LevelOut, LevelOutBase, LevelsListResponse
+from .level import LevelOut, LevelOutBase, LevelsListResponse, LevelScoreOut, LevelsScoreListResponse
 from .meaning import MeaningOut
 from .statistic import LevelProgressByCategoryStatistic, ProgressByUserStatistic
 from .question import (
