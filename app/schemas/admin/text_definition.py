@@ -7,7 +7,7 @@ from .meaning import MeaningOut
 from .category import CategoryOut
 from .level import LevelOut
 from app.models import QuestionTypeName
-from app.constants.definition_group import DefinitionGroup
+from app.constants.definition_group import TextDefinitionGroup
 
 
 class TextDefinitionOut(BaseSchema):
@@ -15,7 +15,7 @@ class TextDefinitionOut(BaseSchema):
 
     type: Literal[QuestionTypeName.TEXT] = QuestionTypeName.TEXT
     text: str
-    group: Optional[DefinitionGroup] = None
+    group: Optional[TextDefinitionGroup] = None
 
     audio: Optional[AudioAssetOut] = None
     category: Optional[CategoryOut] = None
@@ -29,7 +29,7 @@ class TextDefinitionOutIds(BaseSchema):
     id: int
     text: str
     type: Literal[QuestionTypeName.TEXT] = QuestionTypeName.TEXT
-    group: Optional[DefinitionGroup] = None
+    group: Optional[TextDefinitionGroup] = None
     audio_id: Optional[int] = None
     category_id: Optional[int] = None
     level_id: Optional[int] = None
@@ -45,7 +45,7 @@ class TextDefinitionListResponse(BaseSchema):
 
 class TextDefinitionCreate(BaseSchema):
     text: str
-    group: Optional[DefinitionGroup] = None
+    group: Optional[TextDefinitionGroup] = None
 
     audio_id: Optional[int] = None
     category_id: Optional[int] = None
@@ -55,7 +55,7 @@ class TextDefinitionCreate(BaseSchema):
 
 class TextDefinitionUpdate(BaseSchema):
     text: Optional[str] = None
-    group: Optional[DefinitionGroup] = None
+    group: Optional[TextDefinitionGroup] = None
 
     audio_id: Optional[int] = None
     category_id: Optional[int] = None

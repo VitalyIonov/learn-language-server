@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import enum
+from typing import Literal
 
 
 class DefinitionGroup(str, enum.Enum):
@@ -8,3 +9,14 @@ class DefinitionGroup(str, enum.Enum):
     NOUN = "NOUN"
     DESCRIPTION = "DESCRIPTION"
     PHRASE = "PHRASE"
+    ILLUSTRATION = "ILLUSTRATION"
+
+
+TextDefinitionGroup = Literal[
+    DefinitionGroup.VERB,
+    DefinitionGroup.NOUN,
+    DefinitionGroup.DESCRIPTION,
+    DefinitionGroup.PHRASE,
+]
+
+ImageDefinitionGroup = Literal[DefinitionGroup.ILLUSTRATION]

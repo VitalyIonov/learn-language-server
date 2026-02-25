@@ -1,4 +1,4 @@
-from typing import Literal
+from typing import Literal, Optional
 
 from pydantic import ConfigDict, Field
 from app.schemas.common import ImageAssetOut, Meta
@@ -7,6 +7,7 @@ from .meaning import MeaningOut
 from .category import CategoryOut
 from .level import LevelOut
 from app.models import QuestionTypeName
+from app.constants.definition_group import ImageDefinitionGroup
 
 
 class ImageDefinitionOut(BaseSchema):
@@ -14,6 +15,7 @@ class ImageDefinitionOut(BaseSchema):
 
     type: Literal[QuestionTypeName.IMAGE] = QuestionTypeName.IMAGE
     image_id: int
+    group: Optional[ImageDefinitionGroup] = None
     category_id: int | None = None
     level_id: int | None = None
     meaning_ids: list[int] = Field(default_factory=list)
@@ -29,6 +31,7 @@ class ImageDefinitionOut(BaseSchema):
 class ImageDefinitionOutIds(BaseSchema):
     id: int
     image_id: int
+    group: Optional[ImageDefinitionGroup] = None
     category_id: int | None = None
     level_id: int | None = None
     meaning_ids: list[int] = Field(default_factory=list)
@@ -43,6 +46,7 @@ class ImageDefinitionListResponse(BaseSchema):
 
 class ImageDefinitionCreate(BaseSchema):
     image_id: int
+    group: Optional[ImageDefinitionGroup] = None
     category_id: int | None = None
     level_id: int | None = None
     meaning_ids: list[int] = Field(default_factory=list)
@@ -50,6 +54,7 @@ class ImageDefinitionCreate(BaseSchema):
 
 class ImageDefinitionUpdate(BaseSchema):
     image_id: int | None = None
+    group: Optional[ImageDefinitionGroup] = None
     category_id: int | None = None
     level_id: int | None = None
     meaning_ids: list[int] | None = None

@@ -26,3 +26,4 @@ from .user import UserOut, UserCreate, UsersListResponse
 from .translate import TranslateOut
 from .target_language import TargetLanguageOut, TargetLanguageListResponse
 from .interface_language import InterfaceLanguageOut, InterfaceLanguageListResponse
+from .definition import DefinitionStatRow
