@@ -205,6 +205,7 @@ class QuestionService:
             user_id=current_user.id,
             meaning_id=entity.meaning_id,
             level_id=entity.level_id,
+            category_id=entity.category_id,
         )
         definition_progress_info = (
             await self.svc_definition_progress_info.get_or_create(

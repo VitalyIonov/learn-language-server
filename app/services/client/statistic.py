@@ -41,7 +41,6 @@ class StatisticService:
         current_score_stmt = (
             select(coalesce(func.sum(self._get_capped_score_stmt()), 0))
             .select_from(MeaningProgressInfo)
-            .join(Meaning, Meaning.id == MeaningProgressInfo.meaning_id)
             .where(
                 MeaningProgressInfo.user_id == user_id,
             )
@@ -54,11 +53,11 @@ class StatisticService:
     ) -> int:
         current_score_stmt = (
             select(coalesce(func.sum(self._get_capped_score_stmt()), 0))
-            .join(Meaning, Meaning.id == MeaningProgressInfo.meaning_id)
+            .select_from(MeaningProgressInfo)
             .where(
                 MeaningProgressInfo.user_id == user_id,
                 MeaningProgressInfo.level_id == level_id,
-                Meaning.category_id == category_id,
+                MeaningProgressInfo.category_id == category_id,
             )
         )
 

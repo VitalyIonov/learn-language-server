@@ -5,6 +5,7 @@ class MeaningProgressInfoCreate(BaseSchema):
     user_id: int
     meaning_id: int
     level_id: int
+    category_id: int
 
 
 class MeaningProgressInfoUpdate(BaseSchema):
