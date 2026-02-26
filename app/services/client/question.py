@@ -9,7 +9,6 @@ from sqlalchemy.orm import load_only
 from app.constants.score import BASE_SCORE
 from app.schemas.admin import (
     MeaningProgressInfoUpdate,
-    DefinitionProgressInfoUpdate,
 )
 
 from app.schemas.client import (
@@ -212,6 +211,8 @@ class QuestionService:
                 user_id=current_user.id,
                 meaning_id=entity.meaning_id,
                 definition_id=payload.chosen_definition_id,
+                level_id=entity.level_id,
+                category_id=entity.category_id,
             )
         )
 
@@ -225,15 +226,6 @@ class QuestionService:
                 else meaning_progress_info.score - 3
             ),
         )
-        dpi_new_score = max(
-            0,
-            (
-                definition_progress_info.score + 2
-                if result.is_correct
-                else definition_progress_info.score - 3
-            ),
-        )
-
         if mpi_new_score != meaning_progress_info.score:
             await self.svc_meaning_progress_info.update(
                 user_id=current_user.id,
@@ -241,15 +233,6 @@ class QuestionService:
                 level_id=entity.level_id,
                 payload=MeaningProgressInfoUpdate(
                     score=mpi_new_score,
-                ),
-            )
-        if dpi_new_score != definition_progress_info.score:
-            await self.svc_definition_progress_info.update(
-                user_id=current_user.id,
-                meaning_id=entity.meaning_id,
-                definition_id=entity.correct_definition_id,
-                payload=DefinitionProgressInfoUpdate(
-                    score=dpi_new_score,
                 ),
             )
 

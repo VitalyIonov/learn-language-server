@@ -55,7 +55,7 @@ class DefinitionProgressInfoService:
         return await crud_update_definition_progress_info(self.db, entity, payload)
 
     async def get_or_create(
-        self, user_id: int, meaning_id: int, definition_id: int
+        self, user_id: int, meaning_id: int, definition_id: int, level_id: int, category_id: int
     ) -> DefinitionProgressInfo:
         entity = await self.get(user_id, meaning_id, definition_id)
 
@@ -65,6 +65,8 @@ class DefinitionProgressInfoService:
                     user_id=user_id,
                     meaning_id=meaning_id,
                     definition_id=definition_id,
+                    level_id=level_id,
+                    category_id=category_id,
                 )
             )
 

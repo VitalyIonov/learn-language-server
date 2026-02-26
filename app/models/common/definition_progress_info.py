@@ -7,7 +7,7 @@ from sqlalchemy.orm import Mapped, mapped_column, relationship
 from app.core.db import Base
 
 if TYPE_CHECKING:
-    from app.models.common import Meaning, Definition
+    from app.models.common import Meaning, Definition, Level, Category
 
 
 class DefinitionProgressInfo(Base):
@@ -16,16 +16,16 @@ class DefinitionProgressInfo(Base):
     user_id: Mapped[int] = mapped_column(ForeignKey("users.id", ondelete="CASCADE"), nullable=False, primary_key=True)
     meaning_id: Mapped[int] = mapped_column(ForeignKey("meanings.id", ondelete="CASCADE"), nullable=False, primary_key=True)
     definition_id: Mapped[int] = mapped_column(ForeignKey("definitions.id", ondelete="CASCADE"), nullable=False, primary_key=True)
+    level_id: Mapped[int] = mapped_column(ForeignKey("levels.id", ondelete="CASCADE"), nullable=False, index=True)
+    category_id: Mapped[int] = mapped_column(
+        ForeignKey("categories.id", ondelete="CASCADE"),
+        nullable=False,
+        index=True,
+    )
 
-    @property
-    def level_id(self) -> int:
-        return self.definition.level_id
+    chance: Mapped[int] = mapped_column(default=100, server_default="100")
 
-    @property
-    def category_id(self) -> int:
-        return self.definition.category_id
-
-    score: Mapped[int] = mapped_column(default=0, server_default="0")
-
-    meaning: Mapped[Meaning] = relationship("Meaning")
-    definition: Mapped[Definition] = relationship("Definition")
+    meaning: Mapped["Meaning"] = relationship("Meaning", lazy="raise")
+    definition: Mapped["Definition"] = relationship("Definition", lazy="raise")
+    level: Mapped["Level"] = relationship("Level", lazy="raise")
+    category: Mapped["Category"] = relationship("Category", lazy="raise")
