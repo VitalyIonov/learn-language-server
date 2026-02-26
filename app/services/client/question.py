@@ -9,6 +9,7 @@ from sqlalchemy.orm import load_only
 from app.constants.score import BASE_SCORE, DEFINITION_GROUP_SCORES
 from app.schemas.admin import (
     MeaningProgressInfoUpdate,
+    DefinitionProgressInfoUpdate,
 )
 
 from app.schemas.client import (
@@ -69,9 +70,7 @@ class QuestionService:
         category_id: int,
         user_id: int,
     ):
-        current_level_value_stmt = (
-            select(Level.value).where(Level.id == question_level_id).scalar_subquery()
-        )
+        current_level_value_stmt = select(Level.value).where(Level.id == question_level_id).scalar_subquery()
 
         return (
             select(Meaning)
@@ -101,9 +100,7 @@ class QuestionService:
             .limit(1)
         )
 
-    async def generate(
-        self, payload: QuestionGenerate, current_user: User
-    ) -> QuestionOut:
+    async def generate(self, payload: QuestionGenerate, current_user: User) -> QuestionOut:
         meaning_stmt = self._build_meaning_query(
             question_level_id=payload.level_id,
             category_id=payload.category_id,
@@ -150,9 +147,7 @@ class QuestionService:
             .limit(1)
         )
 
-        false_definitions = list(
-            (await self.db.execute(definition_false_stmt)).scalars().all()
-        )
+        false_definitions = list((await self.db.execute(definition_false_stmt)).scalars().all())
         true_definition = (await self.db.execute(definition_true_stmt)).scalar()
 
         if true_definition is None:
@@ -206,14 +201,12 @@ class QuestionService:
             level_id=entity.level_id,
             category_id=entity.category_id,
         )
-        definition_progress_info = (
-            await self.svc_definition_progress_info.get_or_create(
-                user_id=current_user.id,
-                meaning_id=entity.meaning_id,
-                definition_id=payload.chosen_definition_id,
-                level_id=entity.level_id,
-                category_id=entity.category_id,
-            )
+        definition_progress_info = await self.svc_definition_progress_info.get_or_create(
+            user_id=current_user.id,
+            meaning_id=entity.meaning_id,
+            definition_id=payload.chosen_definition_id,
+            level_id=entity.level_id,
+            category_id=entity.category_id,
         )
 
         result = await crud_update_question(self.db, entity, payload)
@@ -221,8 +214,10 @@ class QuestionService:
         if result.is_correct and entity.correct_definition:
             group_score = DEFINITION_GROUP_SCORES.get(entity.correct_definition.group, 0)
             mpi_new_score = meaning_progress_info.score + group_score
+            new_chance = round(definition_progress_info.chance * 0.8, 2)
         else:
             mpi_new_score = meaning_progress_info.score
+            new_chance = round(definition_progress_info.chance * 1.3, 2)
 
         if mpi_new_score != meaning_progress_info.score:
             await self.svc_meaning_progress_info.update(
@@ -233,6 +228,13 @@ class QuestionService:
                     score=mpi_new_score,
                 ),
             )
+
+        await self.svc_definition_progress_info.update(
+            user_id=current_user.id,
+            meaning_id=entity.meaning_id,
+            definition_id=payload.chosen_definition_id,
+            payload=DefinitionProgressInfoUpdate(chance=new_chance),
+        )
 
         current_progress = await self.svc_statistic.get_level_progress_by_category(
             user_id=current_user.id,
@@ -254,9 +256,7 @@ class QuestionService:
             if update_result.new_next_cpi is not None:
                 update_info = LevelUpInfo(
                     type="level_up",
-                    new_level=LevelOutBase.model_validate(
-                        update_result.new_next_cpi.level
-                    ),
+                    new_level=LevelOutBase.model_validate(update_result.new_next_cpi.level),
                 )
             elif update_result.next_level is None:
                 update_info = CategoryFinishInfo(

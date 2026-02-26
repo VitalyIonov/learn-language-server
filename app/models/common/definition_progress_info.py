@@ -23,7 +23,7 @@ class DefinitionProgressInfo(Base):
         index=True,
     )
 
-    chance: Mapped[int] = mapped_column(default=100, server_default="100")
+    chance: Mapped[float] = mapped_column(default=100.0, server_default="100")
 
     meaning: Mapped["Meaning"] = relationship("Meaning", lazy="raise")
     definition: Mapped["Definition"] = relationship("Definition", lazy="raise")

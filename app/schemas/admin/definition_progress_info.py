@@ -12,4 +12,4 @@ class DefinitionProgressInfoCreate(BaseSchema):
 
 
 class DefinitionProgressInfoUpdate(BaseSchema):
-    chance: int = Field(gt=0)
+    chance: float = Field(gt=0)
