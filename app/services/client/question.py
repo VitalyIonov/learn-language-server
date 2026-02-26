@@ -6,7 +6,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy import select, func, and_, case
 from sqlalchemy.orm import load_only
 
-from app.constants.score import BASE_SCORE
+from app.constants.score import BASE_SCORE, DEFINITION_GROUP_SCORES
 from app.schemas.admin import (
     MeaningProgressInfoUpdate,
 )
@@ -218,14 +218,12 @@ class QuestionService:
 
         result = await crud_update_question(self.db, entity, payload)
 
-        mpi_new_score = max(
-            0,
-            (
-                meaning_progress_info.score + 2
-                if result.is_correct
-                else meaning_progress_info.score - 3
-            ),
-        )
+        if result.is_correct and entity.correct_definition:
+            group_score = DEFINITION_GROUP_SCORES.get(entity.correct_definition.group, 0)
+            mpi_new_score = meaning_progress_info.score + group_score
+        else:
+            mpi_new_score = meaning_progress_info.score
+
         if mpi_new_score != meaning_progress_info.score:
             await self.svc_meaning_progress_info.update(
                 user_id=current_user.id,

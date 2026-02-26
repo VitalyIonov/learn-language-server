@@ -17,7 +17,6 @@ async def get_definition_stats(db: AsyncSession, category_id: int) -> list[Defin
         .join(DefinitionsMeanings, DefinitionsMeanings.definition_id == Definition.id)
         .where(
             Definition.category_id == category_id,
-            Definition.group.is_not(None),
         )
         .group_by(Definition.level_id, Definition.group, DefinitionsMeanings.meaning_id)
     )

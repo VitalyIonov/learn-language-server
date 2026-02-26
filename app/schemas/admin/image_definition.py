@@ -15,7 +15,7 @@ class ImageDefinitionOut(BaseSchema):
 
     type: Literal[QuestionTypeName.IMAGE] = QuestionTypeName.IMAGE
     image_id: int
-    group: Optional[ImageDefinitionGroup] = None
+    group: ImageDefinitionGroup
     category_id: int | None = None
     level_id: int | None = None
     meaning_ids: list[int] = Field(default_factory=list)
@@ -31,7 +31,7 @@ class ImageDefinitionOut(BaseSchema):
 class ImageDefinitionOutIds(BaseSchema):
     id: int
     image_id: int
-    group: Optional[ImageDefinitionGroup] = None
+    group: ImageDefinitionGroup
     category_id: int | None = None
     level_id: int | None = None
     meaning_ids: list[int] = Field(default_factory=list)
@@ -46,7 +46,7 @@ class ImageDefinitionListResponse(BaseSchema):
 
 class ImageDefinitionCreate(BaseSchema):
     image_id: int
-    group: Optional[ImageDefinitionGroup] = None
+    group: ImageDefinitionGroup
     category_id: int | None = None
     level_id: int | None = None
     meaning_ids: list[int] = Field(default_factory=list)

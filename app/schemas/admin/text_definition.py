@@ -15,7 +15,7 @@ class TextDefinitionOut(BaseSchema):
 
     type: Literal[QuestionTypeName.TEXT] = QuestionTypeName.TEXT
     text: str
-    group: Optional[TextDefinitionGroup] = None
+    group: TextDefinitionGroup
 
     audio: Optional[AudioAssetOut] = None
     category: Optional[CategoryOut] = None
@@ -29,7 +29,7 @@ class TextDefinitionOutIds(BaseSchema):
     id: int
     text: str
     type: Literal[QuestionTypeName.TEXT] = QuestionTypeName.TEXT
-    group: Optional[TextDefinitionGroup] = None
+    group: TextDefinitionGroup
     audio_id: Optional[int] = None
     category_id: Optional[int] = None
     level_id: Optional[int] = None
@@ -45,7 +45,7 @@ class TextDefinitionListResponse(BaseSchema):
 
 class TextDefinitionCreate(BaseSchema):
     text: str
-    group: Optional[TextDefinitionGroup] = None
+    group: TextDefinitionGroup
 
     audio_id: Optional[int] = None
     category_id: Optional[int] = None

@@ -41,4 +41,9 @@ class Question(Base):
     level: Mapped[Level | None] = relationship("Level", lazy="selectin")
     meaning: Mapped[Meaning | None] = relationship("Meaning", lazy="selectin")
     category: Mapped[Category | None] = relationship("Category", lazy="selectin", back_populates="questions")
+    correct_definition: Mapped["Definition | None"] = relationship(
+        "Definition",
+        foreign_keys=[correct_definition_id],
+        lazy="selectin",
+    )
     definitions: Mapped[list["Definition"]] = relationship("Definition", secondary="definitions_questions")
