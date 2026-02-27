@@ -1,11 +1,57 @@
-from typing import Sequence
+from typing import Sequence, Type, Union
 
-from sqlalchemy import select
+from sqlalchemy import select, func
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from app.models import Definition
+from app.models import Definition, TextDefinition, ImageDefinition
 from app.models.common import Question
+from app.models.common.associations import DefinitionsMeanings
+from app.models.common.definition_progress_info import DefinitionProgressInfo
 from app.schemas.client import QuestionCreate, QuestionUpdate
+from app.schemas.client.question import DefinitionCandidate
+
+
+async def get_definition_candidates(
+    db: AsyncSession,
+    level_id: int,
+    category_id: int,
+    user_id: int,
+) -> list[DefinitionCandidate]:
+    stmt = (
+        select(
+            Definition.id,
+            DefinitionsMeanings.meaning_id,
+            Definition.group,
+            func.coalesce(DefinitionProgressInfo.chance, 100.0).label("chance"),
+        )
+        .join(
+            DefinitionsMeanings,
+            DefinitionsMeanings.definition_id == Definition.id,
+        )
+        .outerjoin(
+            DefinitionProgressInfo,
+            (DefinitionProgressInfo.definition_id == Definition.id)
+            & (DefinitionProgressInfo.meaning_id == DefinitionsMeanings.meaning_id)
+            & (DefinitionProgressInfo.user_id == user_id),
+        )
+        .where(
+            Definition.level_id == level_id,
+            Definition.category_id == category_id,
+        )
+    )
+
+    result = await db.execute(stmt)
+    return [DefinitionCandidate(*row) for row in result.all()]
+
+
+async def get_definitions_by_ids(
+    db: AsyncSession,
+    definition_ids: list[int],
+    definition_class: Type[Union[TextDefinition, ImageDefinition]],
+) -> list[Union[TextDefinition, ImageDefinition]]:
+    stmt = select(definition_class).where(definition_class.id.in_(definition_ids))
+    result = await db.execute(stmt)
+    return list(result.scalars().all())
 
 
 async def get_question(db: AsyncSession, question_id: int) -> Question | None:

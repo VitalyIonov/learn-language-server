@@ -1,4 +1,4 @@
-from typing import Optional, Literal, Annotated, Union
+from typing import Optional, Literal, Annotated, Union, NamedTuple
 
 from pydantic import Field, BaseModel
 from app.schemas.base import BaseSchema
@@ -6,6 +6,7 @@ from .level import LevelOutBase
 from .definition import DefinitionOut
 from .meaning import MeaningOut
 from app.models import QuestionTypeName
+from app.constants.definition_group import DefinitionGroup
 
 
 class LevelUpInfo(BaseModel):
@@ -18,6 +19,13 @@ class CategoryFinishInfo(BaseModel):
 
 
 Info = Annotated[Union[LevelUpInfo, CategoryFinishInfo], Field(discriminator="type")]
+
+
+class DefinitionCandidate(NamedTuple):
+    definition_id: int
+    meaning_id: int
+    group: DefinitionGroup
+    chance: float
 
 
 class QuestionOut(BaseSchema):

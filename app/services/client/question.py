@@ -1,18 +1,18 @@
 import random
-from typing import cast, Union, Type
+from typing import Union, Type
 
 from sqlalchemy.exc import NoResultFound
 from sqlalchemy.ext.asyncio import AsyncSession
-from sqlalchemy import select, func, and_, case
-from sqlalchemy.orm import load_only
 
-from app.constants.score import BASE_SCORE, DEFINITION_GROUP_SCORES
+from app.constants.score import DEFINITION_GROUP_SCORES
+from app.constants.definition_group import DefinitionGroup
 from app.schemas.admin import (
     MeaningProgressInfoUpdate,
     DefinitionProgressInfoUpdate,
 )
 
 from app.schemas.client import (
+    DefinitionCandidate,
     QuestionOut,
     QuestionCreate,
     QuestionUpdate,
@@ -26,10 +26,7 @@ from app.schemas.client import (
 from app.models import (
     User,
     Meaning,
-    Definition,
     Question,
-    Level,
-    MeaningProgressInfo,
     TextDefinition,
     QuestionTypeName,
     ImageDefinition,
@@ -38,6 +35,8 @@ from app.crud.client import (
     create_question as crud_create_question,
     get_question as crud_get_question,
     update_question as crud_update_question,
+    get_definition_candidates as crud_get_definition_candidates,
+    get_definitions_by_ids as crud_get_definitions_by_ids,
 )
 
 from ..admin.category_progress_info import CategoryProgressInfoService
@@ -45,6 +44,14 @@ from ..admin.meaning_progress_info import MeaningProgressInfoService
 from ..admin.definition_progress_info import DefinitionProgressInfoService
 from ..admin.level import LevelService
 from .statistic import StatisticService
+
+FALSE_DEFINITIONS_COUNT: dict[DefinitionGroup, int] = {
+    DefinitionGroup.ILLUSTRATION: 3,
+    DefinitionGroup.VERB: 2,
+    DefinitionGroup.NOUN: 2,
+    DefinitionGroup.DESCRIPTION: 2,
+    DefinitionGroup.PHRASE: 2,
+}
 
 
 class QuestionService:
@@ -64,52 +71,48 @@ class QuestionService:
         self.svc_statistic = svc_statistic
         self.svc_level = svc_level
 
-    def _build_meaning_query(
-        self,
-        question_level_id: int | None,
-        category_id: int,
-        user_id: int,
-    ):
-        current_level_value_stmt = select(Level.value).where(Level.id == question_level_id).scalar_subquery()
+    @staticmethod
+    def _compute_false_definition_ids(
+        candidates: list[DefinitionCandidate],
+    ) -> dict[tuple[int, int], set[int]]:
+        group_definitions: dict[DefinitionGroup, set[int]] = {}
+        meaning_definitions: dict[int, set[int]] = {}
 
-        return (
-            select(Meaning)
-            .join(Level, Meaning.level_id == Level.id)
-            .options(load_only(Meaning.id, Meaning.name))
-            .join(
-                MeaningProgressInfo,
-                and_(
-                    MeaningProgressInfo.meaning_id == Meaning.id,
-                    MeaningProgressInfo.level_id == question_level_id,
-                    MeaningProgressInfo.user_id == user_id,
-                ),
-                isouter=True,
-            )
-            .where(
-                Meaning.definitions.any(Definition.level_id == question_level_id),
-                Meaning.category_id == category_id,
-                Level.value <= current_level_value_stmt,
-            )
-            .order_by(
-                case(
-                    (func.coalesce(MeaningProgressInfo.score, 0) < BASE_SCORE, 1),
-                    else_=2,
-                ),
-                func.random(),
-            )
-            .limit(1)
-        )
+        for candidate in candidates:
+            group_definitions.setdefault(candidate.group, set()).add(candidate.definition_id)
+            meaning_definitions.setdefault(candidate.meaning_id, set()).add(candidate.definition_id)
+
+        return {
+            (candidate.definition_id, candidate.meaning_id): group_definitions[candidate.group] - meaning_definitions[candidate.meaning_id]
+            for candidate in candidates
+        }
 
     async def generate(self, payload: QuestionGenerate, current_user: User) -> QuestionOut:
-        meaning_stmt = self._build_meaning_query(
-            question_level_id=payload.level_id,
+        definition_candidates = await crud_get_definition_candidates(
+            self.db,
+            level_id=payload.level_id,
             category_id=payload.category_id,
             user_id=current_user.id,
         )
-        meaning = (await self.db.execute(meaning_stmt)).scalars().one_or_none()
 
-        if meaning is None:
-            raise NoResultFound("Meaning not found")
+        if not definition_candidates:
+            raise NoResultFound("No definitions found")
+
+        false_ids_map = self._compute_false_definition_ids(definition_candidates)
+
+        eligible = [
+            candidate
+            for candidate in definition_candidates
+            if len(false_ids_map[(candidate.definition_id, candidate.meaning_id)]) >= FALSE_DEFINITIONS_COUNT[candidate.group]
+        ]
+
+        if not eligible:
+            raise NoResultFound("No eligible definitions found")
+
+        selected = random.choices(eligible, weights=[candidate.chance for candidate in eligible], k=1)[0]
+
+        n = FALSE_DEFINITIONS_COUNT[selected.group]
+        false_definition_ids = random.sample(list(false_ids_map[(selected.definition_id, selected.meaning_id)]), n)
 
         question_level = await self.svc_level.get(payload.level_id)
         question_type = question_level.question_types[0]
@@ -117,55 +120,26 @@ class QuestionService:
 
         if question_type.name == QuestionTypeName.TEXT:
             definition_class = TextDefinition
-            load_fields = [definition_class.id, definition_class.text]
-            false_definitions_count = 2
         else:
             definition_class = ImageDefinition
-            load_fields = [definition_class.id, definition_class.image_id]
-            false_definitions_count = 3
 
-        definition_false_stmt = (
-            select(definition_class)
-            .options(load_only(*load_fields))
-            .where(
-                definition_class.level_id == question_level.id,
-                definition_class.category_id == payload.category_id,
-                ~definition_class.meanings.any(Meaning.id == meaning.id),
-            )
-            .order_by(func.random())
-            .limit(false_definitions_count)
-        )
+        all_definition_ids = [selected.definition_id] + false_definition_ids
+        definitions = await crud_get_definitions_by_ids(self.db, all_definition_ids, definition_class)
 
-        definition_true_stmt = (
-            select(definition_class)
-            .options(load_only(*load_fields))
-            .where(
-                definition_class.level_id == question_level.id,
-                definition_class.meanings.any(Meaning.id == meaning.id),
-            )
-            .order_by(func.random())
-            .limit(1)
-        )
+        meaning = await self.db.get(Meaning, selected.meaning_id)
+        if meaning is None:
+            raise NoResultFound("Meaning not found")
 
-        false_definitions = list((await self.db.execute(definition_false_stmt)).scalars().all())
-        true_definition = (await self.db.execute(definition_true_stmt)).scalar()
-
-        if true_definition is None:
-            raise NoResultFound("Definition not found")
-
-        true_definitions = [true_definition]
-
-        definitions = false_definitions + true_definitions
         random.shuffle(definitions)
-        definition_ids = [d.id for d in definitions]
+        definition_ids = [definition.id for definition in definitions]
 
         question_data = QuestionCreate(
             user_id=current_user.id,
             type=question_type.name,
-            meaning_id=cast(int, meaning.id),
+            meaning_id=selected.meaning_id,
             category_id=payload.category_id,
-            level_id=question_level.id,
-            correct_definition_id=cast(int, true_definition.id),
+            level_id=payload.level_id,
+            correct_definition_id=selected.definition_id,
         )
 
         question = await crud_create_question(self.db, question_data, definition_ids)

@@ -4,7 +4,8 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Project Overview
 
-FastAPI backend for a language learning platform. Python 3.11+, async throughout, PostgreSQL via SQLAlchemy 2.0 + asyncpg. Poetry for dependency management. Dockerized development environment.
+FastAPI backend for a language learning platform. Python 3.11+, async throughout, PostgreSQL via SQLAlchemy 2.0 +
+asyncpg. Poetry for dependency management. Dockerized development environment.
 
 ## Commands
 
@@ -46,19 +47,25 @@ Every domain entity follows a consistent 4-layer pattern:
 - **CRUD** (`app/crud/{admin,client,common}/`) — raw database queries
 - **Models** (`app/models/common/`) — SQLAlchemy ORM models
 
-Schemas (Pydantic) live in `app/schemas/{admin,client,common}/` and are split by consumer (admin vs client may expose different fields for the same entity).
+Schemas (Pydantic) live in `app/schemas/{admin,client,common}/` and are split by consumer (admin vs client may expose
+different fields for the same entity).
 
 ### Dependency Injection
 
-All services are wired through FastAPI's `Depends()` system. Factory functions in `app/core/dependencies/service_factories.py` create service instances with their dependencies (DB session, other services). This is the central wiring file — when adding a new service, register its factory here.
+All services are wired through FastAPI's `Depends()` system. Factory functions in
+`app/core/dependencies/service_factories.py` create service instances with their dependencies (DB session, other
+services). This is the central wiring file — when adding a new service, register its factory here.
 
 ### Authentication
 
-Google OAuth2 via Authlib → JWT stored in `access_token` httpOnly cookie. Custom `OAuth2PasswordBearerWithCookie` scheme in `app/core/security.py` reads tokens from cookies instead of Authorization header. `AuthService.decode_token()` validates JWTs signed with `SECRET_KEY`.
+Google OAuth2 via Authlib → JWT stored in `access_token` httpOnly cookie. Custom `OAuth2PasswordBearerWithCookie` scheme
+in `app/core/security.py` reads tokens from cookies instead of Authorization header. `AuthService.decode_token()`
+validates JWTs signed with `SECRET_KEY`.
 
 ### Database
 
-PostgreSQL 15, async via asyncpg. Alembic for migrations (`app/db/migrations/`). All models inherit from `app.core.db.Base`. Seed data loaded from `seed_data/` JSON files via `app/seed.py`.
+PostgreSQL 15, async via asyncpg. Alembic for migrations (`app/db/migrations/`). All models inherit from
+`app.core.db.Base`. Seed data loaded from `seed_data/` JSON files via `app/seed.py`.
 
 ### External Services
 
@@ -69,15 +76,20 @@ PostgreSQL 15, async via asyncpg. Alembic for migrations (`app/db/migrations/`).
 
 ### Domain Model
 
-Core learning flow: **Category → Level → Meaning → Definition** (text or image). User progress tracked per-entity: `CategoryProgressInfo`, `MeaningProgressInfo`, `DefinitionProgressInfo`. Quiz system in `QuestionService` generates questions and updates progress.
+Core learning flow: **Category → Level → Meaning → Definition** (text or image). User progress tracked per-entity:
+`CategoryProgressInfo`, `MeaningProgressInfo`, `DefinitionProgressInfo`. Quiz system in `QuestionService` generates
+questions and updates progress.
 
 ## Configuration
 
-Pydantic `BaseSettings` in `app/core/config.py` reads from `.env`. Key vars: `POSTGRES_*`, `SECRET_KEY`, `SESSION_SECRET_KEY`, `GOOGLE_CLIENT_*`, `R2_*`, `DEEPL_API_KEY`, `OPENAI_API_KEY`.
+Pydantic `BaseSettings` in `app/core/config.py` reads from `.env`. Key vars: `POSTGRES_*`, `SECRET_KEY`,
+`SESSION_SECRET_KEY`, `GOOGLE_CLIENT_*`, `R2_*`, `DEEPL_API_KEY`, `OPENAI_API_KEY`.
 
 ## Conventions
 
 - All DB operations and route handlers are async
 - `black` formatting (line-length 88), `isort` with black profile
 - mypy with pydantic and sqlalchemy plugins
-- Admin and client domains have separate service/schema/CRUD layers for the same entities when different behavior is needed
+- Admin and client domains have separate service/schema/CRUD layers for the same entities when different behavior is
+  needed
+- в циклах не используй сокращения. Неверный вариант - for c in candidates. Верный - for candidate in candidates
