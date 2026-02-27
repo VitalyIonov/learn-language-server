@@ -26,6 +26,7 @@ class LevelsListResponse(BaseSchema):
 class LevelScoreOut(LevelOutBase):
     current_score: int
     max_score: int
+    is_active: bool
 
 
 class LevelsScoreListResponse(BaseSchema):

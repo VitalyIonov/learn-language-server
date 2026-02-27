@@ -54,6 +54,22 @@ async def get_definitions_by_ids(
     return list(result.scalars().all())
 
 
+async def get_last_question_level_id(
+    db: AsyncSession, user_id: int, category_id: int,
+) -> int | None:
+    stmt = (
+        select(Question.level_id)
+        .where(
+            Question.user_id == user_id,
+            Question.category_id == category_id,
+        )
+        .order_by(Question.created_at.desc())
+        .limit(1)
+    )
+    result = await db.execute(stmt)
+    return result.scalar_one_or_none()
+
+
 async def get_question(db: AsyncSession, question_id: int) -> Question | None:
     entity = await db.get(Question, question_id)
     return entity

@@ -5,6 +5,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from app.crud.client import (
     get_levels as crud_get_levels,
     get_levels_base_by_ids as crud_get_levels_base_by_ids,
+    get_last_question_level_id as crud_get_last_question_level_id,
 )
 from app.crud.common import (
     get_definition_stats as crud_get_definition_stats,
@@ -13,6 +14,7 @@ from app.crud.common import (
 from app.schemas.common import DefinitionStatRow
 from app.constants.definition import DefinitionGroup
 from app.constants.score import DEFINITION_GROUP_SCORES
+from app.models import Level
 from app.schemas.client import LevelsListResponse, LevelScoreOut, LevelsScoreListResponse
 
 
@@ -54,6 +56,16 @@ class LevelService:
     async def get_all(self, user_id: int, category_id: int) -> LevelsListResponse:
         return await crud_get_levels(self.db, user_id=user_id, category_id=category_id)
 
+    async def _get_active_level_id(
+        self, user_id: int, category_id: int, levels: list[Level],
+    ) -> int:
+        level_id = await crud_get_last_question_level_id(
+            self.db, user_id=user_id, category_id=category_id,
+        )
+        if level_id is not None:
+            return level_id
+        return min(levels, key=lambda level: level.value).id
+
     async def get_all_by_score(self, user_id: int, category_id: int) -> LevelsScoreListResponse:
         definitions_stat_rows = await crud_get_definition_stats(self.db, category_id=category_id)
         max_scores = _get_level_max_scores(definitions_stat_rows)
@@ -64,6 +76,7 @@ class LevelService:
         level_ids = list(max_scores.keys())
         levels = await crud_get_levels_base_by_ids(self.db, level_ids=level_ids)
         current_scores = await crud_get_scores_by_levels(self.db, user_id=user_id, category_id=category_id, level_ids=level_ids)
+        active_level_id = await self._get_active_level_id(user_id=user_id, category_id=category_id, levels=levels)
 
         items = [
             LevelScoreOut(
@@ -73,6 +86,7 @@ class LevelService:
                 value=level.value,
                 current_score=current_scores.get(level.id, 0),
                 max_score=max_scores[level.id],
+                is_active=(level.id == active_level_id),
             )
             for level in levels
         ]
