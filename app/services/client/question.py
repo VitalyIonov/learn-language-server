@@ -100,7 +100,7 @@ class QuestionService:
         false_definition_ids = random.sample(list(false_ids_map[(selected.definition_id, selected.meaning_id)]), n)
 
         all_definition_ids = [selected.definition_id] + false_definition_ids
-        definitions = await crud_get_definitions_by_ids(self.db, definition_ids=all_definition_ids, definition_type=selected.type)
+        definitions = await crud_get_definitions_by_ids(self.db, definition_ids=all_definition_ids)
 
         meaning = await crud_get_meaning(self.db, meaning_id=selected.meaning_id)
         if meaning is None:
@@ -118,7 +118,7 @@ class QuestionService:
             correct_definition_id=selected.definition_id,
         )
 
-        question = await crud_create_question(self.db, question_data, definition_ids)
+        question = await crud_create_question(self.db, new_question=question_data, definition_ids=definition_ids)
 
         return QuestionOut.model_validate(
             {
@@ -130,7 +130,7 @@ class QuestionService:
         )
 
     async def get(self, question_id: int) -> Question:
-        entity = await crud_get_question(self.db, question_id)
+        entity = await crud_get_question(self.db, question_id=question_id)
 
         if entity is None:
             raise NoResultFound("Question not found")
@@ -159,7 +159,7 @@ class QuestionService:
             category_id=entity.category_id,
         )
 
-        result = await crud_update_question(self.db, entity, payload)
+        result = await crud_update_question(self.db, db_item=entity, item_update=payload)
 
         if result.is_correct and entity.correct_definition:
             group_score = DEFINITION_GROUP_SCORES.get(entity.correct_definition.group, 0)

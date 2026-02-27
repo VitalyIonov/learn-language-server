@@ -1,19 +1,14 @@
-from typing import Sequence, Union
+from typing import Sequence
 
 from sqlalchemy import select, func
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from app.models import Definition, TextDefinition, ImageDefinition, QuestionTypeName
+from app.models import Definition, QuestionTypeName
 from app.models.common import Question
 from app.models.common.associations import DefinitionsMeanings
 from app.models.common.definition_progress_info import DefinitionProgressInfo
 from app.schemas.client import QuestionCreate, QuestionUpdate
 from app.schemas.client.question import DefinitionCandidate
-
-DEFINITION_CLASS_BY_TYPE = {
-    QuestionTypeName.TEXT: TextDefinition,
-    QuestionTypeName.IMAGE: ImageDefinition,
-}
 
 
 async def get_definition_candidates(
@@ -53,10 +48,8 @@ async def get_definition_candidates(
 async def get_definitions_by_ids(
     db: AsyncSession,
     definition_ids: list[int],
-    definition_type: QuestionTypeName,
-) -> list[Union[TextDefinition, ImageDefinition]]:
-    definition_class = DEFINITION_CLASS_BY_TYPE[definition_type]
-    stmt = select(definition_class).where(definition_class.id.in_(definition_ids))
+) -> list[Definition]:
+    stmt = select(Definition).where(Definition.id.in_(definition_ids))
     result = await db.execute(stmt)
     return list(result.scalars().all())
 
