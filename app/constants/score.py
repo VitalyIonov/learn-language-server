@@ -1,4 +1,4 @@
-from app.constants.definition_group import DefinitionGroup
+from app.constants.definition import DefinitionGroup
 
 BASE_SCORE = 6
 

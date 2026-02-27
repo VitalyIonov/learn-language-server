@@ -9,7 +9,6 @@ from .meaning_progress_info import MeaningProgressInfoService
 from .definition_progress_info import DefinitionProgressInfoService
 from .storage_r2 import StorageR2Service
 from .image import ImageService
-from .question_type import QuestionTypeService
 from .tts import TTSService
 from .audio import AudioService
 from .issue import IssueService

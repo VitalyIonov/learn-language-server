@@ -7,7 +7,7 @@ from .meaning import MeaningOut
 from .category import CategoryOut
 from .level import LevelOut
 from app.models import QuestionTypeName
-from app.constants.definition_group import ImageDefinitionGroup
+from app.constants.definition import ImageDefinitionGroup
 
 
 class ImageDefinitionOut(BaseSchema):

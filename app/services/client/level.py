@@ -11,7 +11,7 @@ from app.crud.common import (
     get_scores_by_levels as crud_get_scores_by_levels,
 )
 from app.schemas.common import DefinitionStatRow
-from app.constants.definition_group import DefinitionGroup
+from app.constants.definition import DefinitionGroup
 from app.constants.score import DEFINITION_GROUP_SCORES
 from app.schemas.client import LevelsListResponse, LevelScoreOut, LevelsScoreListResponse
 

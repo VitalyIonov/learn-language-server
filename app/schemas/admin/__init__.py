@@ -32,6 +32,5 @@ from .definition_progress_info import (
     DefinitionProgressInfoUpdate,
 )
 from .question import QuestionOut
-from .question_type import QuestionTypeOut, QuestionTypeListResponse, QuestionTypeName
 from .tts import TTSGenerate, TTSGenerateOut
 from .issue import IssueUpdate, IssueOut, IssuesListResponse

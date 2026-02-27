@@ -1,11 +1,10 @@
 import random
-from typing import Union, Type
 
 from sqlalchemy.exc import NoResultFound
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.constants.score import DEFINITION_GROUP_SCORES
-from app.constants.definition_group import DefinitionGroup
+from app.constants.definition import DefinitionGroup, FALSE_DEFINITIONS_COUNT
 from app.schemas.admin import (
     MeaningProgressInfoUpdate,
     DefinitionProgressInfoUpdate,
@@ -25,11 +24,7 @@ from app.schemas.client import (
 )
 from app.models import (
     User,
-    Meaning,
     Question,
-    TextDefinition,
-    QuestionTypeName,
-    ImageDefinition,
 )
 from app.crud.client import (
     create_question as crud_create_question,
@@ -37,21 +32,13 @@ from app.crud.client import (
     update_question as crud_update_question,
     get_definition_candidates as crud_get_definition_candidates,
     get_definitions_by_ids as crud_get_definitions_by_ids,
+    get_meaning as crud_get_meaning,
 )
 
 from ..admin.category_progress_info import CategoryProgressInfoService
 from ..admin.meaning_progress_info import MeaningProgressInfoService
 from ..admin.definition_progress_info import DefinitionProgressInfoService
-from ..admin.level import LevelService
 from .statistic import StatisticService
-
-FALSE_DEFINITIONS_COUNT: dict[DefinitionGroup, int] = {
-    DefinitionGroup.ILLUSTRATION: 3,
-    DefinitionGroup.VERB: 2,
-    DefinitionGroup.NOUN: 2,
-    DefinitionGroup.DESCRIPTION: 2,
-    DefinitionGroup.PHRASE: 2,
-}
 
 
 class QuestionService:
@@ -62,14 +49,12 @@ class QuestionService:
         svc_meaning_progress_info: MeaningProgressInfoService,
         svc_definition_progress_info: DefinitionProgressInfoService,
         svc_statistic: StatisticService,
-        svc_level: LevelService,
     ):
         self.db = db
         self.svc_category_progress_info = svc_category_progress_info
         self.svc_meaning_progress_info = svc_meaning_progress_info
         self.svc_definition_progress_info = svc_definition_progress_info
         self.svc_statistic = svc_statistic
-        self.svc_level = svc_level
 
     @staticmethod
     def _compute_false_definition_ids(
@@ -114,19 +99,10 @@ class QuestionService:
         n = FALSE_DEFINITIONS_COUNT[selected.group]
         false_definition_ids = random.sample(list(false_ids_map[(selected.definition_id, selected.meaning_id)]), n)
 
-        question_level = await self.svc_level.get(payload.level_id)
-        question_type = question_level.question_types[0]
-        definition_class: Union[Type[TextDefinition], Type[ImageDefinition]]
-
-        if question_type.name == QuestionTypeName.TEXT:
-            definition_class = TextDefinition
-        else:
-            definition_class = ImageDefinition
-
         all_definition_ids = [selected.definition_id] + false_definition_ids
-        definitions = await crud_get_definitions_by_ids(self.db, all_definition_ids, definition_class)
+        definitions = await crud_get_definitions_by_ids(self.db, definition_ids=all_definition_ids, definition_type=selected.type)
 
-        meaning = await self.db.get(Meaning, selected.meaning_id)
+        meaning = await crud_get_meaning(self.db, meaning_id=selected.meaning_id)
         if meaning is None:
             raise NoResultFound("Meaning not found")
 
@@ -135,7 +111,7 @@ class QuestionService:
 
         question_data = QuestionCreate(
             user_id=current_user.id,
-            type=question_type.name,
+            type=selected.type,
             meaning_id=selected.meaning_id,
             category_id=payload.category_id,
             level_id=payload.level_id,

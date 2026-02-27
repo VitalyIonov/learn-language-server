@@ -25,12 +25,3 @@ class DefinitionsQuestions(Base):
     )
 
 
-class LevelsQuestionTypes(Base):
-    __tablename__ = "levels_question_types"
-
-    level_id: Mapped[int] = mapped_column(
-        ForeignKey("levels.id", ondelete="CASCADE"), primary_key=True
-    )
-    question_type_id: Mapped[int] = mapped_column(
-        ForeignKey("question_types.id", ondelete="CASCADE"), primary_key=True
-    )

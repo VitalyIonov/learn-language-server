@@ -9,7 +9,6 @@ from app.db.seed import (
     seed_levels,
     seed_meanings,
     seed_definitions,
-    seed_question_types,
     seed_issue_types,
     seed_issue_statuses,
 )
@@ -35,11 +34,6 @@ def run_merge():
         folder=Path("seed_data/meanings"), output_name="all_meanings.json", indent=2
     )
     merge_json_folder(
-        folder=Path("seed_data/question_types"),
-        output_name="all_question_types.json",
-        indent=2,
-    )
-    merge_json_folder(
         folder=Path("seed_data/users"), output_name="all_users.json", indent=2
     )
     merge_json_folder(
@@ -56,9 +50,6 @@ def run_merge():
 
 async def main():
     run_merge()
-
-    with open("seed_data/all_question_types.json", "r") as f:
-        question_types_seed_data = json.load(f)
 
     with open("seed_data/all_users.json", "r") as f:
         users_seed_data = json.load(f)
@@ -87,7 +78,6 @@ async def main():
             db=session, svc_storage_r2=storage_service
         )
 
-        await seed_question_types(session, question_types_seed_data)
         await seed_categories(
             session,
             categories_seed_data,

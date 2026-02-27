@@ -1,6 +1,6 @@
 from typing import NamedTuple
 
-from app.constants.definition_group import DefinitionGroup
+from app.constants.definition import DefinitionGroup
 
 
 class DefinitionStatRow(NamedTuple):

@@ -15,7 +15,6 @@ from app.services.admin import (
     DefinitionProgressInfoService,
     ImageService,
     StorageR2Service,
-    QuestionTypeService,
     TTSService,
     AudioService,
     IssueService as IssueServiceAdmin,
@@ -91,12 +90,6 @@ async def get_image_service(
     svc_storage_r2: StorageR2Service = Depends(get_storage_r2_service),
 ) -> ImageService:
     return ImageService(db=db, svc_storage_r2=svc_storage_r2)
-
-
-async def get_question_type_service(
-    db: AsyncSession = Depends(get_db),
-) -> QuestionTypeService:
-    return QuestionTypeService(db)
 
 
 async def get_tts_service() -> TTSService:
@@ -186,7 +179,6 @@ async def get_question_service(
     svc_meaning_progress_info=Depends(get_meaning_progress_info_service),
     svc_definition_progress_info=Depends(get_definition_progress_info_service),
     svc_statistic=Depends(get_statistic_service),
-    svc_level=Depends(get_level_service_admin),
 ) -> QuestionService:
     return QuestionService(
         db=db,
@@ -194,7 +186,6 @@ async def get_question_service(
         svc_meaning_progress_info=svc_meaning_progress_info,
         svc_definition_progress_info=svc_definition_progress_info,
         svc_statistic=svc_statistic,
-        svc_level=svc_level,
     )
 
 

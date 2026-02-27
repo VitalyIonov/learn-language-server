@@ -6,7 +6,7 @@ from .level import LevelOutBase
 from .definition import DefinitionOut
 from .meaning import MeaningOut
 from app.models import QuestionTypeName
-from app.constants.definition_group import DefinitionGroup
+from app.constants.definition import DefinitionGroup
 
 
 class LevelUpInfo(BaseModel):
@@ -25,6 +25,7 @@ class DefinitionCandidate(NamedTuple):
     definition_id: int
     meaning_id: int
     group: DefinitionGroup
+    type: QuestionTypeName
     chance: float
 
 

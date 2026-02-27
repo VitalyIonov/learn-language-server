@@ -5,6 +5,5 @@ from .levels import router as levels_router
 from .meanings import router as meanings_router
 from .users import router as users_router
 from .images import router as images_router
-from .question_types import router as question_types_router
 from .issues import router as issues_router
 from .issue_statuses import router as issue_statuses_router

@@ -20,3 +20,11 @@ TextDefinitionGroup = Literal[
 ]
 
 ImageDefinitionGroup = Literal[DefinitionGroup.ILLUSTRATION]
+
+FALSE_DEFINITIONS_COUNT: dict[DefinitionGroup, int] = {
+    DefinitionGroup.ILLUSTRATION: 3,
+    DefinitionGroup.VERB: 2,
+    DefinitionGroup.NOUN: 2,
+    DefinitionGroup.DESCRIPTION: 2,
+    DefinitionGroup.PHRASE: 2,
+}

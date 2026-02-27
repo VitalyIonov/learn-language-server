@@ -7,7 +7,7 @@ from sqlalchemy.orm import Mapped, mapped_column, relationship
 from app.core.db import Base
 from .question_type import QuestionTypeName
 from app.constants.target_language import TargetLanguageCode
-from app.constants.definition_group import DefinitionGroup
+from app.constants.definition import DefinitionGroup
 
 if TYPE_CHECKING:
     from .category import Category
