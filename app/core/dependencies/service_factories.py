@@ -166,11 +166,8 @@ def get_issue_status_service(db: AsyncSession = Depends(get_db)) -> IssueStatusS
 
 async def get_category_service_client(
     db: AsyncSession = Depends(get_db),
-    svc_category_progress_info=Depends(get_category_progress_info_service),
 ) -> CategoryServiceClient:
-    return CategoryServiceClient(
-        db=db, svc_category_progress_info=svc_category_progress_info
-    )
+    return CategoryServiceClient(db=db)
 
 
 async def get_question_service(
