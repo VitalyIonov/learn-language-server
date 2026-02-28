@@ -175,17 +175,13 @@ async def get_category_service_client(
 
 async def get_question_service(
     db: AsyncSession = Depends(get_db),
-    svc_category_progress_info=Depends(get_category_progress_info_service),
     svc_meaning_progress_info=Depends(get_meaning_progress_info_service),
     svc_definition_progress_info=Depends(get_definition_progress_info_service),
-    svc_statistic=Depends(get_statistic_service),
 ) -> QuestionService:
     return QuestionService(
         db=db,
-        svc_category_progress_info=svc_category_progress_info,
         svc_meaning_progress_info=svc_meaning_progress_info,
         svc_definition_progress_info=svc_definition_progress_info,
-        svc_statistic=svc_statistic,
     )
 
 

@@ -17,10 +17,6 @@ from app.schemas.client import (
     QuestionUpdate,
     QuestionGenerate,
     QuestionUpdateOut,
-    LevelUpInfo,
-    LevelOutBase,
-    CategoryFinishInfo,
-    Info,
 )
 from app.models import (
     User,
@@ -35,26 +31,20 @@ from app.crud.client import (
     get_meaning as crud_get_meaning,
 )
 
-from ..admin.category_progress_info import CategoryProgressInfoService
 from ..admin.meaning_progress_info import MeaningProgressInfoService
 from ..admin.definition_progress_info import DefinitionProgressInfoService
-from .statistic import StatisticService
 
 
 class QuestionService:
     def __init__(
         self,
         db: AsyncSession,
-        svc_category_progress_info: CategoryProgressInfoService,
         svc_meaning_progress_info: MeaningProgressInfoService,
         svc_definition_progress_info: DefinitionProgressInfoService,
-        svc_statistic: StatisticService,
     ):
         self.db = db
-        self.svc_category_progress_info = svc_category_progress_info
         self.svc_meaning_progress_info = svc_meaning_progress_info
         self.svc_definition_progress_info = svc_definition_progress_info
-        self.svc_statistic = svc_statistic
 
     @staticmethod
     def _compute_false_definition_ids(
@@ -186,34 +176,6 @@ class QuestionService:
             payload=DefinitionProgressInfoUpdate(chance=new_chance),
         )
 
-        current_progress = await self.svc_statistic.get_level_progress_by_category(
-            user_id=current_user.id,
-            level_id=entity.level_id,
-            category_id=entity.category_id,
-        )
-
-        update_result = None
-        update_info: Info | None = None
-
-        if current_progress >= 100:
-            update_result = await self.svc_category_progress_info.update_category_level(
-                user_id=current_user.id,
-                category_id=entity.category_id,
-                level_id=entity.level_id,
-            )
-
-        if update_result is not None:
-            if update_result.new_next_cpi is not None:
-                update_info = LevelUpInfo(
-                    type="level_up",
-                    new_level=LevelOutBase.model_validate(update_result.new_next_cpi.level),
-                )
-            elif update_result.next_level is None:
-                update_info = CategoryFinishInfo(
-                    type="category_finish",
-                )
-
         return QuestionUpdateOut(
             is_correct=result.is_correct,
-            info=update_info,
         )

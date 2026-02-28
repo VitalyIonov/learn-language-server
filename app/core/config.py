@@ -1,8 +1,19 @@
 from pydantic_settings import BaseSettings, SettingsConfigDict
 from pydantic_core import MultiHostUrl
-from pydantic import (
-    computed_field,
-)
+from pydantic import model_validator
+
+
+def _build_database_uri(scheme: str, user: str, password: str, host: str, port: int, db: str) -> str:
+    return str(
+        MultiHostUrl.build(
+            scheme=scheme,
+            username=user,
+            password=password,
+            host=host,
+            port=port,
+            path=db,
+        )
+    )
 
 
 class Settings(BaseSettings):
@@ -27,31 +38,28 @@ class Settings(BaseSettings):
     OPENAI_API_KEY: str
     SECRET_KEY: str
 
-    @computed_field
-    def database_uri(self) -> str:
-        return str(
-            MultiHostUrl.build(
-                scheme="postgresql+asyncpg",
-                username=self.POSTGRES_USER,
-                password=self.POSTGRES_PASSWORD,
-                host=self.POSTGRES_SERVER,
-                port=self.POSTGRES_PORT,
-                path=self.POSTGRES_DB,
-            )
-        )
+    database_uri: str = ""
+    sync_database_uri: str = ""
 
-    @computed_field
-    def sync_database_uri(self) -> str:
-        return str(
-            MultiHostUrl.build(
-                scheme="postgresql+psycopg2",
-                username=self.POSTGRES_USER,
-                password=self.POSTGRES_PASSWORD,
-                host=self.POSTGRES_SERVER,
-                port=self.POSTGRES_PORT,
-                path=self.POSTGRES_DB,
-            )
+    @model_validator(mode="after")
+    def _set_database_uris(self) -> "Settings":
+        self.database_uri = _build_database_uri(
+            scheme="postgresql+asyncpg",
+            user=self.POSTGRES_USER,
+            password=self.POSTGRES_PASSWORD,
+            host=self.POSTGRES_SERVER,
+            port=self.POSTGRES_PORT,
+            db=self.POSTGRES_DB,
         )
+        self.sync_database_uri = _build_database_uri(
+            scheme="postgresql+psycopg2",
+            user=self.POSTGRES_USER,
+            password=self.POSTGRES_PASSWORD,
+            host=self.POSTGRES_SERVER,
+            port=self.POSTGRES_PORT,
+            db=self.POSTGRES_DB,
+        )
+        return self
 
     SESSION_SECRET_KEY: str
     DEEPL_API_KEY: str
