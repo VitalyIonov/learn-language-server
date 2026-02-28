@@ -1,6 +1,4 @@
-from typing import List, Optional
-
-from pydantic import Field
+from typing import List
 
 from app.schemas.base import BaseSchema
 
@@ -16,18 +14,10 @@ class LevelOutBase(BaseSchema):
 
 
 class LevelOut(LevelOutBase):
-    is_locked: Optional[bool] = Field(default=None)
-
-
-class LevelsListResponse(BaseSchema):
-    items: List[LevelOut]
-
-
-class LevelScoreOut(LevelOutBase):
     current_score: int
     max_score: int
     is_active: bool
 
 
-class LevelsScoreListResponse(BaseSchema):
-    items: List[LevelScoreOut]
+class LevelsListResponse(BaseSchema):
+    items: List[LevelOut]

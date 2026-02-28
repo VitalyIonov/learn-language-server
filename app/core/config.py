@@ -1,4 +1,3 @@
-import os
 from pydantic_settings import BaseSettings, SettingsConfigDict
 from pydantic_core import MultiHostUrl
 from pydantic import (
@@ -29,7 +28,6 @@ class Settings(BaseSettings):
     SECRET_KEY: str
 
     @computed_field
-    @property
     def database_uri(self) -> str:
         return str(
             MultiHostUrl.build(
@@ -43,7 +41,6 @@ class Settings(BaseSettings):
         )
 
     @computed_field
-    @property
     def sync_database_uri(self) -> str:
         return str(
             MultiHostUrl.build(

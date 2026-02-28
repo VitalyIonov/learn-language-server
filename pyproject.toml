@@ -43,6 +43,7 @@ botocore-stubs = "^1.38.46"
 types-awscrt = "^0.27.6"
 types-s3transfer = "^0.13.0"
 sqlalchemy = { version = ">=2.0.42,<3.0.0", extras = ["mypy"] }
+types-python-jose = "^3.5.0.20250531"
 
 [tool.black]
 line-length = 144

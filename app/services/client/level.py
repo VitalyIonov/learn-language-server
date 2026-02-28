@@ -3,7 +3,6 @@ from collections import defaultdict
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.crud.client import (
-    get_levels as crud_get_levels,
     get_levels_base_by_ids as crud_get_levels_base_by_ids,
     get_last_question_level_id as crud_get_last_question_level_id,
 )
@@ -15,7 +14,7 @@ from app.schemas.common import DefinitionStatRow
 from app.constants.definition import DefinitionGroup
 from app.constants.score import DEFINITION_GROUP_SCORES
 from app.models import Level
-from app.schemas.client import LevelsListResponse, LevelScoreOut, LevelsScoreListResponse
+from app.schemas.client import LevelsListResponse, LevelOut
 
 
 def _compute_group_score(group: DefinitionGroup, defs_per_meaning: list[int]) -> int:
@@ -53,9 +52,6 @@ class LevelService:
     def __init__(self, db: AsyncSession):
         self.db = db
 
-    async def get_all(self, user_id: int, category_id: int) -> LevelsListResponse:
-        return await crud_get_levels(self.db, user_id=user_id, category_id=category_id)
-
     async def _get_active_level_id(
         self, user_id: int, category_id: int, levels: list[Level],
     ) -> int:
@@ -66,12 +62,12 @@ class LevelService:
             return level_id
         return min(levels, key=lambda level: level.value).id
 
-    async def get_all_by_score(self, user_id: int, category_id: int) -> LevelsScoreListResponse:
+    async def get_all(self, user_id: int, category_id: int) -> LevelsListResponse:
         definitions_stat_rows = await crud_get_definition_stats(self.db, category_id=category_id)
         max_scores = _get_level_max_scores(definitions_stat_rows)
 
         if not max_scores:
-            return LevelsScoreListResponse(items=[])
+            return LevelsListResponse(items=[])
 
         level_ids = list(max_scores.keys())
         levels = await crud_get_levels_base_by_ids(self.db, level_ids=level_ids)
@@ -79,7 +75,7 @@ class LevelService:
         active_level_id = await self._get_active_level_id(user_id=user_id, category_id=category_id, levels=levels)
 
         items = [
-            LevelScoreOut(
+            LevelOut(
                 id=level.id,
                 name=level.name,
                 alias=level.alias,
@@ -91,4 +87,4 @@ class LevelService:
             for level in levels
         ]
 
-        return LevelsScoreListResponse(items=items)
+        return LevelsListResponse(items=items)
