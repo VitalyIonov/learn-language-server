@@ -1,7 +1,5 @@
 from app.constants.definition import DefinitionGroup
 
-BASE_SCORE = 6
-
 DEFINITION_GROUP_SCORES: dict[DefinitionGroup, int] = {
     DefinitionGroup.VERB: 1,
     DefinitionGroup.NOUN: 1,

@@ -3,10 +3,6 @@ from typing import List
 from app.schemas.base import BaseSchema
 
 
-class ProgressByUserStatistic(BaseSchema):
-    progress: float
-
-
 class TodayScoreStatistic(BaseSchema):
     today_score: int
 
