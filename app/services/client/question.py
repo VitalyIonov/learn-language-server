@@ -15,6 +15,7 @@ from app.schemas.client import (
     QuestionOut,
     QuestionCreate,
     QuestionUpdate,
+    QuestionUpdateCrud,
     QuestionGenerate,
     QuestionUpdateOut,
 )
@@ -149,15 +150,27 @@ class QuestionService:
             category_id=entity.category_id,
         )
 
-        result = await crud_update_question(self.db, db_item=entity, item_update=payload)
+        is_correct = payload.chosen_definition_id == entity.correct_definition_id
 
-        if result.is_correct and entity.correct_definition:
+        if is_correct and entity.correct_definition:
             group_score = DEFINITION_GROUP_SCORES.get(entity.correct_definition.group, 0)
             mpi_new_score = meaning_progress_info.score + group_score
             new_chance = round(definition_progress_info.chance * 0.8, 2)
+            score_delta = group_score
         else:
             mpi_new_score = meaning_progress_info.score
             new_chance = round(definition_progress_info.chance * 1.3, 2)
+            score_delta = 0
+
+        result = await crud_update_question(
+            self.db,
+            db_item=entity,
+            item_update=QuestionUpdateCrud(
+                chosen_definition_id=payload.chosen_definition_id,
+                is_correct=is_correct,
+                score_delta=score_delta,
+            ),
+        )
 
         if mpi_new_score != meaning_progress_info.score:
             await self.svc_meaning_progress_info.update(

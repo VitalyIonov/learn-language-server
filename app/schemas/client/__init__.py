@@ -7,11 +7,12 @@ from .definition import (
 )
 from .level import LevelOut, LevelOutBase, LevelsListResponse
 from .meaning import MeaningOut
-from .statistic import ProgressByUserStatistic, CategoryProgressOut, CategoriesProgressListResponse
+from .statistic import ProgressByUserStatistic, TodayScoreStatistic, CategoryProgressOut, CategoriesProgressListResponse
 from .question import (
     DefinitionCandidate,
     QuestionCreate,
     QuestionUpdate,
+    QuestionUpdateCrud,
     QuestionUpdateOut,
     QuestionOut,
     QuestionGenerate,

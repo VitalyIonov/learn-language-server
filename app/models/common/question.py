@@ -35,6 +35,7 @@ class Question(Base):
         return [d.id for d in self.definitions]
 
     is_correct: Mapped[bool] = mapped_column(nullable=True)
+    score_delta: Mapped[int | None] = mapped_column(nullable=True)
     created_at: Mapped[datetime] = mapped_column(server_default=func.now())
     updated_at: Mapped[datetime] = mapped_column(server_default=func.now(), onupdate=func.now())
 

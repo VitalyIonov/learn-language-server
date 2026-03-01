@@ -7,6 +7,10 @@ class ProgressByUserStatistic(BaseSchema):
     progress: float
 
 
+class TodayScoreStatistic(BaseSchema):
+    today_score: int
+
+
 class CategoryProgressOut(BaseSchema):
     id: int
     name: str

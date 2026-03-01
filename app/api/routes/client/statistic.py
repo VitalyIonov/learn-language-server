@@ -9,6 +9,7 @@ from app.services.client import StatisticService
 from app.schemas.client import (
     CategoriesProgressListResponse,
     ProgressByUserStatistic,
+    TodayScoreStatistic,
 )
 
 router = APIRouter(tags=["statistics"])
@@ -40,6 +41,19 @@ async def get_today_progress_by_user(
     progress = await svc_statistic.get_today_progress_by_user(user_id=current_user.id)
 
     return ProgressByUserStatistic(progress=progress)
+
+
+@router.get(
+    "/statistics/today_score/",
+    response_model=TodayScoreStatistic,
+    operation_id="getStatisticsTodayScore",
+)
+async def get_today_score_by_user(
+    current_user: UserOut = Depends(get_current_user),
+    svc_statistic: StatisticService = Depends(get_statistic_service),
+):
+    today_score = await svc_statistic.get_today_score_by_user(user_id=current_user.id)
+    return TodayScoreStatistic(today_score=today_score)
 
 
 @router.get(

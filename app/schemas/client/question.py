@@ -54,6 +54,12 @@ class QuestionUpdate(BaseSchema):
     chosen_definition_id: int
 
 
+class QuestionUpdateCrud(BaseSchema):
+    chosen_definition_id: int
+    is_correct: bool
+    score_delta: int
+
+
 class QuestionUpdateOut(BaseSchema):
     is_correct: bool
     info: Optional[Info] = None

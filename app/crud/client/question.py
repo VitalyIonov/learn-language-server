@@ -7,7 +7,7 @@ from app.models import Definition, QuestionTypeName
 from app.models.common import Question
 from app.models.common.associations import DefinitionsMeanings
 from app.models.common.definition_progress_info import DefinitionProgressInfo
-from app.schemas.client import QuestionCreate, QuestionUpdate
+from app.schemas.client import QuestionCreate, QuestionUpdateCrud
 from app.schemas.client.question import DefinitionCandidate
 
 
@@ -102,11 +102,9 @@ async def create_question(
 
 
 async def update_question(
-    db: AsyncSession, db_item: Question, item_update: QuestionUpdate
+    db: AsyncSession, db_item: Question, item_update: QuestionUpdateCrud
 ) -> Question:
-    is_correct = item_update.chosen_definition_id == db_item.correct_definition_id
     payload = item_update.model_dump()
-    payload["is_correct"] = is_correct
 
     for field, value in payload.items():
         setattr(db_item, field, value)

@@ -133,6 +133,17 @@ class StatisticService:
         result = self._calculate_progress_percentage(meanings_count, today_score)
         return result
 
+    async def get_today_score_by_user(self, user_id: int) -> int:
+        today_score_stmt = (
+            select(coalesce(func.sum(Question.score_delta), 0)).where(
+                Question.user_id == user_id,
+                Question.updated_at
+                >= datetime.combine(date.today(), datetime.min.time()),
+            )
+        )
+
+        return (await self.db.execute(today_score_stmt)).scalar_one() or 0
+
     async def get_progress_by_categories(
         self, user_id: int
     ) -> CategoriesProgressListResponse:
