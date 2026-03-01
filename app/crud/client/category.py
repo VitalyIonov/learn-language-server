@@ -15,6 +15,18 @@ async def get_category(
     return result
 
 
+async def get_categories_by_ids(
+    db: AsyncSession, category_ids: list[int]
+) -> list[Category]:
+    statement = (
+        select(Category)
+        .where(Category.id.in_(category_ids))
+        .order_by(Category.name)
+    )
+    result = await db.execute(statement)
+    return list(result.scalars().all())
+
+
 async def get_categories(
     db: AsyncSession,
 ) -> CategoriesListResponse:

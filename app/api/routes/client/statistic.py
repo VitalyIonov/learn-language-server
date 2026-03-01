@@ -6,7 +6,10 @@ from app.core.dependencies.service_factories import (
 )
 from app.schemas.common import UserOut
 from app.services.client import StatisticService
-from app.schemas.client import ProgressByUserStatistic
+from app.schemas.client import (
+    CategoriesProgressListResponse,
+    ProgressByUserStatistic,
+)
 
 router = APIRouter(tags=["statistics"])
 
@@ -37,3 +40,15 @@ async def get_today_progress_by_user(
     progress = await svc_statistic.get_today_progress_by_user(user_id=current_user.id)
 
     return ProgressByUserStatistic(progress=progress)
+
+
+@router.get(
+    "/statistics/categories-progress/",
+    response_model=CategoriesProgressListResponse,
+    operation_id="getStatisticsCategoriesProgress",
+)
+async def get_categories_progress(
+    current_user: UserOut = Depends(get_current_user),
+    svc_statistic: StatisticService = Depends(get_statistic_service),
+):
+    return await svc_statistic.get_progress_by_categories(user_id=current_user.id)

@@ -17,7 +17,7 @@ from app.models import Level
 from app.schemas.client import LevelsListResponse, LevelOut
 
 
-def _compute_group_score(group: DefinitionGroup, defs_per_meaning: list[int]) -> int:
+def compute_group_score(group: DefinitionGroup, defs_per_meaning: list[int]) -> int:
     meanings_count = len(defs_per_meaning)
     score_per_def = DEFINITION_GROUP_SCORES[group]
     total_defs = sum(defs_per_meaning)
@@ -41,7 +41,7 @@ def _get_level_max_scores(stats_rows: list[DefinitionStatRow]) -> dict[int, int]
 
     result: dict[int, int] = {}
     for level_id, groups in level_group_data.items():
-        level_score = sum(_compute_group_score(group, defs_per_meaning) for group, defs_per_meaning in groups.items())
+        level_score = sum(compute_group_score(group, defs_per_meaning) for group, defs_per_meaning in groups.items())
         if level_score > 0:
             result[level_id] = level_score
 
