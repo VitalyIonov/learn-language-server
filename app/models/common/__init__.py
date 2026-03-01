@@ -6,7 +6,6 @@ from .meaning import Meaning
 from .associations import DefinitionsMeanings, DefinitionsQuestions
 from .question import Question, QuestionTypeName
 from .user_info import UserInfo
-from .category_progress_info import CategoryProgressInfo
 from .meaning_progress_info import MeaningProgressInfo
 from .definition_progress_info import DefinitionProgressInfo
 from .asset import Asset, AssetType, AssetStatus

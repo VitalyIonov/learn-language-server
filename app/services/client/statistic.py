@@ -6,9 +6,7 @@ from sqlalchemy.sql.functions import func, coalesce
 
 from app.constants.score import BASE_SCORE
 from app.models import (
-    Meaning,
     MeaningProgressInfo,
-    Level,
     Definition,
     DefinitionsMeanings,
     Question,
@@ -43,21 +41,6 @@ class StatisticService:
             .select_from(MeaningProgressInfo)
             .where(
                 MeaningProgressInfo.user_id == user_id,
-            )
-        )
-
-        return (await self.db.execute(current_score_stmt)).scalar_one()
-
-    async def _get_current_score_by_category(
-        self, user_id: int, level_id: int, category_id: int
-    ) -> int:
-        current_score_stmt = (
-            select(coalesce(func.sum(self._get_capped_score_stmt()), 0))
-            .select_from(MeaningProgressInfo)
-            .where(
-                MeaningProgressInfo.user_id == user_id,
-                MeaningProgressInfo.level_id == level_id,
-                MeaningProgressInfo.category_id == category_id,
             )
         )
 
@@ -114,26 +97,3 @@ class StatisticService:
         result = self._calculate_progress_percentage(meanings_count, today_score)
         return result
 
-    async def get_level_progress_by_category(
-        self, user_id: int, level_id: int, category_id: int
-    ) -> float:
-        level_value_stmt = (
-            select(Level.value).where(Level.id == level_id).scalar_subquery()
-        )
-
-        meanings_count_stmt = (
-            select(func.count(Meaning.id))
-            .join(Level, Level.id == Meaning.level_id)
-            .where(
-                Level.value <= level_value_stmt,
-                Meaning.category_id == category_id,
-            )
-        )
-
-        meanings_count = (await self.db.execute(meanings_count_stmt)).scalar_one()
-        current_score = await self._get_current_score_by_category(
-            user_id=user_id, level_id=level_id, category_id=category_id
-        )
-
-        result = self._calculate_progress_percentage(meanings_count, current_score)
-        return result

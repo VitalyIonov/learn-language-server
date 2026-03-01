@@ -10,7 +10,6 @@ from app.services.admin import (
     LevelService as LevelServiceAdmin,
     CategoryService as CategoryServiceAdmin,
     UserInfoService,
-    CategoryProgressInfoService,
     MeaningProgressInfoService,
     DefinitionProgressInfoService,
     ImageService,
@@ -66,13 +65,6 @@ async def get_user_info_service(db: AsyncSession = Depends(get_db)) -> UserInfoS
     return UserInfoService(db)
 
 
-async def get_category_progress_info_service(
-    db: AsyncSession = Depends(get_db),
-    svc_level: LevelServiceAdmin = Depends(get_level_service_admin),
-) -> CategoryProgressInfoService:
-    return CategoryProgressInfoService(db=db, svc_level=svc_level)
-
-
 async def get_meaning_progress_info_service(
     db: AsyncSession = Depends(get_db),
 ) -> MeaningProgressInfoService:
@@ -126,10 +118,9 @@ async def get_issue_service_admin(
 
 async def get_user_service(
     db: AsyncSession = Depends(get_db),
-    svc_cpi: CategoryProgressInfoService = Depends(get_category_progress_info_service),
     svc_user_info: UserInfoService = Depends(get_user_info_service),
 ) -> UserService:
-    return UserService(db, svc_cpi=svc_cpi, svc_user_info=svc_user_info)
+    return UserService(db, svc_user_info=svc_user_info)
 
 
 async def get_current_user(

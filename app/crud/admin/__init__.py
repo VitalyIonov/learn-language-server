@@ -22,8 +22,6 @@ from .image_definition import (
 from .level import (
     get_level,
     get_levels,
-    get_first_level,
-    get_next_available_level,
     create_level,
     delete_level,
 )
@@ -35,12 +33,6 @@ from .meaning import (
     delete_meaning,
 )
 from .user_info import get_user_info, create_user_info, update_user_info
-from .category_progress_info import (
-    get_category_progress_info,
-    create_category_progress_info,
-    update_category_progress_info,
-    get_top_category_progress_info,
-)
 from .meaning_progress_info import (
     get_meaning_progress_info,
     create_meaning_progress_info,
