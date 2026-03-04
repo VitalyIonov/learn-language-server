@@ -7,17 +7,11 @@ from app.crud.common import (
 )
 from app.models.common import User
 from app.schemas.common import UsersListResponse, UserCreate
-from ..admin.user_info import UserInfoService
 
 
 class UserService:
-    def __init__(
-        self,
-        db: AsyncSession,
-        svc_user_info: UserInfoService,
-    ):
+    def __init__(self, db: AsyncSession):
         self.db = db
-        self.svc_user_info = svc_user_info
 
     async def get_by_email(self, email: str) -> User | None:
         return await crud_get_user_by_email(self.db, email)

@@ -9,7 +9,6 @@ from app.services.admin import (
     ImageDefinitionService,
     LevelService as LevelServiceAdmin,
     CategoryService as CategoryServiceAdmin,
-    UserInfoService,
     MeaningProgressInfoService,
     DefinitionProgressInfoService,
     ImageService,
@@ -59,10 +58,6 @@ async def get_category_service_admin(
     db: AsyncSession = Depends(get_db),
 ) -> CategoryServiceAdmin:
     return CategoryServiceAdmin(db)
-
-
-async def get_user_info_service(db: AsyncSession = Depends(get_db)) -> UserInfoService:
-    return UserInfoService(db)
 
 
 async def get_meaning_progress_info_service(
@@ -118,9 +113,8 @@ async def get_issue_service_admin(
 
 async def get_user_service(
     db: AsyncSession = Depends(get_db),
-    svc_user_info: UserInfoService = Depends(get_user_info_service),
 ) -> UserService:
-    return UserService(db, svc_user_info=svc_user_info)
+    return UserService(db)
 
 
 async def get_current_user(

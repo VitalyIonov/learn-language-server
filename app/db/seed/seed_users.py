@@ -1,5 +1,5 @@
 from sqlalchemy import select, insert
-from app.models.common import User, UserInfo
+from app.models.common import User
 from sqlalchemy.ext.asyncio import AsyncSession
 
 
@@ -11,8 +11,6 @@ async def seed_users(session: AsyncSession, data: list[dict]):
         user_id = result.scalar()
 
         if user_id is None:
-            result = await session.execute(
-                insert(User).values(**item).returning(User.id)
+            await session.execute(
+                insert(User).values(**item)
             )
-            user_id = result.scalar_one()
-            await session.execute(insert(UserInfo).values(user_id=user_id))

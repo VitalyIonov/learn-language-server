@@ -32,7 +32,6 @@ from .meaning import (
     update_meaning,
     delete_meaning,
 )
-from .user_info import get_user_info, create_user_info, update_user_info
 from .meaning_progress_info import (
     get_meaning_progress_info,
     create_meaning_progress_info,

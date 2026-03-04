@@ -3,7 +3,6 @@ from .text_definition import TextDefinitionService
 from .image_definition import ImageDefinitionService
 from .level import LevelService
 from .meaning import MeaningService
-from .user_info import UserInfoService
 from .meaning_progress_info import MeaningProgressInfoService
 from .definition_progress_info import DefinitionProgressInfoService
 from .storage_r2 import StorageR2Service
