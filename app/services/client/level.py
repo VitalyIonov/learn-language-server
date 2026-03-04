@@ -13,6 +13,7 @@ from app.crud.common import (
 from app.schemas.common import DefinitionStatRow
 from app.constants.definition import DefinitionGroup
 from app.constants.score import DEFINITION_GROUP_SCORES
+from app.constants.target_language import TargetLanguageCode
 from app.models import Level
 from app.schemas.client import LevelsListResponse, LevelOut
 
@@ -62,7 +63,7 @@ class LevelService:
             return level_id
         return min(levels, key=lambda level: level.value).id
 
-    async def get_all(self, user_id: int, category_id: int) -> LevelsListResponse:
+    async def get_all(self, user_id: int, category_id: int, target_language: TargetLanguageCode) -> LevelsListResponse:
         definitions_stat_rows = await crud_get_definition_stats(self.db, category_id=category_id)
         max_scores = _get_level_max_scores(definitions_stat_rows)
 
@@ -71,7 +72,7 @@ class LevelService:
 
         level_ids = list(max_scores.keys())
         levels = await crud_get_levels_base_by_ids(self.db, level_ids=level_ids)
-        current_scores = await crud_get_scores_by_levels(self.db, user_id=user_id, category_id=category_id, level_ids=level_ids)
+        current_scores = await crud_get_scores_by_levels(self.db, user_id=user_id, category_id=category_id, level_ids=level_ids, language=target_language)
         active_level_id = await self._get_active_level_id(user_id=user_id, category_id=category_id, levels=levels)
 
         items = [

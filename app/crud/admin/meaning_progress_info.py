@@ -2,18 +2,24 @@ from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 from typing import Optional
 
+from app.constants.target_language import TargetLanguageCode
 from app.models.common import MeaningProgressInfo
 from app.schemas.admin import MeaningProgressInfoCreate, MeaningProgressInfoUpdate
 
 
 async def get_meaning_progress_info(
-    db: AsyncSession, user_id: int, meaning_id: int, level_id: int
+    db: AsyncSession,
+    user_id: int,
+    meaning_id: int,
+    level_id: int,
+    language: TargetLanguageCode,
 ) -> Optional[MeaningProgressInfo]:
     result = await db.execute(
         select(MeaningProgressInfo).where(
             MeaningProgressInfo.user_id == user_id,
             MeaningProgressInfo.meaning_id == meaning_id,
             MeaningProgressInfo.level_id == level_id,
+            MeaningProgressInfo.language == language,
         )
     )
     return result.scalar_one_or_none()

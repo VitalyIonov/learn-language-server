@@ -2,6 +2,7 @@ from fastapi import HTTPException
 from sqlalchemy.ext.asyncio import AsyncSession
 from starlette import status
 
+from app.constants.target_language import TargetLanguageCode
 from app.models.common import MeaningProgressInfo
 from app.schemas.admin import MeaningProgressInfoCreate, MeaningProgressInfoUpdate
 from app.crud.admin import (
@@ -16,14 +17,27 @@ class MeaningProgressInfoService:
         self.db = db
 
     async def get(
-        self, user_id: int, meaning_id: int, level_id: int
+        self,
+        user_id: int,
+        meaning_id: int,
+        level_id: int,
+        language: TargetLanguageCode,
     ) -> MeaningProgressInfo | None:
         return await crud_get_meaning_progress_info(
-            self.db, user_id, meaning_id, level_id
+            self.db,
+            user_id=user_id,
+            meaning_id=meaning_id,
+            level_id=level_id,
+            language=language,
         )
 
     async def create(self, payload: MeaningProgressInfoCreate) -> MeaningProgressInfo:
-        entity = await self.get(payload.user_id, payload.meaning_id, payload.level_id)
+        entity = await self.get(
+            user_id=payload.user_id,
+            meaning_id=payload.meaning_id,
+            level_id=payload.level_id,
+            language=payload.language,
+        )
 
         if entity:
             raise HTTPException(
@@ -31,16 +45,22 @@ class MeaningProgressInfoService:
                 detail="MeaningProgressInfo already created",
             )
 
-        return await crud_create_meaning_progress_info(self.db, payload)
+        return await crud_create_meaning_progress_info(self.db, payload=payload)
 
     async def update(
         self,
         user_id: int,
         meaning_id: int,
         level_id: int,
+        language: TargetLanguageCode,
         payload: MeaningProgressInfoUpdate,
     ) -> MeaningProgressInfo:
-        entity = await self.get(user_id, meaning_id, level_id)
+        entity = await self.get(
+            user_id=user_id,
+            meaning_id=meaning_id,
+            level_id=level_id,
+            language=language,
+        )
 
         if entity is None:
             raise HTTPException(
@@ -48,12 +68,24 @@ class MeaningProgressInfoService:
                 detail="MeaningProgressInfo not found",
             )
 
-        return await crud_update_meaning_progress_info(self.db, entity, payload)
+        return await crud_update_meaning_progress_info(
+            self.db, db_entity=entity, payload=payload,
+        )
 
     async def get_or_create(
-        self, user_id: int, meaning_id: int, level_id: int, category_id: int
+        self,
+        user_id: int,
+        meaning_id: int,
+        level_id: int,
+        category_id: int,
+        language: TargetLanguageCode,
     ) -> MeaningProgressInfo:
-        entity = await self.get(user_id, meaning_id, level_id)
+        entity = await self.get(
+            user_id=user_id,
+            meaning_id=meaning_id,
+            level_id=level_id,
+            language=language,
+        )
 
         if entity is None:
             entity = await self.create(
@@ -62,6 +94,7 @@ class MeaningProgressInfoService:
                     meaning_id=meaning_id,
                     level_id=level_id,
                     category_id=category_id,
+                    language=language,
                 )
             )
 

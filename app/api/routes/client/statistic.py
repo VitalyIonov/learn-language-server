@@ -36,4 +36,4 @@ async def get_categories_progress(
     current_user: UserOut = Depends(get_current_user),
     svc_statistic: StatisticService = Depends(get_statistic_service),
 ):
-    return await svc_statistic.get_progress_by_categories(user_id=current_user.id)
+    return await svc_statistic.get_progress_by_categories(user_id=current_user.id, target_language=current_user.target_language)

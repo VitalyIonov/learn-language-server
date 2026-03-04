@@ -1,11 +1,16 @@
 from sqlalchemy import select, func
 from sqlalchemy.ext.asyncio import AsyncSession
 
+from app.constants.target_language import TargetLanguageCode
 from app.models import MeaningProgressInfo
 
 
 async def get_scores_by_levels(
-    db: AsyncSession, user_id: int, category_id: int, level_ids: list[int]
+    db: AsyncSession,
+    user_id: int,
+    category_id: int,
+    level_ids: list[int],
+    language: TargetLanguageCode,
 ) -> dict[int, int]:
     statement = (
         select(
@@ -16,6 +21,7 @@ async def get_scores_by_levels(
             MeaningProgressInfo.user_id == user_id,
             MeaningProgressInfo.category_id == category_id,
             MeaningProgressInfo.level_id.in_(level_ids),
+            MeaningProgressInfo.language == language,
         )
         .group_by(MeaningProgressInfo.level_id)
     )
@@ -25,7 +31,10 @@ async def get_scores_by_levels(
 
 
 async def get_scores_by_categories(
-    db: AsyncSession, user_id: int, category_ids: list[int]
+    db: AsyncSession,
+    user_id: int,
+    category_ids: list[int],
+    language: TargetLanguageCode,
 ) -> dict[int, int]:
     statement = (
         select(
@@ -35,6 +44,7 @@ async def get_scores_by_categories(
         .where(
             MeaningProgressInfo.user_id == user_id,
             MeaningProgressInfo.category_id.in_(category_ids),
+            MeaningProgressInfo.language == language,
         )
         .group_by(MeaningProgressInfo.category_id)
     )

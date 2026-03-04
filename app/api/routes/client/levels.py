@@ -17,4 +17,4 @@ async def read_levels(
     svc: LevelService = Depends(get_level_service_client),
     current_user: User = Depends(get_current_user),
 ):
-    return await svc.get_all(user_id=current_user.id, category_id=category_id)
+    return await svc.get_all(user_id=current_user.id, category_id=category_id, target_language=current_user.target_language)

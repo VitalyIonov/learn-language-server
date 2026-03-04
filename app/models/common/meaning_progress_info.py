@@ -1,9 +1,10 @@
 from __future__ import annotations
 from typing import TYPE_CHECKING
 
-from sqlalchemy import ForeignKey
+from sqlalchemy import ForeignKey, String
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
+from app.constants.target_language import TargetLanguageCode
 from app.core.db import Base
 
 if TYPE_CHECKING:
@@ -16,6 +17,7 @@ class MeaningProgressInfo(Base):
     user_id: Mapped[int] = mapped_column(ForeignKey("users.id", ondelete="CASCADE"), nullable=False, primary_key=True)
     meaning_id: Mapped[int] = mapped_column(ForeignKey("meanings.id", ondelete="CASCADE"), nullable=False, primary_key=True)
     level_id: Mapped[int] = mapped_column(ForeignKey("levels.id", ondelete="CASCADE"), nullable=False, primary_key=True)
+    language: Mapped[TargetLanguageCode] = mapped_column(String, nullable=False, primary_key=True)
     category_id: Mapped[int] = mapped_column(
         ForeignKey("categories.id", ondelete="CASCADE"),
         nullable=False,

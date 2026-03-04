@@ -6,6 +6,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.sql.functions import func, coalesce
 
 from app.constants.definition import DefinitionGroup
+from app.constants.target_language import TargetLanguageCode
 from app.crud.client import get_categories_by_ids as crud_get_categories_by_ids
 from app.crud.common import (
     get_all_definition_stats as crud_get_all_definition_stats,
@@ -59,7 +60,7 @@ class StatisticService:
         return (await self.db.execute(today_score_stmt)).scalar_one() or 0
 
     async def get_progress_by_categories(
-        self, user_id: int
+        self, user_id: int, target_language: TargetLanguageCode
     ) -> CategoriesProgressListResponse:
         stat_rows = await crud_get_all_definition_stats(self.db)
         max_scores = _get_category_max_scores(stat_rows)
@@ -72,7 +73,7 @@ class StatisticService:
             self.db, category_ids=category_ids
         )
         current_scores = await crud_get_scores_by_categories(
-            self.db, user_id=user_id, category_ids=category_ids
+            self.db, user_id=user_id, category_ids=category_ids, language=target_language
         )
 
         items = [

@@ -141,6 +141,7 @@ class QuestionService:
             meaning_id=entity.meaning_id,
             level_id=entity.level_id,
             category_id=entity.category_id,
+            language=current_user.target_language,
         )
         definition_progress_info = await self.svc_definition_progress_info.get_or_create(
             user_id=current_user.id,
@@ -177,6 +178,7 @@ class QuestionService:
                 user_id=current_user.id,
                 meaning_id=entity.meaning_id,
                 level_id=entity.level_id,
+                language=current_user.target_language,
                 payload=MeaningProgressInfoUpdate(
                     score=mpi_new_score,
                 ),
