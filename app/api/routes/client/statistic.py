@@ -23,7 +23,7 @@ async def get_today_score_by_user(
     current_user: UserOut = Depends(get_current_user),
     svc_statistic: StatisticService = Depends(get_statistic_service),
 ):
-    today_score = await svc_statistic.get_today_score_by_user(user_id=current_user.id)
+    today_score = await svc_statistic.get_today_score_by_user(user_id=current_user.id, language=current_user.target_language)
     return TodayScoreStatistic(today_score=today_score)
 
 

@@ -2,9 +2,10 @@ from __future__ import annotations
 from typing import TYPE_CHECKING
 
 from datetime import datetime
-from sqlalchemy import ForeignKey, func
+from sqlalchemy import ForeignKey, String, func
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
+from app.constants.target_language import TargetLanguageCode
 from app.core.db import Base
 from .question_type import QuestionTypeName
 
@@ -36,6 +37,7 @@ class Question(Base):
 
     is_correct: Mapped[bool] = mapped_column(nullable=True)
     score_delta: Mapped[int | None] = mapped_column(nullable=True)
+    language: Mapped[TargetLanguageCode] = mapped_column(String, nullable=False)
     created_at: Mapped[datetime] = mapped_column(server_default=func.now())
     updated_at: Mapped[datetime] = mapped_column(server_default=func.now(), onupdate=func.now())
 

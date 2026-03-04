@@ -48,10 +48,11 @@ class StatisticService:
     def __init__(self, db: AsyncSession):
         self.db = db
 
-    async def get_today_score_by_user(self, user_id: int) -> int:
+    async def get_today_score_by_user(self, user_id: int, language: TargetLanguageCode) -> int:
         today_score_stmt = (
             select(coalesce(func.sum(Question.score_delta), 0)).where(
                 Question.user_id == user_id,
+                Question.language == language,
                 Question.updated_at
                 >= datetime.combine(date.today(), datetime.min.time()),
             )

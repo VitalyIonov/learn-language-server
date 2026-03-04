@@ -107,6 +107,7 @@ class QuestionService:
             category_id=payload.category_id,
             level_id=payload.level_id,
             correct_definition_id=selected.definition_id,
+            language=current_user.target_language,
         )
 
         question = await crud_create_question(self.db, new_question=question_data, definition_ids=definition_ids)

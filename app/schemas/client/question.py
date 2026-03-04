@@ -7,6 +7,7 @@ from .definition import DefinitionOut
 from .meaning import MeaningOut
 from app.models import QuestionTypeName
 from app.constants.definition import DefinitionGroup
+from app.constants.target_language import TargetLanguageCode
 
 
 class LevelUpInfo(BaseModel):
@@ -48,6 +49,7 @@ class QuestionCreate(BaseSchema):
     category_id: int
     correct_definition_id: int
     type: QuestionTypeName
+    language: TargetLanguageCode
 
 
 class QuestionUpdate(BaseSchema):
