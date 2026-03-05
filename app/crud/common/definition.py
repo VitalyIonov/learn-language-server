@@ -1,4 +1,4 @@
-from sqlalchemy import select, func, or_
+from sqlalchemy import select, func
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.models import Definition
@@ -8,7 +8,9 @@ from app.schemas.common import DefinitionStatRow, CategoryDefinitionStatRow
 
 
 async def get_definition_stats(
-    db: AsyncSession, category_id: int, language: TargetLanguageCode,
+    db: AsyncSession,
+    category_id: int,
+    language: TargetLanguageCode,
 ) -> list[DefinitionStatRow]:
     statement = (
         select(
@@ -20,10 +22,7 @@ async def get_definition_stats(
         .join(DefinitionsMeanings, DefinitionsMeanings.definition_id == Definition.id)
         .where(
             Definition.category_id == category_id,
-            or_(
-                Definition.language == language,
-                Definition.language.is_(None),
-            ),
+            Definition.language == language,
         )
         .group_by(Definition.level_id, Definition.group, DefinitionsMeanings.meaning_id)
     )
@@ -33,7 +32,8 @@ async def get_definition_stats(
 
 
 async def get_all_definition_stats(
-    db: AsyncSession, language: TargetLanguageCode,
+    db: AsyncSession,
+    language: TargetLanguageCode,
 ) -> list[CategoryDefinitionStatRow]:
     statement = (
         select(
@@ -44,12 +44,7 @@ async def get_all_definition_stats(
             func.count(Definition.id).label("def_count"),
         )
         .join(DefinitionsMeanings, DefinitionsMeanings.definition_id == Definition.id)
-        .where(
-            or_(
-                Definition.language == language,
-                Definition.language.is_(None),
-            ),
-        )
+        .where(Definition.language == language)
         .group_by(
             Definition.category_id,
             Definition.level_id,

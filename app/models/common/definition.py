@@ -24,7 +24,7 @@ class Definition(Base):
 
     category_id: Mapped[int | None] = mapped_column(ForeignKey("categories.id", ondelete="SET NULL"), nullable=True, index=True)
     level_id: Mapped[int | None] = mapped_column(ForeignKey("levels.id", ondelete="SET NULL"), nullable=True, index=True)
-    language: Mapped[TargetLanguageCode | None] = mapped_column(String, nullable=True)
+    language: Mapped[TargetLanguageCode] = mapped_column(String, nullable=False)
     group: Mapped[DefinitionGroup] = mapped_column(String, nullable=False, index=True)
 
     category: Mapped[Category | None] = relationship("Category", back_populates="definitions", lazy="raise")
