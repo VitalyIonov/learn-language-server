@@ -6,7 +6,6 @@ from sqlalchemy import ForeignKey, String
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 from app.core.db import Base
 from .question_type import QuestionTypeName
-from app.constants.target_language import TargetLanguageCode
 from app.constants.definition import DefinitionGroup
 
 if TYPE_CHECKING:
@@ -24,7 +23,6 @@ class Definition(Base):
 
     category_id: Mapped[int | None] = mapped_column(ForeignKey("categories.id", ondelete="SET NULL"), nullable=True, index=True)
     level_id: Mapped[int | None] = mapped_column(ForeignKey("levels.id", ondelete="SET NULL"), nullable=True, index=True)
-    language: Mapped[TargetLanguageCode | None] = mapped_column(String, nullable=True, server_default=TargetLanguageCode.ES.value)
     group: Mapped[DefinitionGroup] = mapped_column(String, nullable=False, index=True)
 
     category: Mapped[Category | None] = relationship("Category", back_populates="definitions", lazy="raise")

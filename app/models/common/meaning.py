@@ -22,7 +22,7 @@ class Meaning(Base):
     category_id: Mapped[int | None] = mapped_column(ForeignKey("categories.id", ondelete="SET NULL"), nullable=True)
     level_id: Mapped[int | None] = mapped_column(ForeignKey("levels.id", ondelete="SET NULL"), nullable=True)
     audio_id: Mapped[int | None] = mapped_column(ForeignKey("assets.id", ondelete="SET NULL"), nullable=True)
-    language: Mapped[TargetLanguageCode | None] = mapped_column(String, nullable=True, server_default=TargetLanguageCode.ES.value)
+    language: Mapped[TargetLanguageCode] = mapped_column(String, nullable=False)
 
     category: Mapped[Category | None] = relationship("Category", back_populates="meanings", lazy="raise")
     level: Mapped[Level | None] = relationship("Level", lazy="raise")
