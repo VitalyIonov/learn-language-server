@@ -17,6 +17,7 @@ async def get_definition_candidates(
     level_id: int,
     category_id: int,
     user_id: int,
+    language: TargetLanguageCode,
 ) -> list[DefinitionCandidate]:
     stmt = (
         select(
@@ -39,6 +40,7 @@ async def get_definition_candidates(
         .where(
             Definition.level_id == level_id,
             Definition.category_id == category_id,
+            Definition.language == language,
         )
     )
 

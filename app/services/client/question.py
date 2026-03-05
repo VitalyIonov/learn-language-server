@@ -69,6 +69,7 @@ class QuestionService:
             level_id=payload.level_id,
             category_id=payload.category_id,
             user_id=current_user.id,
+            language=current_user.target_language,
         )
 
         if not definition_candidates:
