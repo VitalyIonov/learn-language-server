@@ -32,7 +32,9 @@ async def get_definition_stats(
     return [DefinitionStatRow(*row) for row in result.all()]
 
 
-async def get_all_definition_stats(db: AsyncSession) -> list[CategoryDefinitionStatRow]:
+async def get_all_definition_stats(
+    db: AsyncSession, language: TargetLanguageCode,
+) -> list[CategoryDefinitionStatRow]:
     statement = (
         select(
             Definition.category_id,
@@ -42,6 +44,12 @@ async def get_all_definition_stats(db: AsyncSession) -> list[CategoryDefinitionS
             func.count(Definition.id).label("def_count"),
         )
         .join(DefinitionsMeanings, DefinitionsMeanings.definition_id == Definition.id)
+        .where(
+            or_(
+                Definition.language == language,
+                Definition.language.is_(None),
+            ),
+        )
         .group_by(
             Definition.category_id,
             Definition.level_id,

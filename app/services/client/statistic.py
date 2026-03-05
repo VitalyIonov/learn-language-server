@@ -15,6 +15,7 @@ from app.crud.common import (
 from app.models import Question
 from app.schemas.client import CategoriesProgressListResponse, CategoryProgressOut
 from app.schemas.common import CategoryDefinitionStatRow
+from app.constants.score import LEVEL_SCORE_MULTIPLIER
 from app.services.client.level import compute_group_score
 
 
@@ -39,7 +40,7 @@ def _get_category_max_scores(
                 for group, defs_per_meaning in groups.items()
             )
         if category_score > 0:
-            result[category_id] = category_score
+            result[category_id] = category_score * LEVEL_SCORE_MULTIPLIER
 
     return result
 
@@ -63,7 +64,7 @@ class StatisticService:
     async def get_progress_by_categories(
         self, user_id: int, target_language: TargetLanguageCode
     ) -> CategoriesProgressListResponse:
-        stat_rows = await crud_get_all_definition_stats(self.db)
+        stat_rows = await crud_get_all_definition_stats(self.db, language=target_language)
         max_scores = _get_category_max_scores(stat_rows)
 
         if not max_scores:
