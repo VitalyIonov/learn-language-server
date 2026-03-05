@@ -94,6 +94,7 @@ class QuestionService:
         all_definition_ids = [selected.definition_id] + false_definition_ids
         definitions = await crud_get_definitions_by_ids(self.db, definition_ids=all_definition_ids)
 
+        # TODO сейчас нет гарантии, что meaning того же языка, что и definition. Нужно добавить фоллбэк с переводом и логи, либо придумать другой вариант
         meaning = await crud_get_meaning(self.db, meaning_id=selected.meaning_id)
         if meaning is None:
             raise NoResultFound("Meaning not found")
