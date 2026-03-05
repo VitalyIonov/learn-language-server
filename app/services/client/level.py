@@ -12,7 +12,7 @@ from app.crud.common import (
 )
 from app.schemas.common import DefinitionStatRow
 from app.constants.definition import DefinitionGroup
-from app.constants.score import DEFINITION_GROUP_SCORES
+from app.constants.score import DEFINITION_GROUP_SCORES, LEVEL_SCORE_MULTIPLIER
 from app.constants.target_language import TargetLanguageCode
 from app.models import Level
 from app.schemas.client import LevelsListResponse, LevelOut
@@ -44,7 +44,7 @@ def _get_level_max_scores(stats_rows: list[DefinitionStatRow]) -> dict[int, int]
     for level_id, groups in level_group_data.items():
         level_score = sum(compute_group_score(group, defs_per_meaning) for group, defs_per_meaning in groups.items())
         if level_score > 0:
-            result[level_id] = level_score
+            result[level_id] = level_score * LEVEL_SCORE_MULTIPLIER
 
     return result
 
@@ -54,17 +54,17 @@ class LevelService:
         self.db = db
 
     async def _get_active_level_id(
-        self, user_id: int, category_id: int, levels: list[Level],
+        self, user_id: int, category_id: int, levels: list[Level], target_language: TargetLanguageCode,
     ) -> int:
         level_id = await crud_get_last_question_level_id(
-            self.db, user_id=user_id, category_id=category_id,
+            self.db, user_id=user_id, category_id=category_id, language=target_language,
         )
         if level_id is not None:
             return level_id
         return min(levels, key=lambda level: level.value).id
 
     async def get_all(self, user_id: int, category_id: int, target_language: TargetLanguageCode) -> LevelsListResponse:
-        definitions_stat_rows = await crud_get_definition_stats(self.db, category_id=category_id)
+        definitions_stat_rows = await crud_get_definition_stats(self.db, category_id=category_id, language=target_language)
         max_scores = _get_level_max_scores(definitions_stat_rows)
 
         if not max_scores:
@@ -73,7 +73,7 @@ class LevelService:
         level_ids = list(max_scores.keys())
         levels = await crud_get_levels_base_by_ids(self.db, level_ids=level_ids)
         current_scores = await crud_get_scores_by_levels(self.db, user_id=user_id, category_id=category_id, level_ids=level_ids, language=target_language)
-        active_level_id = await self._get_active_level_id(user_id=user_id, category_id=category_id, levels=levels)
+        active_level_id = await self._get_active_level_id(user_id=user_id, category_id=category_id, levels=levels, target_language=target_language)
 
         items = [
             LevelOut(

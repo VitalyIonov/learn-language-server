@@ -5,6 +5,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.models import Definition, QuestionTypeName
 from app.models.common import Question
+from app.constants.target_language import TargetLanguageCode
 from app.models.common.associations import DefinitionsMeanings
 from app.models.common.definition_progress_info import DefinitionProgressInfo
 from app.schemas.client import QuestionCreate, QuestionUpdateCrud
@@ -55,13 +56,14 @@ async def get_definitions_by_ids(
 
 
 async def get_last_question_level_id(
-    db: AsyncSession, user_id: int, category_id: int,
+    db: AsyncSession, user_id: int, category_id: int, language: TargetLanguageCode,
 ) -> int | None:
     stmt = (
         select(Question.level_id)
         .where(
             Question.user_id == user_id,
             Question.category_id == category_id,
+            Question.language == language,
         )
         .order_by(Question.created_at.desc())
         .limit(1)

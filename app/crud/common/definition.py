@@ -1,12 +1,15 @@
-from sqlalchemy import select, func
+from sqlalchemy import select, func, or_
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.models import Definition
 from app.models.common.associations import DefinitionsMeanings
+from app.constants.target_language import TargetLanguageCode
 from app.schemas.common import DefinitionStatRow, CategoryDefinitionStatRow
 
 
-async def get_definition_stats(db: AsyncSession, category_id: int) -> list[DefinitionStatRow]:
+async def get_definition_stats(
+    db: AsyncSession, category_id: int, language: TargetLanguageCode,
+) -> list[DefinitionStatRow]:
     statement = (
         select(
             Definition.level_id,
@@ -17,6 +20,10 @@ async def get_definition_stats(db: AsyncSession, category_id: int) -> list[Defin
         .join(DefinitionsMeanings, DefinitionsMeanings.definition_id == Definition.id)
         .where(
             Definition.category_id == category_id,
+            or_(
+                Definition.language == language,
+                Definition.language.is_(None),
+            ),
         )
         .group_by(Definition.level_id, Definition.group, DefinitionsMeanings.meaning_id)
     )
