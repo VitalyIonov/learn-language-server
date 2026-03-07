@@ -31,7 +31,6 @@ from app.services.common import (
     UserService,
     AuthService,
     TranslationService,
-    IssueStatusService,
     TranslateService,
 )
 from app.core.dependencies.auth import oauth2_scheme
@@ -140,10 +139,6 @@ async def get_translate_service() -> TranslateService:
     return TranslateService()
 
 
-def get_issue_status_service(db: AsyncSession = Depends(get_db)) -> IssueStatusService:
-    return IssueStatusService(db)
-
-
 async def get_category_service_client(
     db: AsyncSession = Depends(get_db),
 ) -> CategoryServiceClient:
@@ -170,9 +165,8 @@ async def get_level_service_client(
 
 async def get_issue_service_client(
     db: AsyncSession = Depends(get_db),
-    svc_issue_status=Depends(get_issue_status_service),
 ) -> IssueServiceClient:
-    return IssueServiceClient(db, svc_issue_status)
+    return IssueServiceClient(db)
 
 
 async def get_translation_service(

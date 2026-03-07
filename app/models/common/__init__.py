@@ -13,5 +13,4 @@ from .image_definition import ImageDefinition
 from .image_asset import ImageAsset
 from .audio_asset import AudioAsset, AssetType
 from .translation import Translation
-from .issue_status import IssueStatus
 from .issue import Issue

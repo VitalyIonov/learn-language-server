@@ -6,10 +6,10 @@ from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from app.core.db import Base
 from app.constants.issue_type import IssueTypeName
+from app.constants.issue_status import IssueStatusName
 
 if TYPE_CHECKING:
     from .question import Question
-    from .issue_status import IssueStatus
     from .user import User
 
 
@@ -23,9 +23,7 @@ class Issue(Base):
     question_id: Mapped[int] = mapped_column(
         ForeignKey("questions.id", ondelete="SET NULL"), nullable=True
     )
-    status_id: Mapped[int] = mapped_column(
-        ForeignKey("issue_statuses.id", ondelete="SET NULL"), nullable=True
-    )
+    status: Mapped[IssueStatusName] = mapped_column(String, nullable=False)
     type: Mapped[IssueTypeName] = mapped_column(String, nullable=False)
     text: Mapped[str] = mapped_column(nullable=True)
     decision: Mapped[str] = mapped_column(nullable=True)
@@ -38,7 +36,6 @@ class Issue(Base):
         "User", back_populates="issues", lazy="selectin"
     )
     question: Mapped["Question"] = relationship("Question", lazy="selectin")
-    status: Mapped["IssueStatus"] = relationship("IssueStatus", lazy="selectin")
 
     created_at: Mapped[datetime] = mapped_column(server_default=func.now())
     updated_at: Mapped[datetime] = mapped_column(

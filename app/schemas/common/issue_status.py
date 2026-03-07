@@ -1,12 +1,9 @@
+from app.constants.issue_status import IssueStatusName
 from app.schemas.base import BaseSchema
 
 
 class IssueStatusOut(BaseSchema):
-    id: int
-    name: str
-
-    class Config:
-        from_attributes = True
+    name: IssueStatusName
 
 
 class IssueStatusListResponse(BaseSchema):

@@ -1,9 +1,10 @@
 from datetime import datetime
 from typing import List, Optional
 
+from app.constants.issue_status import IssueStatusName
 from app.constants.issue_type import IssueTypeName
 from app.schemas.base import BaseSchema
-from app.schemas.common import IssueStatusOut, UserOut, Meta
+from app.schemas.common import UserOut, Meta
 from app.schemas.admin import QuestionOut
 
 
@@ -12,7 +13,7 @@ class IssueOut(BaseSchema):
     text: Optional[str] = None
     decision: Optional[str] = None
     reporter: Optional[UserOut] = None
-    status: Optional[IssueStatusOut] = None
+    status: IssueStatusName
     type: IssueTypeName
     question: Optional[QuestionOut] = None
     meaning: str
@@ -26,7 +27,7 @@ class IssueOut(BaseSchema):
 
 class IssueUpdate(BaseSchema):
     decision: Optional[str] = None
-    status_id: Optional[int] = None
+    status: Optional[IssueStatusName] = None
 
 
 class IssuesListResponse(BaseSchema):

@@ -9,7 +9,6 @@ from app.db.seed import (
     seed_levels,
     seed_meanings,
     seed_definitions,
-    seed_issue_statuses,
 )
 from app.core.dependencies.service_factories import (
     get_image_service,
@@ -35,11 +34,6 @@ def run_merge():
     merge_json_folder(
         folder=Path("seed_data/users"), output_name="all_users.json", indent=2
     )
-    merge_json_folder(
-        folder=Path("seed_data/issue_statuses"),
-        output_name="all_issue_statuses.json",
-        indent=2,
-    )
 
 
 async def main():
@@ -60,9 +54,6 @@ async def main():
     with open("seed_data/all_definitions.json", "r") as f:
         definitions_seed_data = json.load(f)
 
-    with open("seed_data/all_issue_statuses.json", "r") as f:
-        issue_statuses_data = json.load(f)
-
     async with async_session() as session:
         storage_service = await get_storage_r2_service()
         image_service = await get_image_service(
@@ -82,7 +73,6 @@ async def main():
             image_service,
         )
         await seed_users(session, users_seed_data)
-        await seed_issue_statuses(session, issue_statuses_data)
 
 
 if __name__ == "__main__":

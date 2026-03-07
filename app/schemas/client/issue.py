@@ -1,15 +1,15 @@
 from typing import List, Optional
 
+from app.constants.issue_status import IssueStatusName
 from app.constants.issue_type import IssueTypeName
 from app.schemas.base import BaseSchema
-from app.schemas.common import IssueStatusOut
 
 
 class IssueOut(BaseSchema):
     id: int
     text: Optional[str] = None
     decision: Optional[str] = None
-    status: Optional[IssueStatusOut] = None
+    status: IssueStatusName
     type: IssueTypeName
     meaning: str
     definitions: List[str]
@@ -21,7 +21,6 @@ class IssueOut(BaseSchema):
 class IssueCreate(BaseSchema):
     text: Optional[str] = None
     type: IssueTypeName
-    status_id: Optional[int] = None
     reporter_id: Optional[int] = None
     question_id: int
     meaning: str

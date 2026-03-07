@@ -2,6 +2,7 @@ from typing import Sequence
 
 from sqlalchemy.ext.asyncio import AsyncSession
 
+from app.constants.issue_status import INITIAL_ISSUE_STATUS
 from app.crud.client import (
     create_issue as create_issue_crud,
     get_issues as get_issues_crud,
@@ -9,24 +10,16 @@ from app.crud.client import (
 from app.models import Issue
 from app.schemas.client import IssueCreate
 
-from ..common.issue_status import IssueStatusService
-
-INITIAL_ISSUE_STATUS_VALUE = 0
-
 
 class IssueService:
-    def __init__(self, db: AsyncSession, svc_issue_status: IssueStatusService):
+    def __init__(self, db: AsyncSession):
         self.db = db
-        self.svc_issue_status = svc_issue_status
 
     async def create(self, payload: IssueCreate, user_id: int):
-        updates: dict = {"reporter_id": user_id}
-        new_status = await self.svc_issue_status.get_by_value(
-            INITIAL_ISSUE_STATUS_VALUE
-        )
-
-        if new_status:
-            updates["status_id"] = new_status.id
+        updates: dict = {
+            "reporter_id": user_id,
+            "status": INITIAL_ISSUE_STATUS,
+        }
 
         new_payload = payload.model_copy(update=updates)
 
