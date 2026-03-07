@@ -30,6 +30,7 @@ from app.services.client import (
 from app.services.common import (
     UserService,
     AuthService,
+    EmbeddingService,
     TranslationService,
     TranslateService,
 )
@@ -133,6 +134,10 @@ async def require_admin(
 
 def get_statistic_service(db: AsyncSession = Depends(get_db)) -> StatisticService:
     return StatisticService(db)
+
+
+async def get_embedding_service() -> EmbeddingService:
+    return EmbeddingService()
 
 
 async def get_translate_service() -> TranslateService:
