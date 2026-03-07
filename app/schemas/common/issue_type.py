@@ -1,12 +1,9 @@
+from app.constants.issue_type import IssueTypeName
 from app.schemas.base import BaseSchema
 
 
 class IssueTypeOut(BaseSchema):
-    id: int
-    name: str
-
-    class Config:
-        from_attributes = True
+    name: IssueTypeName
 
 
 class IssueTypeListResponse(BaseSchema):

@@ -1,8 +1,8 @@
-from fastapi import APIRouter, Depends
+from fastapi import APIRouter
 
-from app.core.dependencies.service_factories import get_issue_type_service
+from app.constants.issue_type import IssueTypeName
 from app.schemas.common import IssueTypeListResponse
-from app.services.common import IssueTypeService
+from app.schemas.common.issue_type import IssueTypeOut
 
 router = APIRouter(tags=["issue_types"])
 
@@ -12,7 +12,7 @@ router = APIRouter(tags=["issue_types"])
     response_model=IssueTypeListResponse,
     operation_id="getIssueTypesList",
 )
-async def get_issue_types(
-    svc: IssueTypeService = Depends(get_issue_type_service),
-):
-    return await svc.get_all()
+async def get_issue_types():
+    return IssueTypeListResponse(
+        items=[IssueTypeOut(name=issue_type) for issue_type in IssueTypeName]
+    )

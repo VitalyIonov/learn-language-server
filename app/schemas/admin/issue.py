@@ -1,8 +1,9 @@
 from datetime import datetime
 from typing import List, Optional
 
+from app.constants.issue_type import IssueTypeName
 from app.schemas.base import BaseSchema
-from app.schemas.common import IssueTypeOut, IssueStatusOut, UserOut, Meta
+from app.schemas.common import IssueStatusOut, UserOut, Meta
 from app.schemas.admin import QuestionOut
 
 
@@ -12,7 +13,7 @@ class IssueOut(BaseSchema):
     decision: Optional[str] = None
     reporter: Optional[UserOut] = None
     status: Optional[IssueStatusOut] = None
-    type: Optional[IssueTypeOut] = None
+    type: IssueTypeName
     question: Optional[QuestionOut] = None
     meaning: str
     definitions: List[str]

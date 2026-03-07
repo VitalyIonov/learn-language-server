@@ -31,7 +31,6 @@ from app.services.common import (
     UserService,
     AuthService,
     TranslationService,
-    IssueTypeService,
     IssueStatusService,
     TranslateService,
 )
@@ -139,10 +138,6 @@ def get_statistic_service(db: AsyncSession = Depends(get_db)) -> StatisticServic
 
 async def get_translate_service() -> TranslateService:
     return TranslateService()
-
-
-def get_issue_type_service(db: AsyncSession = Depends(get_db)) -> IssueTypeService:
-    return IssueTypeService(db)
 
 
 def get_issue_status_service(db: AsyncSession = Depends(get_db)) -> IssueStatusService:

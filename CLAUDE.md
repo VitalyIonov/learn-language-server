@@ -13,7 +13,7 @@ asyncpg. Poetry for dependency management. Dockerized development environment.
 make start              # Docker compose up (web:8000, db, nginx)
 make bash               # Shell into web container
 make db-migrate         # Run alembic migrations (upgrade head)
-make db-migrate-gen     # Auto-generate new migration from model changes
+make db-migrate-gen m="message"  # Auto-generate new migration from model changes
 make db-seed            # Seed database from seed_data/ JSON files
 make reset-db           # Reset entire database
 make db-connect         # psql into the running database
@@ -87,6 +87,7 @@ Pydantic `BaseSettings` in `app/core/config.py` reads from `.env`. Key vars: `PO
 
 ## Conventions
 
+- **Всегда использовать `make` команды** вместо прямого вызова CLI-инструментов. Особенно для миграций (`make db-migrate-gen`, `make db-migrate`) — они выполняются внутри Docker-контейнера, где доступна БД.
 - All DB operations and route handlers are async
 - `black` formatting (line-length 88), `isort` with black profile
 - mypy with pydantic and sqlalchemy plugins
