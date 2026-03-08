@@ -49,7 +49,11 @@ async def seed_definitions(
 
         if def_type == QuestionTypeName.TEXT.upper():
             existing_text_def: TextDefinition | None = await session.scalar(
-                select(TextDefinition).where(TextDefinition.text == definition_data["text"])
+                select(TextDefinition).where(
+                    TextDefinition.text == definition_data["text"],
+                    TextDefinition.category_id == category_id,
+                    TextDefinition.level_id == level_id,
+                )
             )
 
             if existing_text_def:
@@ -65,7 +69,11 @@ async def seed_definitions(
 
         if def_type == QuestionTypeName.IMAGE.upper():
             existing_img_def: ImageDefinition | None = await session.scalar(
-                select(ImageDefinition).where(ImageDefinition.text == definition_data["text"])
+                select(ImageDefinition).where(
+                    ImageDefinition.text == definition_data["text"],
+                    ImageDefinition.category_id == category_id,
+                    ImageDefinition.level_id == level_id,
+                )
             )
 
             if existing_img_def and existing_img_def.image_id:
