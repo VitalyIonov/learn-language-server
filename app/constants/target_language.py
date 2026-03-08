@@ -6,6 +6,7 @@ import enum
 class TargetLanguageCode(str, enum.Enum):
     EN = "EN"
     ES = "ES"
+    RU = "RU"
 
     @property
     def display_name(self) -> str:

@@ -144,12 +144,6 @@ async def get_translate_service() -> TranslateService:
     return TranslateService()
 
 
-async def get_category_service_client(
-    db: AsyncSession = Depends(get_db),
-) -> CategoryServiceClient:
-    return CategoryServiceClient(db=db)
-
-
 async def get_question_service(
     db: AsyncSession = Depends(get_db),
     svc_meaning_progress_info=Depends(get_meaning_progress_info_service),
@@ -179,6 +173,13 @@ async def get_translation_service(
     svc_translate: TranslateService = Depends(get_translate_service),
 ) -> TranslationService:
     return TranslationService(db, svc_translate)
+
+
+async def get_category_service_client(
+    db: AsyncSession = Depends(get_db),
+    svc_translation: TranslationService = Depends(get_translation_service),
+) -> CategoryServiceClient:
+    return CategoryServiceClient(db=db, svc_translation=svc_translation)
 
 
 async def get_settings_service(
