@@ -2,7 +2,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy import select
 
 from app.core.db import async_session as session_factory
-from app.models.common import Category, Level, Meaning
+from app.models.common import Category, Meaning
 from app.core.dependencies.service_factories import (
     get_tts_service,
     get_storage_r2_service,
@@ -21,15 +21,11 @@ async def seed_meanings(session: AsyncSession, meanings_data: list[dict]) -> Non
         category_id = await session.scalar(
             select(Category.id).where(Category.name == m["category"])
         )
-        level_id = await session.scalar(
-            select(Level.id).where(Level.alias == m["level"])
-        )
 
         session.add(
             Meaning(
                 name=m["name"],
                 category_id=category_id,
-                level_id=level_id,
             )
         )
 

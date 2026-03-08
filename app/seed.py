@@ -25,14 +25,14 @@ def run_merge():
     merge_json_folder(folder=Path("seed_data/v2/categories"), output_name="all_categories.json", indent=2)
     merge_json_folder(folder=Path("seed_data/v2/levels"), output_name="all_levels.json", indent=2)
     merge_json_folder(folder=Path("seed_data/v2/meanings"), output_name="all_meanings.json", indent=2)
-    merge_json_folder(folder=Path("seed_data/v2/users"), output_name="all_users.json", indent=2)
+    # merge_json_folder(folder=Path("seed_data/v2/users"), output_name="all_users.json", indent=2)
 
 
 async def main():
     run_merge()
 
-    with open("seed_data/v2/all_users.json", "r") as f:
-        users_seed_data = json.load(f)
+    # with open("seed_data/v2/all_users.json", "r") as f:
+    #     users_seed_data = json.load(f)
 
     with open("seed_data/v2/all_categories.json", "r") as f:
         categories_seed_data = json.load(f)
@@ -62,7 +62,7 @@ async def main():
             definitions_seed_data,
             image_service,
         )
-        await seed_users(session, users_seed_data)
+        # await seed_users(session, users_seed_data)
 
 
 if __name__ == "__main__":

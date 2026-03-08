@@ -3,14 +3,12 @@ from typing import List, Optional
 from app.schemas.common import Meta
 from app.schemas.base import BaseSchema
 from .category import CategoryOut
-from .level import LevelOut
 
 
 class MeaningOut(BaseSchema):
     id: int
     name: str
     category: Optional[CategoryOut] = None
-    level: Optional[LevelOut] = None
 
     model_config = ConfigDict(from_attributes=True)
 
@@ -25,11 +23,9 @@ class MeaningsListResponse(BaseSchema):
 class MeaningCreate(BaseSchema):
     name: str
     category_id: Optional[int] = None
-    level_id: Optional[int] = None
 
 
 class MeaningUpdate(BaseSchema):
     name: Optional[int] = None
     category_id: Optional[int] = None
-    level_id: Optional[int] = None
     audio_id: Optional[int] = None

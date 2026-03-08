@@ -17,7 +17,6 @@ async def get_meanings(
         select(Meaning)
         .options(
             selectinload(Meaning.category),
-            selectinload(Meaning.level),
         )
         .order_by(Meaning.id)
     )
