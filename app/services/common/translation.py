@@ -48,12 +48,15 @@ class TranslationService:
     async def translate(
         self,
         text: str,
-        lang_from: str = "es",
-        lang_to: str = "ru",
+        lang_from: str,
+        lang_to: str,
         context: str | None = None,
     ) -> str:
-        if not text:
-            raise HTTPException(status_code=400, detail="Missing 'text' parameter")
+        if not all((text, lang_from, lang_to)):
+            raise HTTPException(status_code=400, detail="Missing required parameter")
+
+        if lang_from == lang_to:
+            return text
 
         translated_text = await self.get(text, lang_from, lang_to)
 

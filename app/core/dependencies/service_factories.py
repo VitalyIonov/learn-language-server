@@ -156,12 +156,6 @@ async def get_question_service(
     )
 
 
-async def get_level_service_client(
-    db: AsyncSession = Depends(get_db),
-) -> LevelServiceClient:
-    return LevelServiceClient(db)
-
-
 async def get_issue_service_client(
     db: AsyncSession = Depends(get_db),
 ) -> IssueServiceClient:
@@ -180,6 +174,13 @@ async def get_category_service_client(
     svc_translation: TranslationService = Depends(get_translation_service),
 ) -> CategoryServiceClient:
     return CategoryServiceClient(db=db, svc_translation=svc_translation)
+
+
+async def get_level_service_client(
+    db: AsyncSession = Depends(get_db),
+    svc_translation: TranslationService = Depends(get_translation_service),
+) -> LevelServiceClient:
+    return LevelServiceClient(db, svc_translation=svc_translation)
 
 
 async def get_settings_service(

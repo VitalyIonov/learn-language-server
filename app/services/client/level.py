@@ -16,6 +16,7 @@ from app.constants.score import DEFINITION_GROUP_SCORES, LEVEL_SCORE_MULTIPLIER
 from app.constants.target_language import TargetLanguageCode
 from app.models import Level
 from app.schemas.client import LevelsListResponse, LevelOut
+from app.services.common import TranslationService
 
 
 def compute_group_score(group: DefinitionGroup, defs_per_meaning: list[int]) -> int:
@@ -50,14 +51,22 @@ def _get_level_max_scores(stats_rows: list[DefinitionStatRow]) -> dict[int, int]
 
 
 class LevelService:
-    def __init__(self, db: AsyncSession):
+    def __init__(self, db: AsyncSession, svc_translation: TranslationService):
         self.db = db
+        self.svc_translation = svc_translation
 
     async def _get_active_level_id(
-        self, user_id: int, category_id: int, levels: list[Level], target_language: TargetLanguageCode,
+        self,
+        user_id: int,
+        category_id: int,
+        levels: list[Level],
+        target_language: TargetLanguageCode,
     ) -> int:
         level_id = await crud_get_last_question_level_id(
-            self.db, user_id=user_id, category_id=category_id, language=target_language,
+            self.db,
+            user_id=user_id,
+            category_id=category_id,
+            language=target_language,
         )
         if level_id is not None:
             return level_id
@@ -72,20 +81,31 @@ class LevelService:
 
         level_ids = list(max_scores.keys())
         levels = await crud_get_levels_base_by_ids(self.db, level_ids=level_ids)
-        current_scores = await crud_get_scores_by_levels(self.db, user_id=user_id, category_id=category_id, level_ids=level_ids, language=target_language)
-        active_level_id = await self._get_active_level_id(user_id=user_id, category_id=category_id, levels=levels, target_language=target_language)
+        current_scores = await crud_get_scores_by_levels(
+            self.db, user_id=user_id, category_id=category_id, level_ids=level_ids, language=target_language
+        )
+        active_level_id = await self._get_active_level_id(
+            user_id=user_id, category_id=category_id, levels=levels, target_language=target_language
+        )
 
-        items = [
-            LevelOut(
-                id=level.id,
-                name=level.name,
-                alias=level.alias,
-                value=level.value,
-                current_score=current_scores.get(level.id, 0),
-                max_score=max_scores[level.id],
-                is_active=(level.id == active_level_id),
+        items = []
+        for level in levels:
+            translated_name = await self.svc_translation.translate(
+                text=level.name,
+                lang_from=level.language.value,
+                lang_to=target_language.value,
             )
-            for level in levels
-        ]
+            items.append(
+                LevelOut(
+                    id=level.id,
+                    name=translated_name,
+                    alias=level.alias,
+                    value=level.value,
+                    language=level.language,
+                    current_score=current_scores.get(level.id, 0),
+                    max_score=max_scores[level.id],
+                    is_active=(level.id == active_level_id),
+                )
+            )
 
         return LevelsListResponse(items=items)
