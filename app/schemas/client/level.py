@@ -1,5 +1,6 @@
 from typing import List
 
+from app.constants.target_language import TargetLanguageCode
 from app.schemas.base import BaseSchema
 
 
@@ -8,6 +9,7 @@ class LevelOutBase(BaseSchema):
     name: str
     alias: str
     value: float
+    language: TargetLanguageCode
 
     class Config:
         from_attributes = True
