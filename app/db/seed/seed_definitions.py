@@ -30,26 +30,26 @@ async def seed_definitions(
     data: list[dict],
     image_service: ImageService,
 ) -> None:
-    for item in data:
+    for definition_data in data:
         category_id = await session.scalar(
-            select(Category.id).where(Category.name == item["category"])
+            select(Category.id).where(Category.name == definition_data["category"])
         )
         level_id = await session.scalar(
-            select(Level.id).where(Level.alias == item["level"])
+            select(Level.id).where(Level.alias == definition_data["level"])
         )
         meaning_objs = (
             await session.scalars(
-                select(Meaning).where(Meaning.name.in_(item["meanings"]))
+                select(Meaning).where(Meaning.name.in_(definition_data["meanings"]))
             )
         ).all()
 
-        def_type = item.get("type")
+        def_type = definition_data.get("type", "").upper()
 
         result: Union[TextDefinition, ImageDefinition] | None = None
 
-        if def_type == QuestionTypeName.TEXT:
+        if def_type == QuestionTypeName.TEXT.upper():
             existing_text_def: TextDefinition | None = await session.scalar(
-                select(TextDefinition).where(TextDefinition.text == item["text"])
+                select(TextDefinition).where(TextDefinition.text == definition_data["text"])
             )
 
             if existing_text_def:
@@ -58,14 +58,16 @@ async def seed_definitions(
                 continue
 
             result = TextDefinition(
-                text=item["text"],
+                text=definition_data["text"],
                 category_id=category_id,
                 level_id=level_id,
+                language=definition_data["language"],
+                group=definition_data["group"],
             )
 
-        if def_type == QuestionTypeName.IMAGE:
+        if def_type == QuestionTypeName.IMAGE.upper():
             existing_img_def: ImageDefinition | None = await session.scalar(
-                select(ImageDefinition).where(ImageDefinition.text == item["text"])
+                select(ImageDefinition).where(ImageDefinition.text == definition_data["text"])
             )
 
             if existing_img_def and existing_img_def.image_id:
@@ -74,7 +76,7 @@ async def seed_definitions(
                 continue
 
             image_asset = None
-            image_path = item.get("image_path")
+            image_path = definition_data.get("image_path")
 
             if image_path and os.path.exists(image_path):
                 try:
@@ -85,11 +87,11 @@ async def seed_definitions(
                         )
                         image_asset = await image_service.create_and_upload(
                             file=upload_file,
-                            payload=ImageAssetUploadPayload(text=item.get("text")),
+                            payload=ImageAssetUploadPayload(text=definition_data.get("text")),
                         )
 
                 except Exception as e:
-                    print(f"❌ Ошибка при загрузке картинки {item['image_path']}: {e}")
+                    print(f"❌ Ошибка при загрузке картинки {definition_data['image_path']}: {e}")
 
             if existing_img_def and not existing_img_def.image_id and image_asset:
                 existing_img_def.image_id = image_asset.image_id
@@ -101,14 +103,18 @@ async def seed_definitions(
 
             result = ImageDefinition(
                 image_id=image_asset.image_id if image_asset else None,
-                text=item["text"],
+                text=definition_data["text"],
                 category_id=category_id,
                 level_id=level_id,
+                language=definition_data["language"],
+                group=definition_data["group"],
             )
 
         if result:
             result.meanings.extend(meaning_objs)
             session.add(result)
+
+    await session.commit()
 
     rows = await session.execute(
         select(TextDefinition.id).where(TextDefinition.audio_id.is_(None))

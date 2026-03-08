@@ -13,21 +13,24 @@ from app.utils.generate_audio import run_audio_generator
 
 
 async def seed_meanings(session: AsyncSession, meanings_data: list[dict]) -> None:
-    for m in meanings_data:
-        exists = await session.execute(select(Meaning).where(Meaning.name == m["name"]))
+    for meaning_data in meanings_data:
+        exists = await session.execute(select(Meaning).where(Meaning.name == meaning_data["name"]))
         if exists.scalars().first():
             continue
 
         category_id = await session.scalar(
-            select(Category.id).where(Category.name == m["category"])
+            select(Category.id).where(Category.name == meaning_data["category"])
         )
 
         session.add(
             Meaning(
-                name=m["name"],
+                name=meaning_data["name"],
                 category_id=category_id,
+                language=meaning_data["language"],
             )
         )
+
+    await session.commit()
 
     rows = await session.execute(select(Meaning.id).where(Meaning.audio_id.is_(None)))
     ids_to_insert_audio: list[int] = [r[0] for r in rows]
