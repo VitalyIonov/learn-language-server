@@ -17,6 +17,7 @@ async def seed_levels(session: AsyncSession, data: list[dict]):
                 name=item["name"],
                 alias=item["alias"],
                 value=item["value"],
+                language=item["language"],
             )
 
             session.add(level)

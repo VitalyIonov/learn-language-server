@@ -18,47 +18,37 @@ from app.core.dependencies.service_factories import (
 
 def run_merge():
     merge_json_folder(
-        folder=Path("seed_data/definitions"),
+        folder=Path("seed_data/v2/definitions"),
         output_name="all_definitions.json",
         indent=2,
     )
-    merge_json_folder(
-        folder=Path("seed_data/categories"), output_name="all_categories.json", indent=2
-    )
-    merge_json_folder(
-        folder=Path("seed_data/levels"), output_name="all_levels.json", indent=2
-    )
-    merge_json_folder(
-        folder=Path("seed_data/meanings"), output_name="all_meanings.json", indent=2
-    )
-    merge_json_folder(
-        folder=Path("seed_data/users"), output_name="all_users.json", indent=2
-    )
+    merge_json_folder(folder=Path("seed_data/v2/categories"), output_name="all_categories.json", indent=2)
+    merge_json_folder(folder=Path("seed_data/v2/levels"), output_name="all_levels.json", indent=2)
+    merge_json_folder(folder=Path("seed_data/v2/meanings"), output_name="all_meanings.json", indent=2)
+    merge_json_folder(folder=Path("seed_data/v2/users"), output_name="all_users.json", indent=2)
 
 
 async def main():
     run_merge()
 
-    with open("seed_data/all_users.json", "r") as f:
+    with open("seed_data/v2/all_users.json", "r") as f:
         users_seed_data = json.load(f)
 
-    with open("seed_data/all_categories.json", "r") as f:
+    with open("seed_data/v2/all_categories.json", "r") as f:
         categories_seed_data = json.load(f)
 
-    with open("seed_data/all_levels.json", "r") as f:
+    with open("seed_data/v2/all_levels.json", "r") as f:
         levels_seed_data = json.load(f)
 
-    with open("seed_data/all_meanings.json", "r") as f:
+    with open("seed_data/v2/all_meanings.json", "r") as f:
         meanings_seed_data = json.load(f)
 
-    with open("seed_data/all_definitions.json", "r") as f:
+    with open("seed_data/v2/all_definitions.json", "r") as f:
         definitions_seed_data = json.load(f)
 
     async with async_session() as session:
         storage_service = await get_storage_r2_service()
-        image_service = await get_image_service(
-            db=session, svc_storage_r2=storage_service
-        )
+        image_service = await get_image_service(db=session, svc_storage_r2=storage_service)
 
         await seed_categories(
             session,

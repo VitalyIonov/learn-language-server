@@ -1,6 +1,7 @@
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy import select
 
+from app.core.db import async_session as session_factory
 from app.models.common import Category, Level, Meaning
 from app.core.dependencies.service_factories import (
     get_tts_service,
@@ -38,11 +39,12 @@ async def seed_meanings(session: AsyncSession, meanings_data: list[dict]) -> Non
     if not ids_to_insert_audio:
         return
 
-    svc_storage_r2 = await get_storage_r2_service()
-    svc_tts = await get_tts_service()
-    svc_audio = await get_audio_service(
-        db=session, svc_storage_r2=svc_storage_r2, svc_tts=svc_tts
-    )
-    svc_meaning = await get_meaning_service(db=session, svc_audio=svc_audio)
+    async def generate_audio_for_meaning(meaning_id: int) -> None:
+        async with session_factory() as db:
+            svc_storage_r2 = await get_storage_r2_service()
+            svc_tts = await get_tts_service()
+            svc_audio = await get_audio_service(db=db, svc_storage_r2=svc_storage_r2, svc_tts=svc_tts)
+            svc_meaning = await get_meaning_service(db=db, svc_audio=svc_audio)
+            await svc_meaning.generate_audio(meaning_id=meaning_id)
 
-    await run_audio_generator(ids_to_insert_audio, svc_meaning.generate_audio)
+    await run_audio_generator(ids_to_insert_audio, generate_audio_for_meaning)

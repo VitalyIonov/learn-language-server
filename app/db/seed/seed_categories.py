@@ -63,6 +63,7 @@ async def seed_categories(
 
         result = Category(
             name=category_data["name"],
+            language=category_data["language"],
             image_id=image_asset.image_id if image_asset else None,
         )
 

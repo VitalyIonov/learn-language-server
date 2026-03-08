@@ -21,6 +21,7 @@ from app.core.dependencies.service_factories import (
     get_audio_service,
     get_text_definition_service,
 )
+from app.core.db import async_session as session_factory
 from app.utils.generate_audio import run_audio_generator
 
 
@@ -117,13 +118,12 @@ async def seed_definitions(
     if not ids_to_insert_audio:
         return
 
-    svc_storage_r2 = await get_storage_r2_service()
-    svc_tts = await get_tts_service()
-    svc_audio = await get_audio_service(
-        db=session, svc_storage_r2=svc_storage_r2, svc_tts=svc_tts
-    )
-    svc_text_definitions = await get_text_definition_service(
-        db=session, svc_audio=svc_audio
-    )
+    async def generate_audio_for_definition(definition_id: int) -> None:
+        async with session_factory() as db:
+            svc_storage_r2 = await get_storage_r2_service()
+            svc_tts = await get_tts_service()
+            svc_audio = await get_audio_service(db=db, svc_storage_r2=svc_storage_r2, svc_tts=svc_tts)
+            svc_text_definitions = await get_text_definition_service(db=db, svc_audio=svc_audio)
+            await svc_text_definitions.generate_audio(definition_id=definition_id)
 
-    await run_audio_generator(ids_to_insert_audio, svc_text_definitions.generate_audio)
+    await run_audio_generator(ids_to_insert_audio, generate_audio_for_definition)
