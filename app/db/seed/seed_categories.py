@@ -61,11 +61,12 @@ async def seed_categories(
             session.add(existing_category)
             continue
 
-        result = Category(
-            name=category_data["name"],
-            language=category_data["language"],
-            image_id=image_asset.image_id if image_asset else None,
-        )
+        if not existing_category:
+            result = Category(
+                name=category_data["name"],
+                language=category_data["language"],
+                image_id=image_asset.image_id if image_asset else None,
+            )
 
-        session.add(result)
+            session.add(result)
     await session.commit()

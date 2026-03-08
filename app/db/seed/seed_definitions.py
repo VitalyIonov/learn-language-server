@@ -53,8 +53,6 @@ async def seed_definitions(
             )
 
             if existing_text_def:
-                existing_text_def.meanings.extend(meaning_objs)
-
                 continue
 
             result = TextDefinition(
@@ -71,8 +69,6 @@ async def seed_definitions(
             )
 
             if existing_img_def and existing_img_def.image_id:
-                existing_img_def.meanings.extend(meaning_objs)
-
                 continue
 
             image_asset = None
@@ -95,9 +91,6 @@ async def seed_definitions(
 
             if existing_img_def and not existing_img_def.image_id and image_asset:
                 existing_img_def.image_id = image_asset.image_id
-
-                existing_img_def.meanings.extend(meaning_objs)
-
                 session.add(existing_img_def)
                 continue
 
