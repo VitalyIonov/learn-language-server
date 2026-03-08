@@ -29,7 +29,7 @@ class TranslationService:
     async def create(
         self,
         text: str,
-        translated_text,
+        translated_text: str,
         lang_from: str,
         lang_to: str,
     ) -> str:

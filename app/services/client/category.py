@@ -24,8 +24,8 @@ class CategoryService:
         result = CategoryOut.model_validate(category)
         result.name = await self.svc_translation.translate(
             text=result.name,
-            lang_from=category.language.value,
-            lang_to=target_language.value,
+            lang_from=category.language,
+            lang_to=target_language,
         )
 
         return result
@@ -36,8 +36,8 @@ class CategoryService:
         for item in response.items:
             item.name = await self.svc_translation.translate(
                 text=item.name,
-                lang_from=item.language.value,
-                lang_to=target_language.value,
+                lang_from=item.language,
+                lang_to=target_language,
             )
 
         return response

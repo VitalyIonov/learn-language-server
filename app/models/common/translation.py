@@ -1,4 +1,6 @@
-from sqlalchemy import UniqueConstraint
+from datetime import datetime
+
+from sqlalchemy import UniqueConstraint, func
 from sqlalchemy.orm import Mapped, mapped_column
 
 from app.core.db import Base
@@ -17,3 +19,4 @@ class Translation(Base):
     translated_text: Mapped[str] = mapped_column(nullable=False)
     lang_from: Mapped[str] = mapped_column(index=True, nullable=False)
     lang_to: Mapped[str] = mapped_column(index=True, nullable=False)
+    translated_at: Mapped[datetime] = mapped_column(server_default=func.now())

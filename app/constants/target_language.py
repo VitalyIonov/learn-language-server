@@ -10,4 +10,4 @@ class TargetLanguageCode(str, enum.Enum):
 
     @property
     def display_name(self) -> str:
-        return {TargetLanguageCode.EN: "English", TargetLanguageCode.ES: "Español"}[self]
+        return {TargetLanguageCode.EN: "English", TargetLanguageCode.ES: "Español", TargetLanguageCode.RU: "Русский"}[self]

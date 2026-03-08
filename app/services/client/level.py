@@ -92,8 +92,8 @@ class LevelService:
         for level in levels:
             translated_name = await self.svc_translation.translate(
                 text=level.name,
-                lang_from=level.language.value,
-                lang_to=target_language.value,
+                lang_from=level.language,
+                lang_to=target_language,
             )
             items.append(
                 LevelOut(
