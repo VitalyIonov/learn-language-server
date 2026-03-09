@@ -15,6 +15,7 @@ class ImageDefinitionOut(BaseSchema):
     id: int
 
     type: Literal[QuestionTypeName.IMAGE] = QuestionTypeName.IMAGE
+    text: str
     language: TargetLanguageCode
     image_id: int
     group: ImageDefinitionGroup

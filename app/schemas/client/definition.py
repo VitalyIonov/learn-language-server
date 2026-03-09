@@ -23,6 +23,7 @@ class TextDefinitionOut(BaseDefinitionOut):
 
 class ImageDefinitionOut(BaseDefinitionOut):
     type: Literal[QuestionTypeName.IMAGE]
+    text: str
     language: TargetLanguageCode
     image_id: int
     image: ImageAssetOut
