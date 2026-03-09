@@ -2,12 +2,14 @@ from pydantic import ConfigDict, Field
 from typing import List, Optional
 from app.schemas.common import Meta
 from app.schemas.base import BaseSchema
+from app.constants.target_language import TargetLanguageCode
 from .category import CategoryOut
 
 
 class MeaningOut(BaseSchema):
     id: int
     name: str
+    language: TargetLanguageCode
     category: Optional[CategoryOut] = None
 
     model_config = ConfigDict(from_attributes=True)

@@ -10,8 +10,10 @@ router = APIRouter(tags=["translations"])
 @router.get("/translate", response_model=TranslateOut, operation_id="getTranslate")
 async def translate_text(
     text: str = Query(description="text to translate"),
+    lang_from: str = Query(description="source language code"),
+    lang_to: str = Query(description="target language code"),
     svc_translation: TranslationService = Depends(get_translation_service),
 ):
-    result = await svc_translation.translate(text=text)
+    result = await svc_translation.translate(text=text, lang_from=lang_from, lang_to=lang_to)
 
     return {"translation": result}

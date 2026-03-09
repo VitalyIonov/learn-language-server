@@ -8,12 +8,14 @@ from .category import CategoryOut
 from .level import LevelOut
 from app.models import QuestionTypeName
 from app.constants.definition import ImageDefinitionGroup
+from app.constants.target_language import TargetLanguageCode
 
 
 class ImageDefinitionOut(BaseSchema):
     id: int
 
     type: Literal[QuestionTypeName.IMAGE] = QuestionTypeName.IMAGE
+    language: TargetLanguageCode
     image_id: int
     group: ImageDefinitionGroup
     category_id: int | None = None

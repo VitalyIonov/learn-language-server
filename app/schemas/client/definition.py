@@ -5,6 +5,7 @@ from pydantic import ConfigDict, Field
 from app.models import QuestionTypeName
 from app.schemas.common import ImageAssetOut, AudioAssetOut
 from app.schemas.base import BaseSchema
+from app.constants.target_language import TargetLanguageCode
 
 
 class BaseDefinitionOut(BaseSchema):
@@ -16,11 +17,13 @@ class BaseDefinitionOut(BaseSchema):
 class TextDefinitionOut(BaseDefinitionOut):
     type: Literal[QuestionTypeName.TEXT]
     text: str
+    language: TargetLanguageCode
     audio: Optional[AudioAssetOut] = None
 
 
 class ImageDefinitionOut(BaseDefinitionOut):
     type: Literal[QuestionTypeName.IMAGE]
+    language: TargetLanguageCode
     image_id: int
     image: ImageAssetOut
 

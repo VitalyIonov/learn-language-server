@@ -8,6 +8,7 @@ from .category import CategoryOut
 from .level import LevelOut
 from app.models import QuestionTypeName
 from app.constants.definition import TextDefinitionGroup
+from app.constants.target_language import TargetLanguageCode
 
 
 class TextDefinitionOut(BaseSchema):
@@ -15,6 +16,7 @@ class TextDefinitionOut(BaseSchema):
 
     type: Literal[QuestionTypeName.TEXT] = QuestionTypeName.TEXT
     text: str
+    language: TargetLanguageCode
     group: TextDefinitionGroup
 
     audio: Optional[AudioAssetOut] = None
