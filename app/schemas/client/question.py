@@ -33,6 +33,7 @@ class DefinitionCandidate(NamedTuple):
 class QuestionOut(BaseSchema):
     id: int
     type: QuestionTypeName
+    definition_group: DefinitionGroup
     meaning: MeaningOut
     definitions: list[DefinitionOut]
 
@@ -49,6 +50,7 @@ class QuestionCreate(BaseSchema):
     category_id: int
     correct_definition_id: int
     type: QuestionTypeName
+    definition_group: DefinitionGroup
     language: TargetLanguageCode
 
 

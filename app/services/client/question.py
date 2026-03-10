@@ -105,6 +105,7 @@ class QuestionService:
         question_data = QuestionCreate(
             user_id=current_user.id,
             type=selected.type,
+            definition_group=selected.group,
             meaning_id=selected.meaning_id,
             category_id=payload.category_id,
             level_id=payload.level_id,
@@ -118,6 +119,7 @@ class QuestionService:
             {
                 "id": question.id,
                 "type": question.type,
+                "definition_group": question.definition_group,
                 "meaning": meaning,
                 "definitions": definitions,
             }
