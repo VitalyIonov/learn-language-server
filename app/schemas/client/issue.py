@@ -21,6 +21,7 @@ class IssueOut(BaseSchema):
 class IssueCreate(BaseSchema):
     text: Optional[str] = None
     type: IssueTypeName
+    status: Optional[IssueStatusName] = None
     reporter_id: Optional[int] = None
     question_id: int
     meaning: str

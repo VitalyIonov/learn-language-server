@@ -19,6 +19,8 @@ class CategoryOutBase(BaseSchema):
     name: str
     language: TargetLanguageCode
     image: ImageAssetOut | None = None
+    current_score: int
+    max_score: int
 
     class Config:
         from_attributes = True

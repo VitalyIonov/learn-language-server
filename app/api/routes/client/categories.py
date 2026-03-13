@@ -32,4 +32,4 @@ async def read_categories(
     svc: CategoryService = Depends(get_category_service_client),
     current_user: User = Depends(get_current_user),
 ):
-    return await svc.get_all(target_language=current_user.target_language)
+    return await svc.get_all(user_id=current_user.id, target_language=current_user.target_language)

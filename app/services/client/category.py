@@ -6,7 +6,13 @@ from app.crud.client import (
     get_category as crud_get_category,
     get_categories as crud_get_categories,
 )
-from app.schemas.client import CategoriesListResponse, CategoryOut
+from app.crud.common import (
+    get_all_definition_stats as crud_get_all_definition_stats,
+    get_scores_by_categories as crud_get_scores_by_categories,
+)
+from app.schemas.client import CategoriesListResponse, CategoryOut, CategoryOutBase
+from app.schemas.common import Meta
+from app.services.client.statistic import _get_category_max_scores
 from app.services.common import TranslationService
 
 
@@ -30,14 +36,33 @@ class CategoryService:
 
         return result
 
-    async def get_all(self, target_language: TargetLanguageCode) -> CategoriesListResponse:
-        response = await crud_get_categories(self.db)
+    async def get_all(self, user_id: int, target_language: TargetLanguageCode) -> CategoriesListResponse:
+        categories, total_count = await crud_get_categories(self.db)
 
-        for item in response.items:
-            item.name = await self.svc_translation.translate(
-                text=item.name,
-                lang_from=item.language,
+        stat_rows = await crud_get_all_definition_stats(self.db, language=target_language)
+        max_scores = _get_category_max_scores(stat_rows)
+
+        category_ids = [category.id for category in categories]
+        current_scores = await crud_get_scores_by_categories(
+            self.db, user_id=user_id, category_ids=category_ids, language=target_language
+        )
+
+        items = []
+        for category in categories:
+            translated_name = await self.svc_translation.translate(
+                text=category.name,
+                lang_from=category.language,
                 lang_to=target_language,
             )
+            items.append(
+                CategoryOutBase(
+                    id=category.id,
+                    name=translated_name,
+                    language=category.language,
+                    image=category.image,
+                    current_score=current_scores.get(category.id, 0),
+                    max_score=max_scores.get(category.id, 0),
+                )
+            )
 
-        return response
+        return CategoriesListResponse(items=items, meta=Meta(total_count=total_count))

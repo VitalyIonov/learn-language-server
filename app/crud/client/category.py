@@ -1,7 +1,6 @@
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy import select, func
 from app.models.common import Category
-from app.schemas.client import CategoriesListResponse
 
 
 async def get_category(
@@ -29,16 +28,11 @@ async def get_categories_by_ids(
 
 async def get_categories(
     db: AsyncSession,
-) -> CategoriesListResponse:
+) -> tuple[list[Category], int]:
     statement = select(Category).order_by(Category.name)
     count_statement = select(func.count()).select_from(Category)
 
     result = await db.execute(statement)
     count = await db.execute(count_statement)
 
-    return CategoriesListResponse.model_validate(
-        {
-            "items": result.scalars().all(),
-            "meta": {"total_count": count.scalar_one()},
-        }
-    )
+    return list(result.scalars().all()), count.scalar_one()
