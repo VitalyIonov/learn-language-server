@@ -14,69 +14,28 @@ DEEPL_API_KEY = settings.DEEPL_API_KEY
 DEEPL_API_URL = "https://api-free.deepl.com/v2/translate"
 DEFAULT_TRANSLATION_MODEL = "gpt-4o"
 
-_LANG_MAP = {
-    "es": "Spanish",
-    "ru": "Russian",
-    "en": "English",
-    "fr": "French",
-    "de": "German",
-    "pt": "Portuguese",
-    "it": "Italian",
-}
+from app.constants.translate import ACTION_STYLE, BASE_RULES, BATCH_OUTPUT_RULES
 
 
-def _normalize_lang(lang: str) -> str:
-    if not lang:
-        return ""
-    key = lang.strip().lower()
-    return _LANG_MAP.get(key, lang.strip().title())
+def build_instructions(lang_from: str, lang_to: str, group: str | None = None) -> str:
+    style = ACTION_STYLE.get(lang_to, {}).get(group, "")
+    parts = [
+        f"Ты переводчик. Переводи строго с {lang_from} на {lang_to}.",
+        style,
+        BASE_RULES,
+    ]
+    return " ".join(part for part in parts if part).strip()
 
 
-ACTION_STYLE_BY_LANG: dict[str, str] = {
-    "ru": (
-        "Для описаний действий используй глаголы несовершенного вида "
-        "(отвечающие на вопрос «что делает?»). "
-        "Напр.: «afeitarse» → «бриться», «lavar los platos» → «мыть посуду». "
-        "Существительные и названия предметов оставляй существительными "
-        "(напр.: «razor» → «бритва», не «бриться»)."
-    ),
-    "en": (
-        "For action descriptions, prefer present simple or gerund where natural, "
-        'e.g., "to shave" / "shaving", "to wash the dishes" / "washing the dishes". '
-        "Nouns and object names must remain as nouns "
-        '(e.g., "бритва" -> "razor", not "shaving").'
-    ),
-    "es": (
-        "Para descripciones de acciones, usa el infinitivo "
-        "(p. ej., «afeitarse», «lavar los platos»). "
-        "Los sustantivos y nombres de objetos deben permanecer como sustantivos "
-        "(p. ej., «бритва» → «maquinilla de afeitar», no «afeitarse»)."
-    ),
-}
-
-BASE_RULES = "Выводи ТОЛЬКО перевод — без кавычек, пояснений и префиксов. " "Сохраняй числовые форматы, эмодзи и разметку."
-
-
-def build_instructions(lang_from: str, lang_to: str) -> str:
-    style = ACTION_STYLE_BY_LANG.get(lang_to)
-    return f"Ты переводчик. Переводи строго с {lang_from} на {lang_to}. " f"{style} {BASE_RULES}".strip()
-
-
-BATCH_OUTPUT_RULES = (
-    "Верни ТОЛЬКО валидный JSON-массив вида "
-    '[{"id": 0, "text": "перевод"}, ...]. '
-    "Без markdown-обёртки, без пояснений, без кавычек вокруг массива."
-)
-
-
-def build_batch_instructions(lang_from: str, lang_to: str) -> str:
-    style = ACTION_STYLE_BY_LANG.get(lang_to)
-    return (
-        f"Ты переводчик. Переводи строго с {lang_from} на {lang_to}. "
-        f"{style} "
-        "Сохраняй числовые форматы, эмодзи и разметку. "
-        f"{BATCH_OUTPUT_RULES}"
-    ).strip()
+def build_batch_instructions(lang_from: str, lang_to: str, group: str | None = None) -> str:
+    style = ACTION_STYLE.get(lang_to, {}).get(group, "")
+    parts = [
+        f"Ты переводчик. Переводи строго с {lang_from} на {lang_to}.",
+        style,
+        "Сохраняй числовые форматы, эмодзи и разметку.",
+        BATCH_OUTPUT_RULES,
+    ]
+    return " ".join(part for part in parts if part).strip()
 
 
 class TranslateService:
@@ -110,10 +69,8 @@ class TranslateService:
         lang_from: str = "ES",
         lang_to: str = "RU",
         context: str | None = None,
+        group: str | None = None,
     ) -> str:
-        src = _normalize_lang(lang_from)
-        dst = _normalize_lang(lang_to)
-
         if context:
             user_input = (
                 "Стиль: нейтрально-разговорно.\n\n"
@@ -127,7 +84,7 @@ class TranslateService:
         else:
             user_input = "Стиль: нейтрально-разговорно.\n\n" "TEXT (translate only this):\n" f"{text}"
 
-        instructions = build_instructions(src, dst)
+        instructions = build_instructions(lang_from, lang_to, group=group)
 
         open_ai_response = self._client.responses.create(
             model=DEFAULT_TRANSLATION_MODEL,
@@ -145,14 +102,13 @@ class TranslateService:
         lang_to: str,
         lang_from: str = "ES",
         context: str | None = None,
+        group: str | None = None,
         chunk_size: int = 25,
     ) -> list[str]:
         if not texts or not lang_to:
             return []
 
-        src = _normalize_lang(lang_from)
-        dst = _normalize_lang(lang_to)
-        instructions = build_batch_instructions(src, dst)
+        instructions = build_batch_instructions(lang_from, lang_to, group=group)
 
         results: list[str] = []
 
@@ -200,6 +156,7 @@ class TranslateService:
                         lang_from=lang_from,
                         lang_to=lang_to,
                         context=context,
+                        group=group,
                     )
                     results.append(translated)
 

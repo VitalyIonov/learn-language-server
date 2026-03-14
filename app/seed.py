@@ -1,6 +1,6 @@
 import asyncio
 from pathlib import Path
-from app.scripts.merge_jsons import merge_json_folder
+from app.scripts.merge_jsons import merge_json_folder, deduplicate_definitions
 import json
 from app.core.db import async_session
 from app.db.seed import (
@@ -17,11 +17,12 @@ from app.core.dependencies.service_factories import (
 
 
 def run_merge():
-    merge_json_folder(
+    definitions_path = merge_json_folder(
         folder=Path("seed_data/v2/definitions"),
         output_name="all_definitions.json",
         indent=2,
     )
+    deduplicate_definitions(file_path=definitions_path)
     merge_json_folder(folder=Path("seed_data/v2/categories"), output_name="all_categories.json", indent=2)
     merge_json_folder(folder=Path("seed_data/v2/levels"), output_name="all_levels.json", indent=2)
     merge_json_folder(folder=Path("seed_data/v2/meanings"), output_name="all_meanings.json", indent=2)
