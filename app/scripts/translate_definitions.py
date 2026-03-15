@@ -25,10 +25,7 @@ def build_meaning_map(category: str, lang_from: str, lang_to: str) -> dict[str, 
     target_meanings = load_meanings(category=category, language=lang_to)
 
     if len(source_meanings) != len(target_meanings):
-        raise ValueError(
-            f"Meaning count mismatch: {lang_from} has {len(source_meanings)}, "
-            f"{lang_to} has {len(target_meanings)}"
-        )
+        raise ValueError(f"Meaning count mismatch: {lang_from} has {len(source_meanings)}, " f"{lang_to} has {len(target_meanings)}")
 
     return dict(zip(source_meanings, target_meanings))
 
@@ -73,11 +70,7 @@ async def translate_definitions(
                 group=group.upper(),
             )
 
-            translated_meanings = [
-                meaning_map[meaning]
-                for meaning in definition.get("meanings", [])
-                if meaning in meaning_map
-            ]
+            translated_meanings = [meaning_map[meaning] for meaning in definition.get("meanings", []) if meaning in meaning_map]
 
             translated_definition = {
                 "text": translated_text,
@@ -102,7 +95,7 @@ async def translate_definitions(
 
 async def main() -> None:
     parser = argparse.ArgumentParser(description="Translate seed definition files")
-    parser.add_argument("--category", required=True, help="Category folder name (e.g. rooms_is_a_house)")
+    parser.add_argument("--category", required=True, help="Category folder name (e.g. rooms_in_a_house)")
     parser.add_argument("--group", required=True, help="Definition group (e.g. verb, noun, phrase, descriptions)")
     parser.add_argument("--lang-from", default="ru", help="Source language code (default: ru)")
     parser.add_argument("--lang-to", nargs="+", required=True, help="Target language codes (e.g. en es)")

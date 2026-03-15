@@ -19,4 +19,5 @@ class Translation(Base):
     translated_text: Mapped[str] = mapped_column(nullable=False)
     lang_from: Mapped[str] = mapped_column(index=True, nullable=False)
     lang_to: Mapped[str] = mapped_column(index=True, nullable=False)
+    context: Mapped[str | None] = mapped_column(nullable=True)
     translated_at: Mapped[datetime] = mapped_column(server_default=func.now())

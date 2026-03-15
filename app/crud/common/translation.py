@@ -26,7 +26,10 @@ async def create_translation(db: AsyncSession, payload: TranslationCreate) -> Tr
         .values(**payload.model_dump())
         .on_conflict_do_update(
             constraint="uq_translations_text_langs",
-            set_={"translated_text": payload.translated_text},
+            set_={
+                "translated_text": payload.translated_text,
+                "context": payload.context,
+            },
         )
         .returning(Translation)
     )

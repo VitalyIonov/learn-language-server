@@ -10,3 +10,4 @@ class TranslationCreate(BaseSchema):
     translated_text: str
     lang_from: str
     lang_to: str
+    context: str | None = None
