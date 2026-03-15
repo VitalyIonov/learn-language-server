@@ -40,7 +40,8 @@ ACTION_STYLE: dict[str, dict[str | None, str]] = {
         None: "",
         "VERB": (
             "Traduce como un verbo en infinitivo. "
-            "P. ej.: «мыться» → «lavarse», «готовить» → «cocinar»."
+            "Usa la forma más común y coloquial, no la literaria. "
+            "P. ej.: «мыться» → «lavarse», «готовить» → «cocinar», «лежать» → «estar acostado» (NO «yacer»)."
         ),
         "NOUN": (
             "Traduce como un sustantivo. "
@@ -57,6 +58,8 @@ ACTION_STYLE: dict[str, dict[str | None, str]] = {
 }
 
 BASE_RULES = (
+    "Используй общеупотребимую, разговорную лексику. "
+    "Избегай литературных, архаичных и редких слов. "
     "Выводи ТОЛЬКО перевод — без кавычек, пояснений и префиксов. "
     "Сохраняй числовые форматы, эмодзи и разметку."
 )
