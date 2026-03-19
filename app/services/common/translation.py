@@ -34,6 +34,7 @@ class TranslationService:
         lang_from: str,
         lang_to: str,
         context: str = "",
+        group: str | None = None,
     ) -> str:
         if not all((text, lang_from, lang_to)):
             raise HTTPException(status_code=400, detail="Missing required parameter")
@@ -46,7 +47,9 @@ class TranslationService:
         if translated_text:
             return translated_text
 
-        translated_text = await self.svc_translate.translate_by_open_ai(text, lang_from, lang_to, context=context)
+        translated_text = await self.svc_translate.translate_by_open_ai(
+            text, lang_from, lang_to, context=context, group=group
+        )
 
         valid = self.svc_validator.is_valid(text=text, translated_text=translated_text, lang_to=lang_to)
 

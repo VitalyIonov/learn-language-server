@@ -4,7 +4,10 @@ import json
 import logging
 from pathlib import Path
 
-from app.services.common import TranslateService
+from app.core.db import async_session
+from app.services.common import TranslationService
+from app.services.common.translate import TranslateService
+from app.services.common.translation_validator import TranslationValidatorService
 
 logger = logging.getLogger(__name__)
 logging.basicConfig(level=logging.INFO, format="%(levelname)s: %(message)s")
@@ -49,48 +52,55 @@ async def translate_definitions(
     lang_from: str,
     lang_to: str,
 ) -> None:
-    svc_translate = TranslateService()
+    svc_validator = TranslationValidatorService()
+    svc_translate = TranslateService(svc_validator=svc_validator)
+
     meaning_map = build_meaning_map(category=category, lang_from=lang_from, lang_to=lang_to)
     definitions_by_file = load_source_definitions(category=category, lang_from=lang_from, group=group)
 
     target_dir = DEFINITIONS_DIR / category / lang_to.upper() / group
     target_dir.mkdir(parents=True, exist_ok=True)
 
-    for filename, definitions in definitions_by_file.items():
-        translated_definitions = []
+    async with async_session() as session:
+        svc_translation = TranslationService(
+            db=session, svc_translate=svc_translate, svc_validator=svc_validator
+        )
 
-        for definition in definitions:
-            context = f"{', '.join(definition.get('meanings', []))} - {definition.get('category', '')}"
+        for filename, definitions in definitions_by_file.items():
+            translated_definitions = []
 
-            translated_text = await svc_translate.translate_by_open_ai(
-                text=definition["text"],
-                lang_from=lang_from,
-                lang_to=lang_to,
-                context=context,
-                group=group.upper(),
-            )
+            for definition in definitions:
+                context = f"{', '.join(definition.get('meanings', []))} - {definition.get('category', '')}"
 
-            translated_meanings = [meaning_map[meaning] for meaning in definition.get("meanings", []) if meaning in meaning_map]
+                translated_text = await svc_translation.translate(
+                    text=definition["text"],
+                    lang_from=lang_from,
+                    lang_to=lang_to,
+                    context=context,
+                    group=group.upper(),
+                )
 
-            translated_definition = {
-                "text": translated_text,
-                "level": definition["level"],
-                "category": definition["category"],
-                "meanings": translated_meanings,
-                "type": definition["type"],
-                "group": definition["group"],
-                "language": lang_to.upper(),
-            }
-            translated_definitions.append(translated_definition)
+                translated_meanings = [meaning_map[meaning] for meaning in definition.get("meanings", []) if meaning in meaning_map]
 
-            logger.info("%s → %s (%s)", definition["text"], translated_text, lang_to.upper())
+                translated_definition = {
+                    "text": translated_text,
+                    "level": definition["level"],
+                    "category": definition["category"],
+                    "meanings": translated_meanings,
+                    "type": definition["type"],
+                    "group": definition["group"],
+                    "language": lang_to.upper(),
+                }
+                translated_definitions.append(translated_definition)
 
-        output_path = target_dir / filename
-        with open(output_path, "w", encoding="utf-8") as file:
-            json.dump(translated_definitions, file, ensure_ascii=False, indent=2)
-            file.write("\n")
+                logger.info("%s → %s (%s)", definition["text"], translated_text, lang_to.upper())
 
-        logger.info("Записан %s (%d definitions)", output_path, len(translated_definitions))
+            output_path = target_dir / filename
+            with open(output_path, "w", encoding="utf-8") as file:
+                json.dump(translated_definitions, file, ensure_ascii=False, indent=2)
+                file.write("\n")
+
+            logger.info("Записан %s (%d definitions)", output_path, len(translated_definitions))
 
 
 async def main() -> None:
