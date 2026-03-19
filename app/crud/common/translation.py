@@ -8,12 +8,15 @@ from app.models.common import Translation
 from app.schemas.common import TranslationCreate
 
 
-async def get_translation(db: AsyncSession, text: str, lang_from: str, lang_to: str) -> Optional[Translation]:
+async def get_translation(
+    db: AsyncSession, text: str, lang_from: str, lang_to: str, context: str = ""
+) -> Optional[Translation]:
     result = await db.execute(
         select(Translation).where(
             Translation.text == text,
             Translation.lang_from == lang_from,
             Translation.lang_to == lang_to,
+            Translation.context == context,
         )
     )
 

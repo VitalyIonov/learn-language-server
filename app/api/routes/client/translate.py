@@ -16,6 +16,6 @@ async def translate_text(
     context: str | None = Query(default=None, description="optional context for better translation"),
     svc_translation: TranslationService = Depends(get_translation_service),
 ):
-    result = await svc_translation.translate(text=text, lang_from=lang_from, lang_to=lang_to, context=context)
+    result = await svc_translation.translate(text=text, lang_from=lang_from, lang_to=lang_to, context=context or "")
 
     return {"translation": result}

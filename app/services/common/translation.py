@@ -23,8 +23,8 @@ class TranslationService:
         self.svc_translate = svc_translate
         self.svc_validator = svc_validator
 
-    async def get(self, text: str, lang_from: str, lang_to: str) -> Optional[str]:
-        result = await crud_get_translation(self.db, text=text, lang_from=lang_from, lang_to=lang_to)
+    async def get(self, text: str, lang_from: str, lang_to: str, context: str = "") -> Optional[str]:
+        result = await crud_get_translation(self.db, text=text, lang_from=lang_from, lang_to=lang_to, context=context)
 
         return result.translated_text if result else None
 
@@ -33,7 +33,7 @@ class TranslationService:
         text: str,
         lang_from: str,
         lang_to: str,
-        context: str | None = None,
+        context: str = "",
     ) -> str:
         if not all((text, lang_from, lang_to)):
             raise HTTPException(status_code=400, detail="Missing required parameter")
@@ -41,7 +41,7 @@ class TranslationService:
         if lang_from == lang_to:
             return text
 
-        translated_text = await self.get(text, lang_from, lang_to)
+        translated_text = await self.get(text, lang_from, lang_to, context)
 
         if translated_text:
             return translated_text
