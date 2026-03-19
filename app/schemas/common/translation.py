@@ -11,3 +11,4 @@ class TranslationCreate(BaseSchema):
     lang_from: str
     lang_to: str
     context: str | None = None
+    is_valid: bool = True

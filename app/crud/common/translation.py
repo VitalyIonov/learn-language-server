@@ -29,6 +29,7 @@ async def create_translation(db: AsyncSession, payload: TranslationCreate) -> Tr
             set_={
                 "translated_text": payload.translated_text,
                 "context": payload.context,
+                "is_valid": payload.is_valid,
             },
         )
         .returning(Translation)

@@ -2,11 +2,13 @@ from typing import Optional
 
 from fastapi import HTTPException
 from sqlalchemy.ext.asyncio import AsyncSession
+
 from app.crud.common import (
     get_translation as crud_get_translation,
     create_translation as crud_create_translation,
 )
 from app.schemas.common import TranslationCreate
+from app.services.common.translation_validator import TranslationValidatorService
 from ..common.translate import TranslateService
 
 
@@ -15,9 +17,11 @@ class TranslationService:
         self,
         db: AsyncSession,
         svc_translate: TranslateService,
+        svc_validator: TranslationValidatorService,
     ):
         self.db = db
         self.svc_translate = svc_translate
+        self.svc_validator = svc_validator
 
     async def get(self, text: str, lang_from: str, lang_to: str) -> Optional[str]:
         result = await crud_get_translation(self.db, text=text, lang_from=lang_from, lang_to=lang_to)
@@ -44,6 +48,8 @@ class TranslationService:
 
         translated_text = await self.svc_translate.translate_by_open_ai(text, lang_from, lang_to, context=context)
 
+        valid = self.svc_validator.is_valid(text=text, translated_text=translated_text, lang_to=lang_to)
+
         await crud_create_translation(
             self.db,
             TranslationCreate(
@@ -52,6 +58,7 @@ class TranslationService:
                 lang_from=lang_from,
                 lang_to=lang_to,
                 context=context,
+                is_valid=valid,
             ),
         )
 

@@ -33,6 +33,7 @@ from app.services.common import (
     EmbeddingService,
     TranslationService,
     TranslateService,
+    TranslationValidatorService,
 )
 from app.core.dependencies.auth import oauth2_scheme
 
@@ -140,8 +141,14 @@ async def get_embedding_service() -> EmbeddingService:
     return EmbeddingService()
 
 
-async def get_translate_service() -> TranslateService:
-    return TranslateService()
+async def get_translation_validator_service() -> TranslationValidatorService:
+    return TranslationValidatorService()
+
+
+async def get_translate_service(
+    svc_validator: TranslationValidatorService = Depends(get_translation_validator_service),
+) -> TranslateService:
+    return TranslateService(svc_validator=svc_validator)
 
 
 async def get_question_service(
@@ -165,8 +172,9 @@ async def get_issue_service_client(
 async def get_translation_service(
     db: AsyncSession = Depends(get_db),
     svc_translate: TranslateService = Depends(get_translate_service),
+    svc_validator: TranslationValidatorService = Depends(get_translation_validator_service),
 ) -> TranslationService:
-    return TranslationService(db, svc_translate)
+    return TranslationService(db, svc_translate=svc_translate, svc_validator=svc_validator)
 
 
 async def get_category_service_client(

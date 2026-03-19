@@ -4,7 +4,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Project Overview
 
-FastAPI backend for a language learning platform. Python 3.11+, async throughout, PostgreSQL via SQLAlchemy 2.0 +
+FastAPI backend for a language learning platform. Python 3.12+, async throughout, PostgreSQL via SQLAlchemy 2.0 +
 asyncpg. Poetry for dependency management. Dockerized development environment.
 
 ## Commands
@@ -84,6 +84,28 @@ questions and updates progress.
 
 Pydantic `BaseSettings` in `app/core/config.py` reads from `.env`. Key vars: `POSTGRES_*`, `SECRET_KEY`,
 `SESSION_SECRET_KEY`, `GOOGLE_CLIENT_*`, `R2_*`, `DEEPL_API_KEY`, `OPENAI_API_KEY`.
+
+## Создание нового сервиса
+
+При добавлении нового сервиса следовать чеклисту:
+
+1. **Класс** — сервис всегда оформляется как класс в `app/services/{admin,client,common}/`.
+   Зависимости (db, другие сервисы) передаются через `__init__`.
+2. **Экспорт** — добавить импорт в `__init__.py` соответствующего пакета сервисов.
+3. **Фабрика** — зарегистрировать factory-функцию в `app/core/dependencies/service_factories.py`.
+   Зависимости получать через `Depends()`.
+4. **Роут** — подключить сервис в роуте через `Depends(get_<service_name>)`.
+
+Пример фабрики:
+```python
+async def get_translation_validator_service() -> TranslationValidatorService:
+    return TranslationValidatorService()
+
+async def get_translate_service(
+    svc_validator: TranslationValidatorService = Depends(get_translation_validator_service),
+) -> TranslateService:
+    return TranslateService(svc_validator=svc_validator)
+```
 
 ## Conventions
 

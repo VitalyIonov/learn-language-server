@@ -13,8 +13,10 @@ logger = logging.getLogger(__name__)
 DEEPL_API_KEY = settings.DEEPL_API_KEY
 DEEPL_API_URL = "https://api-free.deepl.com/v2/translate"
 DEFAULT_TRANSLATION_MODEL = "gpt-4o"
+MAX_TRANSLATION_ATTEMPTS = 2
 
 from app.constants.translate import ACTION_STYLE, BASE_RULES, BATCH_OUTPUT_RULES
+from app.services.common.translation_validator import TranslationValidatorService
 
 
 def build_instructions(lang_from: str, lang_to: str, group: str | None = None) -> str:
@@ -39,8 +41,9 @@ def build_batch_instructions(lang_from: str, lang_to: str, group: str | None = N
 
 
 class TranslateService:
-    def __init__(self):
+    def __init__(self, svc_validator: TranslationValidatorService):
         self._client = OpenAI(api_key=settings.OPENAI_API_KEY)
+        self.svc_validator = svc_validator
 
     @staticmethod
     def translate_by_deepl(text: str, lang_from: str = "ES", lang_to: str = "RU") -> str:
@@ -68,6 +71,34 @@ class TranslateService:
         text: str,
         lang_from: str = "ES",
         lang_to: str = "RU",
+        context: str | None = None,
+        group: str | None = None,
+    ) -> str:
+        translated_text = ""
+
+        for attempt in range(MAX_TRANSLATION_ATTEMPTS):
+            translated_text = self._call_openai(text=text, lang_from=lang_from, lang_to=lang_to, context=context, group=group)
+
+            if self.svc_validator.is_valid(text=text, translated_text=translated_text, lang_to=lang_to):
+                break
+
+            logger.error(
+                "Translation validation failed (attempt %d/%d): '%s' -> '%s' (%s->%s)",
+                attempt + 1,
+                MAX_TRANSLATION_ATTEMPTS,
+                text,
+                translated_text,
+                lang_from,
+                lang_to,
+            )
+
+        return translated_text
+
+    def _call_openai(
+        self,
+        text: str,
+        lang_from: str,
+        lang_to: str,
         context: str | None = None,
         group: str | None = None,
     ) -> str:
@@ -142,17 +173,35 @@ class TranslateService:
                     user_input=user_input,
                     expected_count=len(chunk),
                 )
-                results.extend(chunk_results)
+                for source_text, translated_text in zip(chunk, chunk_results):
+                    if self.svc_validator.is_valid(text=source_text, translated_text=translated_text, lang_to=lang_to):
+                        results.append(translated_text)
+                    else:
+                        logger.warning(
+                            "Batch item validation failed: '%s' -> '%s' (%s->%s), retranslating individually",
+                            source_text,
+                            translated_text,
+                            lang_from,
+                            lang_to,
+                        )
+                        retranslated = await self.translate_by_open_ai(
+                            text=source_text,
+                            lang_from=lang_from,
+                            lang_to=lang_to,
+                            context=context,
+                            group=group,
+                        )
+                        results.append(retranslated)
             except Exception:
                 logger.warning(
-                    "Batch translation failed for chunk %d-%d, " "falling back to individual translations",
+                    "Batch translation failed for chunk %d-%d, falling back to individual translations",
                     chunk_start,
                     chunk_start + len(chunk),
                     exc_info=True,
                 )
-                for text in chunk:
+                for source_text in chunk:
                     translated = await self.translate_by_open_ai(
-                        text=text,
+                        text=source_text,
                         lang_from=lang_from,
                         lang_to=lang_to,
                         context=context,
