@@ -39,6 +39,9 @@ class TranslationService:
         if not all((text, lang_from, lang_to)):
             raise HTTPException(status_code=400, detail="Missing required parameter")
 
+        lang_from = lang_from.upper()
+        lang_to = lang_to.upper()
+
         if lang_from == lang_to:
             return text
 
